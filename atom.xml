@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2020-08-25T10:25:33.421Z</updated>
+    <updated>2020-08-25T10:29:08.996Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -16,11 +16,17 @@
         <link href="http://weakcc.github.io/post/mysql-you-hua/">
         </link>
         <updated>2020-08-25T10:05:46.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="定位慢-sql">定位慢 SQL</h1>
+<ul>
+<li>一种方法是查看慢查询日志</li>
+<li>另一种方法是 show process 查看正在执行的 SQL</li>
+</ul>]]></summary>
         <content type="html"><![CDATA[<h1 id="定位慢-sql">定位慢 SQL</h1>
 <ul>
 <li>一种方法是查看慢查询日志</li>
 <li>另一种方法是 show process 查看正在执行的 SQL</li>
 </ul>
+<!-- more -->
 <h1 id="使用不了索引的场景">使用不了索引的场景</h1>
 <ul>
 <li>应该避免隐式转换</li>
@@ -51,8 +57,11 @@
         <link href="http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/">
         </link>
         <updated>2020-08-25T09:34:51.000Z</updated>
-        <content type="html"><![CDATA[<p><img src="http://weakcc.github.io/post-images/1598348346116.png" alt="" loading="lazy"><br>
-已 MAMP 为例：<br>
+        <summary type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598348346116.png" alt="" loading="lazy"></figure>
+]]></summary>
+        <content type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598348346116.png" alt="" loading="lazy"></figure>
+<!-- more -->
+<p>已 MAMP 为例：<br>
 <img src="http://weakcc.github.io/post-images/1598348508212.png" alt="" loading="lazy"><br>
 <img src="http://weakcc.github.io/post-images/1598348628532.png" alt="" loading="lazy"><br>
 在[mysqld]下面添加这段</p>
