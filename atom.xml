@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2020-08-25T10:02:39.214Z</updated>
+    <updated>2020-08-25T10:24:24.799Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,41 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[MySQL 优化]]></title>
+        <id>http://weakcc.github.io/post/mysql-you-hua/</id>
+        <link href="http://weakcc.github.io/post/mysql-you-hua/">
+        </link>
+        <updated>2020-08-25T10:05:46.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="定位慢-sql">定位慢 SQL</h1>
+<ul>
+<li>一种方法是查看慢查询日志</li>
+<li>另一种方法是 show process 查看正在执行的 SQL</li>
+</ul>
+<h1 id="使用不了索引的场景">使用不了索引的场景</h1>
+<ul>
+<li>应该避免隐式转换</li>
+<li>like查询不能以%开头</li>
+<li>范围查询时，包含的数据比例不能太大</li>
+<li>不建议对条件字段做运算及函数操作</li>
+</ul>
+<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598350258439.png" alt="" loading="lazy"></figure>
+<h1 id="分页查询">分页查询</h1>
+<ul>
+<li>根据自增且连续主键排序的分页查询优化</li>
+<li>查询根据非主键字段排序的分页查询优化</li>
+</ul>
+<p><img src="http://weakcc.github.io/post-images/1598350670568.png" alt="" loading="lazy"><br>
+<img src="http://weakcc.github.io/post-images/1598350676387.png" alt="" loading="lazy"></p>
+<h1 id="常见需要添加索引的场景">常见需要添加索引的场景</h1>
+<ul>
+<li>数据检索时在条件字段添加索引</li>
+<li>聚合函数对聚合字段添加索引</li>
+<li>对排序字段添加索引</li>
+<li>为了防止回表添加索引</li>
+<li>关联查询在关联字段添加索引</li>
+</ul>]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[MySQL5.7版本sql_mode=only_full_group_by问题解决办法]]></title>
         <id>http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/</id>
