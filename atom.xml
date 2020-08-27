@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2020-08-25T10:38:37.035Z</updated>
+    <updated>2020-08-27T00:56:48.724Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,15 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[Redis 概览]]></title>
+        <id>http://weakcc.github.io/post/redis-gai-lan/</id>
+        <link href="http://weakcc.github.io/post/redis-gai-lan/">
+        </link>
+        <updated>2020-08-27T00:55:29.000Z</updated>
+        <content type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598489746128.png" alt="" loading="lazy"></figure>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[MySQL 优化]]></title>
         <id>http://weakcc.github.io/post/mysql-you-hua/</id>
@@ -52,7 +61,7 @@
 </ul>]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[MySQL5.7版本sql_mode=only_full_group_by问题解决办法]]></title>
+        <title type="html"><![CDATA[MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法]]></title>
         <id>http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/</id>
         <link href="http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/">
         </link>
