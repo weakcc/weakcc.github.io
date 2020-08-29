@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>MySQL 优化 | 腰盐醋</title>
+<title>宝塔搭建 ThinkPHP | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1598683032486">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="MySQL 优化" />
-  <meta name="keywords" content="MySQL" />
+  <meta name="description" content="宝塔搭建 ThinkPHP" />
+  <meta name="keywords" content="" />
 </head>
 
 <body>
@@ -161,8 +161,7 @@
       <div class="sidebar-body pisces" id="sidebar_body">
         
           
-            <div class="post-side-meta" id="post_side_meta">
-              
+            
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -200,194 +199,6 @@
 
 
 </div>
-            </div>
-            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
-              <div class="toc-box right-motion">
-  <div class="toc-wrapper auto-number auto"
-    id="toc_wrapper">
-    <ul class="markdownIt-TOC">
-<li><a href="#%E5%AE%9A%E4%BD%8D%E6%85%A2-sql">定位慢 SQL</a></li>
-<li><a href="#%E4%BD%BF%E7%94%A8%E4%B8%8D%E4%BA%86%E7%B4%A2%E5%BC%95%E7%9A%84%E5%9C%BA%E6%99%AF">使用不了索引的场景</a></li>
-<li><a href="#%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2">分页查询</a></li>
-<li><a href="#%E5%B8%B8%E8%A7%81%E9%9C%80%E8%A6%81%E6%B7%BB%E5%8A%A0%E7%B4%A2%E5%BC%95%E7%9A%84%E5%9C%BA%E6%99%AF">常见需要添加索引的场景</a></li>
-</ul>
-
-  </div>
-</div>
-
-<script>
-
-  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
-  let active = 'active-show', activeClass = 'active-current';
-  let tocWrapper = document.querySelector('#toc_wrapper');
-  let tocContent = tocWrapper.children[0];
-  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
-
-  function addTocNumber(elem, deep) {
-    if (!elem) {
-      return;
-    }
-    let prop = elem.__proto__;
-
-    if (prop === HTMLUListElement.prototype) {
-      for (let i = 0; i < elem.children.length; i++) {
-        addTocNumber(elem.children[i], deep + (i + 1) + '.');
-      }
-    } else if (prop === HTMLLIElement.prototype) {
-      // 保存li元素
-      if (elem.children[0] && elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
-        lList.push(elem);
-      }
-      for (let i = 0; i < elem.children.length; i++) {
-        let cur = elem.children[i];
-        if (cur.__proto__ === HTMLAnchorElement.prototype) {
-          if (autoNumber) {
-            cur.text = deep + ' ' + cur.text;
-          }
-        } else if (cur.__proto__ === HTMLUListElement.prototype) {
-          addTocNumber(cur, deep);
-        }
-      }
-    }
-  }
-
-  function removeParentActiveClass() {
-    let parents = tocContent.querySelectorAll('.' + active)
-    parents.forEach(function (elem) {
-      elem.classList.remove(active);
-    });
-  }
-
-  function addActiveClass(index) {
-    if (index >= 0 && index < hList.length) {
-      lList[index].classList.add(activeClass);
-    }
-  }
-
-  function removeActiveClass(index) {
-    if (index >= 0 && index < hList.length) {
-      lList[index].classList.remove(activeClass);
-    }
-  }
-
-  function addActiveLiElemment(elem, parent) {
-    if (!elem || elem === parent) {
-      return;
-    } else {
-      if (elem.__proto__ === HTMLLIElement.prototype) {
-        elem.classList.add(active);
-      }
-      addActiveLiElemment(elem.parentElement, parent);
-    }
-  }
-
-  function showToc() {
-    if (tocWrapper) {
-      postBody = document.querySelector('#post_body');
-      for (let i = 0; i < postBody.children.length; i++) {
-        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
-          hList.push(postBody.children[i]);
-        }
-      }
-      if (tocWrapper.classList.contains('compress')) {
-        tocContent.classList.add('closed');
-      } else if (tocWrapper.classList.contains('no_compress')) {
-        tocContent.classList.add('expanded');
-      } else {
-        if (hList.length > 10) {
-          active = 'active-hidden'
-          tocContent.classList.add('closed');
-        } else {
-          tocContent.classList.add('expanded');
-        }
-      }
-    }
-  }
-
-  (function () {
-    // 处理不是从#一级标题开始目录
-    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
-      let con = tocContent.children[0].children[0];
-      tocContent.innerHTML = con.innerHTML;
-    }
-    let markdownItTOC = document.querySelector('.markdownIt-TOC');
-    let innerHeight = window.innerHeight;
-    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
-    addTocNumber(tocContent, '');
-  })();
-
-  document.addEventListener('scroll', function (e) {
-    if (lList.length <= 0) {
-      return;
-    }
-    let scrollTop = document.scrollingElement.scrollTop + 10;
-    let dir;
-
-    if (lastTop - scrollTop > 0) {
-      dir = 'up';
-    } else {
-      dir = 'down';
-    }
-
-    lastTop = scrollTop;
-    if (scrollTop <= 0) {
-      if (lastIndex >= 0 && lastIndex < hList.length) {
-        lList[lastIndex].classList.remove(activeClass);
-      }
-      return;
-    }
-
-    let current = 0, hasFind = false;
-    for (let i = 0; i < hList.length; i++) {
-      if (hList[i].offsetTop > scrollTop) {
-        current = i;
-        hasFind = true;
-        break;
-      }
-    }
-    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
-      current = hList.length - 1;
-    } else {
-      current--;
-    }
-    if (dir === 'down') {
-      if (current > lastIndex) {
-        addActiveClass(current);
-        removeActiveClass(lastIndex)
-        lastIndex = current;
-        removeParentActiveClass();
-        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
-      }
-    } else {
-      if (current < lastIndex) {
-        addActiveClass(current);
-        removeActiveClass(lastIndex);
-        lastIndex = current;
-        removeParentActiveClass();
-        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
-      }
-    }
-  });
-
-
-  window.addEventListener('load', function () {
-    showToc();
-    document.querySelector('#sidebar').style = 'display: block;';
-    tocWrapper.classList.add('toc-active');
-    setTimeout(function () {
-      if ("createEvent" in document) {
-        let evt = document.createEvent("HTMLEvents");
-        evt.initEvent("scroll", false, true);
-        document.dispatchEvent(evt);
-      }
-      else {
-        document.fireEvent("scroll");
-      }
-    }, 500)
-  })
-
-</script>
-            </div>
           
         
       </div>
@@ -475,8 +286,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/mysql-you-hua/">
-      MySQL 优化
+    <a class="post-title-link" href="http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/">
+      宝塔搭建 ThinkPHP
     </a>
   </h1>
   <div class="post-meta">
@@ -484,65 +295,62 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-08-25 18:05:46">2020-08-25</span>
+      <span class="publish-time" data-t="2020-08-29 10:45:32">2020-08-29</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
     <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/VwbG72yxK/">
-        <span>MySQL</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>1<span class="language" data-lan="minute">分钟</span></span>
+      <span>2<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>199<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>281<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <h1 id="定位慢-sql">定位慢 SQL</h1>
-<ul>
-<li>一种方法是查看慢查询日志</li>
-<li>另一种方法是 show process 查看正在执行的 SQL</li>
-</ul>
-<!-- more -->
-<h1 id="使用不了索引的场景">使用不了索引的场景</h1>
-<ul>
-<li>应该避免隐式转换</li>
-<li>like查询不能以%开头</li>
-<li>范围查询时，包含的数据比例不能太大</li>
-<li>不建议对条件字段做运算及函数操作</li>
-</ul>
-<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598350258439.png" alt="" loading="lazy"></figure>
-<h1 id="分页查询">分页查询</h1>
-<ul>
-<li>根据自增且连续主键排序的分页查询优化</li>
-<li>查询根据非主键字段排序的分页查询优化</li>
-</ul>
-<p><img src="http://weakcc.github.io/post-images/1598350670568.png" alt="" loading="lazy"><br>
-<img src="http://weakcc.github.io/post-images/1598350676387.png" alt="" loading="lazy"></p>
-<h1 id="常见需要添加索引的场景">常见需要添加索引的场景</h1>
-<ul>
-<li>数据检索时在条件字段添加索引</li>
-<li>聚合函数对聚合字段添加索引</li>
-<li>对排序字段添加索引</li>
-<li>为了防止回表添加索引</li>
-<li>关联查询在关联字段添加索引</li>
-</ul>
+              <p>要使用宝塔面板首先需要开启端口:<br>
+腾讯云：<a href="https://www.bt.cn/bbs/thread-1229-1-1.html">https://www.bt.cn/bbs/thread-1229-1-1.html</a><br>
+阿里云：<a href="https://www.bt.cn/bbs/thread-2897-1-1.html">https://www.bt.cn/bbs/thread-2897-1-1.html</a><br>
+华为云：<a href="https://www.bt.cn/bbs/thread-3923-1-1.html">https://www.bt.cn/bbs/thread-3923-1-1.html</a></p>
+<p>示例是使用 <code>CentOS7.4</code><br>
+执行下面的命令即可</p>
+<pre><code>yum install -y wget &amp;&amp; wget -O install.sh http://download.bt.cn/install/install_6.0.sh &amp;&amp; sh install.sh
+</code></pre>
+<p><img src="http://weakcc.github.io/post-images/1598669843047.png" alt="" loading="lazy"><br>
+中途如果询问 <code>Do you want to install Bt-Panel to the /www directory now?(y/n)</code>: 输入 <code>y</code> 回车即可；<br>
+出现类似下面页面就是安装完成<br>
+<img src="http://weakcc.github.io/post-images/1598670082145.png" alt="" loading="lazy"><br>
+然后浏览器打开外网面板地址的链接<br>
+<img src="http://weakcc.github.io/post-images/1598670218637.png" alt="" loading="lazy"><br>
+输入 <code>username</code> 和 <code>password</code> 对应的值即完成登录<br>
+<img src="http://weakcc.github.io/post-images/1598670316511.png" alt="" loading="lazy"><br>
+选择环境类型<br>
+<img src="http://weakcc.github.io/post-images/1598670509110.png" alt="" loading="lazy"><br>
+选择编译安装，一键安装即可<br>
+<img src="http://weakcc.github.io/post-images/1598670547784.png" alt="" loading="lazy"><br>
+喝杯茶 loadIng... 任务列表为 0 时表示安装成功<br>
+<img src="http://weakcc.github.io/post-images/1598671037291.png" alt="" loading="lazy"><br>
+安装需要的 PHP 扩展（可以下拉选择）<br>
+<img src="http://weakcc.github.io/post-images/1598671326212.png" alt="" loading="lazy"><br>
+喝杯茶 loadIng... 任务列表为 0 时表示安装成功<br>
+<img src="http://weakcc.github.io/post-images/1598671459440.png" alt="" loading="lazy"><br>
+取消被禁用的 <code>proc_open</code> 函数<br>
+<img src="http://weakcc.github.io/post-images/1598671733927.png" alt="" loading="lazy"><br>
+新建一个站点<br>
+可以把域名解析到服务器 IP<br>
+<img src="http://weakcc.github.io/post-images/1598671957608.png" alt="" loading="lazy"><br>
+<img src="http://weakcc.github.io/post-images/1598672008074.png" alt="" loading="lazy"><br>
+如果想 IP 直接访问<br>
+<img src="http://weakcc.github.io/post-images/1598673615513.png" alt="" loading="lazy"><br>
+<img src="http://weakcc.github.io/post-images/1598673653330.png" alt="" loading="lazy"></p>
+<blockquote>
+<p>官网安装方法: <a href="https://www.bt.cn/bbs/thread-19376-1-1.html">https://www.bt.cn/bbs/thread-19376-1-1.html</a></p>
+</blockquote>
+
             </div>
             
             
@@ -554,7 +362,7 @@
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/mysql-you-hua/" title="MySQL 优化">http://weakcc.github.io/post/mysql-you-hua/</a>
+      <a href="http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/" title="宝塔搭建 ThinkPHP">http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -563,21 +371,15 @@
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/VwbG72yxK/"># MySQL</a>
-    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="Redis 概览" href="http://weakcc.github.io/post/redis-gai-lan/">Redis 概览</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="Redis 概览" href="http://weakcc.github.io/post/redis-gai-lan/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法" href="http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/">MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法</a>
-        <a class="nav-mobile-next" title="MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法" href="http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/">下一篇</a>
+        <a class="nav-pc-next" title="Redis 概览" href="http://weakcc.github.io/post/redis-gai-lan/">Redis 概览</a>
+        <a class="nav-mobile-next" title="Redis 概览" href="http://weakcc.github.io/post/redis-gai-lan/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>

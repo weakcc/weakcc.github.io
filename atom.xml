@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2020-08-27T00:57:56.981Z</updated>
+    <updated>2020-08-29T06:37:14.053Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,52 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[宝塔搭建 ThinkPHP]]></title>
+        <id>http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/</id>
+        <link href="http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/">
+        </link>
+        <updated>2020-08-29T02:45:32.000Z</updated>
+        <content type="html"><![CDATA[<p>要使用宝塔面板首先需要开启端口:<br>
+腾讯云：<a href="https://www.bt.cn/bbs/thread-1229-1-1.html">https://www.bt.cn/bbs/thread-1229-1-1.html</a><br>
+阿里云：<a href="https://www.bt.cn/bbs/thread-2897-1-1.html">https://www.bt.cn/bbs/thread-2897-1-1.html</a><br>
+华为云：<a href="https://www.bt.cn/bbs/thread-3923-1-1.html">https://www.bt.cn/bbs/thread-3923-1-1.html</a></p>
+<p>示例是使用 <code>CentOS7.4</code><br>
+执行下面的命令即可</p>
+<pre><code>yum install -y wget &amp;&amp; wget -O install.sh http://download.bt.cn/install/install_6.0.sh &amp;&amp; sh install.sh
+</code></pre>
+<p><img src="http://weakcc.github.io/post-images/1598669843047.png" alt="" loading="lazy"><br>
+中途如果询问 <code>Do you want to install Bt-Panel to the /www directory now?(y/n)</code>: 输入 <code>y</code> 回车即可；<br>
+出现类似下面页面就是安装完成<br>
+<img src="http://weakcc.github.io/post-images/1598670082145.png" alt="" loading="lazy"><br>
+然后浏览器打开外网面板地址的链接<br>
+<img src="http://weakcc.github.io/post-images/1598670218637.png" alt="" loading="lazy"><br>
+输入 <code>username</code> 和 <code>password</code> 对应的值即完成登录<br>
+<img src="http://weakcc.github.io/post-images/1598670316511.png" alt="" loading="lazy"><br>
+选择环境类型<br>
+<img src="http://weakcc.github.io/post-images/1598670509110.png" alt="" loading="lazy"><br>
+选择编译安装，一键安装即可<br>
+<img src="http://weakcc.github.io/post-images/1598670547784.png" alt="" loading="lazy"><br>
+喝杯茶 loadIng... 任务列表为 0 时表示安装成功<br>
+<img src="http://weakcc.github.io/post-images/1598671037291.png" alt="" loading="lazy"><br>
+安装需要的 PHP 扩展（可以下拉选择）<br>
+<img src="http://weakcc.github.io/post-images/1598671326212.png" alt="" loading="lazy"><br>
+喝杯茶 loadIng... 任务列表为 0 时表示安装成功<br>
+<img src="http://weakcc.github.io/post-images/1598671459440.png" alt="" loading="lazy"><br>
+取消被禁用的 <code>proc_open</code> 函数<br>
+<img src="http://weakcc.github.io/post-images/1598671733927.png" alt="" loading="lazy"><br>
+新建一个站点<br>
+可以把域名解析到服务器 IP<br>
+<img src="http://weakcc.github.io/post-images/1598671957608.png" alt="" loading="lazy"><br>
+<img src="http://weakcc.github.io/post-images/1598672008074.png" alt="" loading="lazy"><br>
+如果想 IP 直接访问<br>
+<img src="http://weakcc.github.io/post-images/1598673615513.png" alt="" loading="lazy"><br>
+<img src="http://weakcc.github.io/post-images/1598673653330.png" alt="" loading="lazy"></p>
+<blockquote>
+<p>官网安装方法: <a href="https://www.bt.cn/bbs/thread-19376-1-1.html">https://www.bt.cn/bbs/thread-19376-1-1.html</a></p>
+</blockquote>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Redis 概览]]></title>
         <id>http://weakcc.github.io/post/redis-gai-lan/</id>
