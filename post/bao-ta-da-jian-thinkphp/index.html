@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>宝塔搭建 ThinkPHP | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1598683060438">
+<link rel="shortcut icon" href="/favicon.ico?v=1598689371558">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -39,7 +39,7 @@
 
 
   <meta name="description" content="宝塔搭建 ThinkPHP" />
-  <meta name="keywords" content="" />
+  <meta name="keywords" content="PHP,ThinkPHP" />
 </head>
 
 <body>
@@ -161,7 +161,8 @@
       <div class="sidebar-body pisces" id="sidebar_body">
         
           
-            
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -178,13 +179,13 @@
     </div>
     <div class="sidebar-item-box">
       <a href="">
-        <span class="site-item-stat-count">2</span>
+        <span class="site-item-stat-count">4</span>
         <span class="site-item-stat-name language" data-lan="category">分类</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="/tags/">
-        <span class="site-item-stat-count">2</span>
+        <span class="site-item-stat-count">4</span>
         <span class="site-item-stat-name language" data-lan="tag">标签</span>
       </a>
     </div>
@@ -199,6 +200,192 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#%E5%AE%89%E8%A3%85%E6%96%B9%E6%B3%95">安装方法</a></li>
+<li><a href="#%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86">问题处理</a></li>
+</ul>
+
+  </div>
+</div>
+
+<script>
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
+      }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0] && elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
+    });
+  }
+
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
           
         
       </div>
@@ -300,13 +487,32 @@
     </span>
     
     <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show language" data-lan="category-in">分类于</span>
+      
+      
+      <a href="http://weakcc.github.io/tag/IuY5uV6ll/">
+        <span>PHP</span>
+      </a>、
+      
+      
+      
+      <a href="http://weakcc.github.io/tag/2bQ39Lzfo/">
+        <span>ThinkPHP</span>
+      </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
       <i class="fa fa-clock-o"></i>
       <span>2<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>281<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>375<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
@@ -317,6 +523,7 @@
 阿里云：<a href="https://www.bt.cn/bbs/thread-2897-1-1.html">https://www.bt.cn/bbs/thread-2897-1-1.html</a><br>
 华为云：<a href="https://www.bt.cn/bbs/thread-3923-1-1.html">https://www.bt.cn/bbs/thread-3923-1-1.html</a></p>
 <!-- more -->
+<h1 id="安装方法">安装方法</h1>
 <p>示例是使用 <code>CentOS7.4</code><br>
 执行下面的命令即可</p>
 <pre><code>yum install -y wget &amp;&amp; wget -O install.sh http://download.bt.cn/install/install_6.0.sh &amp;&amp; sh install.sh
@@ -347,7 +554,28 @@
 <img src="http://weakcc.github.io/post-images/1598672008074.png" alt="" loading="lazy"><br>
 如果想 IP 直接访问<br>
 <img src="http://weakcc.github.io/post-images/1598673615513.png" alt="" loading="lazy"><br>
-<img src="http://weakcc.github.io/post-images/1598673653330.png" alt="" loading="lazy"></p>
+<img src="http://weakcc.github.io/post-images/1598673653330.png" alt="" loading="lazy"><br>
+安装 <code>composer</code><br>
+<img src="http://weakcc.github.io/post-images/1598688092769.png" alt="" loading="lazy"><br>
+切换国内镜像</p>
+<pre><code>composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/  
+</code></pre>
+<p>进入网站目录<br>
+<img src="http://weakcc.github.io/post-images/1598687672274.png" alt="" loading="lazy"><br>
+删除默认文件</p>
+<pre><code>rm -rf index.html 404.html .htaccess
+</code></pre>
+<p>安装 <code>ThinkPHP5.1</code><br>
+<img src="http://weakcc.github.io/post-images/1598688693276.png" alt="" loading="lazy"></p>
+<h1 id="问题处理">问题处理</h1>
+<p>问题：安装的是 PHP7.2 显示的 PHP5.4<br>
+<img src="http://weakcc.github.io/post-images/1598685559996.png" alt="" loading="lazy"><br>
+在选个 PHP 版本，来回切下就行了<br>
+<img src="http://weakcc.github.io/post-images/1598685555408.png" alt="" loading="lazy"><br>
+问题：putenv() has been disabled for security reasons<br>
+<img src="http://weakcc.github.io/post-images/1598688465332.png" alt="" loading="lazy"><br>
+在配置文件去掉 <code>putenv</code><br>
+<img src="http://weakcc.github.io/post-images/1598688493779.png" alt="" loading="lazy"></p>
 <blockquote>
 <p>官网安装方法: <a href="https://www.bt.cn/bbs/thread-19376-1-1.html">https://www.bt.cn/bbs/thread-19376-1-1.html</a></p>
 </blockquote>
@@ -371,6 +599,10 @@
     </li>
   </ul>
   <div class="tags">
+    
+      <a href="http://weakcc.github.io/tag/IuY5uV6ll/"># PHP</a>
+    
+      <a href="http://weakcc.github.io/tag/2bQ39Lzfo/"># ThinkPHP</a>
     
   </div>
   <div class="nav">
@@ -849,6 +1081,7 @@
 阿里云：&lt;a href=&#34;https://www.bt.cn/bbs/thread-2897-1-1.html&#34;&gt;https://www.bt.cn/bbs/thread-2897-1-1.html&lt;/a&gt;&lt;br&gt;
 华为云：&lt;a href=&#34;https://www.bt.cn/bbs/thread-3923-1-1.html&#34;&gt;https://www.bt.cn/bbs/thread-3923-1-1.html&lt;/a&gt;&lt;/p&gt;
 &lt;!-- more --&gt;
+&lt;h1 id=&#34;安装方法&#34;&gt;安装方法&lt;/h1&gt;
 &lt;p&gt;示例是使用 &lt;code&gt;CentOS7.4&lt;/code&gt;&lt;br&gt;
 执行下面的命令即可&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;yum install -y wget &amp;amp;&amp;amp; wget -O install.sh http://download.bt.cn/install/install_6.0.sh &amp;amp;&amp;amp; sh install.sh
@@ -879,7 +1112,28 @@
 &lt;img src=&#34;http://weakcc.github.io/post-images/1598672008074.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
 如果想 IP 直接访问&lt;br&gt;
 &lt;img src=&#34;http://weakcc.github.io/post-images/1598673615513.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
-&lt;img src=&#34;http://weakcc.github.io/post-images/1598673653330.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1598673653330.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+安装 &lt;code&gt;composer&lt;/code&gt;&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1598688092769.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+切换国内镜像&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/  
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;进入网站目录&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1598687672274.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+删除默认文件&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;rm -rf index.html 404.html .htaccess
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;安装 &lt;code&gt;ThinkPHP5.1&lt;/code&gt;&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1598688693276.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;问题处理&#34;&gt;问题处理&lt;/h1&gt;
+&lt;p&gt;问题：安装的是 PHP7.2 显示的 PHP5.4&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1598685559996.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+在选个 PHP 版本，来回切下就行了&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1598685555408.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+问题：putenv() has been disabled for security reasons&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1598688465332.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+在配置文件去掉 &lt;code&gt;putenv&lt;/code&gt;&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1598688493779.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;官网安装方法: &lt;a href=&#34;https://www.bt.cn/bbs/thread-19376-1-1.html&#34;&gt;https://www.bt.cn/bbs/thread-19376-1-1.html&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
