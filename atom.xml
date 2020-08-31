@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2020-08-31T06:18:00.320Z</updated>
+    <updated>2020-08-31T11:51:29.153Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -101,7 +101,9 @@
 在配置文件去掉 <code>putenv</code><br>
 <img src="http://weakcc.github.io/post-images/1598688493779.png" alt="" loading="lazy"></p>
 <h2 id="问题宝塔面板网站防跨站攻击-open_basedir-无法关闭解决办法">问题：宝塔面板网站防跨站攻击 <code>open_basedir</code> 无法关闭解决办法</h2>
-<p><img src="http://weakcc.github.io/post-images/1598691497862.png" alt="" loading="lazy"><br>
+<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598691497862.png" alt="" loading="lazy"></figure>
+<h2 id="问题fatal-error-require-failed-opening-required-wwwwwwroo">问题：Fatal error: require(): Failed opening required ‘/www/wwwroo...</h2>
+<p>把目录下的 <code>.user.ini</code> 删掉（把防跨站攻击勾去掉）<br>
 网站根目录下有一个 <code>.user.ini</code> 的文件，将其删掉即可</p>
 <blockquote>
 <p>官网安装方法: <a href="https://www.bt.cn/bbs/thread-19376-1-1.html">https://www.bt.cn/bbs/thread-19376-1-1.html</a></p>
