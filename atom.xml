@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2020-08-31T11:51:29.153Z</updated>
+    <updated>2020-09-09T08:38:34.620Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,18 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[Scrapy]]></title>
+        <id>http://weakcc.github.io/post/scrapy/</id>
+        <link href="http://weakcc.github.io/post/scrapy/">
+        </link>
+        <updated>2020-09-04T09:25:53.000Z</updated>
+        <summary type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1599211588406.png" alt="" loading="lazy"></figure>
+]]></summary>
+        <content type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1599211588406.png" alt="" loading="lazy"></figure>
+<!-- more -->
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Redis 基础指令]]></title>
         <id>http://weakcc.github.io/post/redis-ji-chu-zhi-ling/</id>
@@ -159,25 +171,5 @@
 <li>为了防止回表添加索引</li>
 <li>关联查询在关联字段添加索引</li>
 </ul>]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法]]></title>
-        <id>http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/</id>
-        <link href="http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/">
-        </link>
-        <updated>2020-08-25T09:34:51.000Z</updated>
-        <summary type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598348346116.png" alt="" loading="lazy"></figure>
-]]></summary>
-        <content type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598348346116.png" alt="" loading="lazy"></figure>
-<!-- more -->
-<p>已 MAMP 为例：<br>
-<img src="http://weakcc.github.io/post-images/1598348508212.png" alt="" loading="lazy"><br>
-<img src="http://weakcc.github.io/post-images/1598348628532.png" alt="" loading="lazy"><br>
-在[mysqld]下面添加这段</p>
-<pre><code>sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION  
-</code></pre>
-<p><img src="http://weakcc.github.io/post-images/1598348771324.png" alt="" loading="lazy"><br>
-最后重启 MAMP 就可以了</p>
-]]></content>
     </entry>
 </feed>
