@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2020-10-27T01:24:52.445Z</updated>
+    <updated>2020-11-25T01:52:34.435Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,17 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[MySQL写sql的21个好习惯，学习工作效率翻倍]]></title>
+        <id>http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/</id>
+        <link href="http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/">
+        </link>
+        <updated>2020-11-25T01:44:20.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>https://learnku.com/articles/51820</p>
+</blockquote>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Python正则]]></title>
         <id>http://weakcc.github.io/post/python-zheng-ze/</id>
@@ -43,7 +54,7 @@ print(show.__name__)
 # show
 </code></pre>
 <h3 id="第二步">第二步</h3>
-<p>装饰器简单语法的使用以及@语法的使用。</p>
+<p>装饰器简单语法的使用以及 <code>@</code> 语法的使用。</p>
 <pre><code class="language-python">def log(func):
     def wrapper(*args, **kwargs):
         print(&quot;我在show之前打印&quot;)
@@ -220,15 +231,6 @@ a.bar()
 ]]></summary>
         <content type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1599211588406.png" alt="" loading="lazy"></figure>
 <!-- more -->
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Redis 基础指令]]></title>
-        <id>http://weakcc.github.io/post/redis-ji-chu-zhi-ling/</id>
-        <link href="http://weakcc.github.io/post/redis-ji-chu-zhi-ling/">
-        </link>
-        <updated>2020-08-31T03:38:45.000Z</updated>
-        <content type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598845148125.png" alt="" loading="lazy"></figure>
 ]]></content>
     </entry>
 </feed>
