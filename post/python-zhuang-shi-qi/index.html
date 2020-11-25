@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>Python装饰器 | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1606269152404">
+<link rel="shortcut icon" href="/favicon.ico?v=1606284670845">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -228,6 +228,8 @@
 <li><a href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5">第二步</a></li>
 <li><a href="#%E7%AC%AC%E4%B8%89%E6%AD%A5">第三步</a></li>
 <li><a href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5">第四步</a></li>
+<li><a href="#%E7%AC%AC%E4%BA%94%E6%AD%A5">第五步</a></li>
+<li><a href="#%E7%AC%AC%E5%85%AD%E6%AD%A5">第六步</a></li>
 </ul>
 </li>
 </ul>
@@ -525,12 +527,12 @@
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>2<span class="language" data-lan="minute">分钟</span></span>
+      <span>3<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>448<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>581<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
@@ -623,6 +625,61 @@ print(show.__name__)
 # 1 2
 # 我在show之后打印
 # show
+</code></pre>
+<h3 id="第五步">第五步</h3>
+<p>类装饰器</p>
+<pre><code class="language-python">class A(object):
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, *args, **kwargs):
+        print(&quot;== before func ==&quot;)
+        return self.func(*args, **kwargs)
+
+
+@A
+def test_func(name):
+    return 'hello ' + name
+
+
+if __name__ == '__main__':
+    t = test_func(&quot;小小&quot;)
+    print(t)
+
+# == before func ==
+# hello 小小
+</code></pre>
+<h3 id="第六步">第六步</h3>
+<p>带参数的类装饰器</p>
+<pre><code class="language-python">from functools import wraps
+
+
+class A(object):
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            print(&quot;== before func ==&quot;)
+            print(self.name)
+            return func(*args, **kwargs)
+
+        return wrapper
+
+
+@A(&quot;小明&quot;)
+def test_func(name):
+    return 'hello ' + name
+
+
+if __name__ == '__main__':
+    t = test_func(&quot;小小&quot;)
+    print(t)
+    
+# == before func ==
+# 小明
+# hello 小小
 </code></pre>
 
             </div>
@@ -1240,6 +1297,61 @@ print(show.__name__)
 # 1 2
 # 我在show之后打印
 # show
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;第五步&#34;&gt;第五步&lt;/h3&gt;
+&lt;p&gt;类装饰器&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;class A(object):
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, *args, **kwargs):
+        print(&amp;quot;== before func ==&amp;quot;)
+        return self.func(*args, **kwargs)
+
+
+@A
+def test_func(name):
+    return &#39;hello &#39; + name
+
+
+if __name__ == &#39;__main__&#39;:
+    t = test_func(&amp;quot;小小&amp;quot;)
+    print(t)
+
+# == before func ==
+# hello 小小
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;第六步&#34;&gt;第六步&lt;/h3&gt;
+&lt;p&gt;带参数的类装饰器&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from functools import wraps
+
+
+class A(object):
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            print(&amp;quot;== before func ==&amp;quot;)
+            print(self.name)
+            return func(*args, **kwargs)
+
+        return wrapper
+
+
+@A(&amp;quot;小明&amp;quot;)
+def test_func(name):
+    return &#39;hello &#39; + name
+
+
+if __name__ == &#39;__main__&#39;:
+    t = test_func(&amp;quot;小小&amp;quot;)
+    print(t)
+    
+# == before func ==
+# 小明
+# hello 小小
 &lt;/code&gt;&lt;/pre&gt;
 ">Python装饰器</a>
       </div>

@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1606269152404">
+<link rel="shortcut icon" href="/favicon.ico?v=1606284670845">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -566,6 +566,61 @@ print(show.__name__)
 # 1 2
 # 我在show之后打印
 # show
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;第五步&#34;&gt;第五步&lt;/h3&gt;
+&lt;p&gt;类装饰器&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;class A(object):
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, *args, **kwargs):
+        print(&amp;quot;== before func ==&amp;quot;)
+        return self.func(*args, **kwargs)
+
+
+@A
+def test_func(name):
+    return &#39;hello &#39; + name
+
+
+if __name__ == &#39;__main__&#39;:
+    t = test_func(&amp;quot;小小&amp;quot;)
+    print(t)
+
+# == before func ==
+# hello 小小
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;第六步&#34;&gt;第六步&lt;/h3&gt;
+&lt;p&gt;带参数的类装饰器&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from functools import wraps
+
+
+class A(object):
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            print(&amp;quot;== before func ==&amp;quot;)
+            print(self.name)
+            return func(*args, **kwargs)
+
+        return wrapper
+
+
+@A(&amp;quot;小明&amp;quot;)
+def test_func(name):
+    return &#39;hello &#39; + name
+
+
+if __name__ == &#39;__main__&#39;:
+    t = test_func(&amp;quot;小小&amp;quot;)
+    print(t)
+    
+# == before func ==
+# 小明
+# hello 小小
 &lt;/code&gt;&lt;/pre&gt;
 ">Python装饰器</a>
       </div>
