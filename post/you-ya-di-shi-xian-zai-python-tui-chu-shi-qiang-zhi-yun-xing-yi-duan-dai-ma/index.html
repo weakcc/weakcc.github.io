@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>Redis 基础指令 | 腰盐醋</title>
+<title>优雅地实现在 Python 退出时强制运行一段代码 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1606552749224">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="Redis 基础指令" />
-  <meta name="keywords" content="Redis" />
+  <meta name="description" content="优雅地实现在 Python 退出时强制运行一段代码" />
+  <meta name="keywords" content="Python" />
 </head>
 
 <body>
@@ -300,8 +300,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/redis-ji-chu-zhi-ling/">
-      Redis 基础指令
+    <a class="post-title-link" href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/">
+      优雅地实现在 Python 退出时强制运行一段代码
     </a>
   </h1>
   <div class="post-meta">
@@ -309,7 +309,7 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-08-31 11:38:45">2020-08-31</span>
+      <span class="publish-time" data-t="2020-11-28 16:30:15">2020-11-28</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
@@ -318,8 +318,8 @@
       <span class="pc-show language" data-lan="category-in">分类于</span>
       
       
-      <a href="http://weakcc.github.io/tag/tayIXOYIs/">
-        <span>Redis</span>
+      <a href="http://weakcc.github.io/tag/CUorjbHG_/">
+        <span>Python</span>
       </a>
       
       
@@ -328,18 +328,64 @@
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>0<span class="language" data-lan="minute">分钟</span></span>
+      <span>2<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>0<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>352<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598845148125.png" alt="" loading="lazy"></figure>
+              <p>如果有这样一个场景，你要给一个项目开发测试程序，程序开始运行的时候，会创建初始环境，测试完成以后，会清理环境。<br>
+使用 Python 自带的 <code>atexit</code> 这个模块</p>
+<pre><code class="language-python">import atexit
+
+@atexit.register
+def clean():
+    print(&quot;清理环境相关的代码&quot;)
+
+def test():
+    print(&quot;这里先执行&quot;)
+    example = {'a': 1, 'b': 2}
+    print(example['c'])  # 显然这里会报错
+
+test()
+
+# 这里先执行
+# Traceback (most recent call last):
+# 清理环境相关的代码
+#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 15, in &lt;module&gt;
+#     test()
+#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 12, in test
+#     print(example['c'])  # 显然这里会报错
+# KeyError: 'c'
+</code></pre>
+<!-- more -->
+<p><code>atexit</code> 使用中有下面几个注意事项：</p>
+<ul>
+<li>你可以注册多个退出函数，他们会按照注册时间从晚到早以此执行。例如
+<pre><code class="language-python">import atexit
+
+@atexit.register
+def clean_1():
+    ...
+
+@atexit.register
+def clean_2():
+    ...
+</code></pre>
+<p>会先运行 <code>clean_2()</code> 后运行 <code>clean_1()</code></li></p>
+<li>如果 `clean()` 函数有参数，那么你可以不用装饰器，而是直接调用 `atexit.register(clean_1, 参数1, 参数2, 参数3='xxx')`</li>
+<li>如果程序是被你没有处理过的系统信号杀死的，那么注册的函数无法正常执行</li>
+<li>如果发生了严重的Python内部错误，你注册的函数无法正常执行</li>
+<li>如果你手动调用了 `os._exit()`，你注册的函数无法正常执行</li>
+</ul>
+<blockquote>
+<p>https://mp.weixin.qq.com/s/Q65F49ZhFV02mqVPyxILHg</p>
+</blockquote>
 
             </div>
             
@@ -356,7 +402,7 @@
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/redis-ji-chu-zhi-ling/" title="Redis 基础指令">http://weakcc.github.io/post/redis-ji-chu-zhi-ling/</a>
+      <a href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/" title="优雅地实现在 Python 退出时强制运行一段代码">http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -365,21 +411,17 @@
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/tayIXOYIs/"># Redis</a>
+      <a href="http://weakcc.github.io/tag/CUorjbHG_/"># Python</a>
     
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="Scrapy" href="http://weakcc.github.io/post/scrapy/">Scrapy</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="Scrapy" href="http://weakcc.github.io/post/scrapy/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="宝塔搭建 ThinkPHP" href="http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/">宝塔搭建 ThinkPHP</a>
-        <a class="nav-mobile-next" title="宝塔搭建 ThinkPHP" href="http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/">下一篇</a>
+        <a class="nav-pc-next" title="MySQL写sql的21个好习惯，学习工作效率翻倍" href="http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/">MySQL写sql的21个好习惯，学习工作效率翻倍</a>
+        <a class="nav-mobile-next" title="MySQL写sql的21个好习惯，学习工作效率翻倍" href="http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2020-11-25T06:11:13.514Z</updated>
+    <updated>2020-11-28T08:39:15.901Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,86 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[优雅地实现在 Python 退出时强制运行一段代码]]></title>
+        <id>http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/</id>
+        <link href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/">
+        </link>
+        <updated>2020-11-28T08:30:15.000Z</updated>
+        <summary type="html"><![CDATA[<p>如果有这样一个场景，你要给一个项目开发测试程序，程序开始运行的时候，会创建初始环境，测试完成以后，会清理环境。<br>
+使用 Python 自带的 <code>atexit</code> 这个模块</p>
+<pre><code class="language-python">import atexit
+
+@atexit.register
+def clean():
+    print(&quot;清理环境相关的代码&quot;)
+
+def test():
+    print(&quot;这里先执行&quot;)
+    example = {'a': 1, 'b': 2}
+    print(example['c'])  # 显然这里会报错
+
+test()
+
+# 这里先执行
+# Traceback (most recent call last):
+# 清理环境相关的代码
+#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 15, in &lt;module&gt;
+#     test()
+#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 12, in test
+#     print(example['c'])  # 显然这里会报错
+# KeyError: 'c'
+</code></pre>
+]]></summary>
+        <content type="html"><![CDATA[<p>如果有这样一个场景，你要给一个项目开发测试程序，程序开始运行的时候，会创建初始环境，测试完成以后，会清理环境。<br>
+使用 Python 自带的 <code>atexit</code> 这个模块</p>
+<pre><code class="language-python">import atexit
+
+@atexit.register
+def clean():
+    print(&quot;清理环境相关的代码&quot;)
+
+def test():
+    print(&quot;这里先执行&quot;)
+    example = {'a': 1, 'b': 2}
+    print(example['c'])  # 显然这里会报错
+
+test()
+
+# 这里先执行
+# Traceback (most recent call last):
+# 清理环境相关的代码
+#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 15, in &lt;module&gt;
+#     test()
+#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 12, in test
+#     print(example['c'])  # 显然这里会报错
+# KeyError: 'c'
+</code></pre>
+<!-- more -->
+<p><code>atexit</code> 使用中有下面几个注意事项：</p>
+<ul>
+<li>你可以注册多个退出函数，他们会按照注册时间从晚到早以此执行。例如
+<pre><code class="language-python">import atexit
+
+@atexit.register
+def clean_1():
+    ...
+
+@atexit.register
+def clean_2():
+    ...
+</code></pre>
+<p>会先运行 <code>clean_2()</code> 后运行 <code>clean_1()</code></li></p>
+<li>如果 `clean()` 函数有参数，那么你可以不用装饰器，而是直接调用 `atexit.register(clean_1, 参数1, 参数2, 参数3='xxx')`</li>
+<li>如果程序是被你没有处理过的系统信号杀死的，那么注册的函数无法正常执行</li>
+<li>如果发生了严重的Python内部错误，你注册的函数无法正常执行</li>
+<li>如果你手动调用了 `os._exit()`，你注册的函数无法正常执行</li>
+</ul>
+<blockquote>
+<p>https://mp.weixin.qq.com/s/Q65F49ZhFV02mqVPyxILHg</p>
+</blockquote>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[MySQL写sql的21个好习惯，学习工作效率翻倍]]></title>
         <id>http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/</id>
@@ -274,18 +354,6 @@ a.bar()
 <p>经典类：首先去A类中查找，如果A类中没有，则继续去B类中找，如果B类中么有，则继续去D类中找，如果D类中么有，则继续去C类中找，如果还是未找到，则报错</p>
 <p>新式类：首先去A类中查找，如果A类中没有，则继续去B类中找，如果B类中么有，则继续去C类中找，如果C类中么有，则继续去D类中找，如果还是未找到，则报错</p>
 <p>注意：在上述查找过程中，一旦找到，则寻找过程立即中断，便不会再继续找了。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Scrapy]]></title>
-        <id>http://weakcc.github.io/post/scrapy/</id>
-        <link href="http://weakcc.github.io/post/scrapy/">
-        </link>
-        <updated>2020-09-04T09:25:53.000Z</updated>
-        <summary type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1599211588406.png" alt="" loading="lazy"></figure>
-]]></summary>
-        <content type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1599211588406.png" alt="" loading="lazy"></figure>
-<!-- more -->
 ]]></content>
     </entry>
 </feed>

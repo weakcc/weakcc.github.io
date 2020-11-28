@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>Scrapy | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1606284670845">
+<link rel="shortcut icon" href="/favicon.ico?v=1606552749224">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -188,7 +188,7 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">10</span>
+        <span class="site-item-stat-count">11</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
@@ -869,6 +869,58 @@
       <hr>
     </div>
     <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/"" data-c="
+          &lt;p&gt;如果有这样一个场景，你要给一个项目开发测试程序，程序开始运行的时候，会创建初始环境，测试完成以后，会清理环境。&lt;br&gt;
+使用 Python 自带的 &lt;code&gt;atexit&lt;/code&gt; 这个模块&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import atexit
+
+@atexit.register
+def clean():
+    print(&amp;quot;清理环境相关的代码&amp;quot;)
+
+def test():
+    print(&amp;quot;这里先执行&amp;quot;)
+    example = {&#39;a&#39;: 1, &#39;b&#39;: 2}
+    print(example[&#39;c&#39;])  # 显然这里会报错
+
+test()
+
+# 这里先执行
+# Traceback (most recent call last):
+# 清理环境相关的代码
+#   File &amp;quot;/Users/dupeng/m7/Python/Web/demo.py&amp;quot;, line 15, in &amp;lt;module&amp;gt;
+#     test()
+#   File &amp;quot;/Users/dupeng/m7/Python/Web/demo.py&amp;quot;, line 12, in test
+#     print(example[&#39;c&#39;])  # 显然这里会报错
+# KeyError: &#39;c&#39;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;&lt;code&gt;atexit&lt;/code&gt; 使用中有下面几个注意事项：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;你可以注册多个退出函数，他们会按照注册时间从晚到早以此执行。例如
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import atexit
+
+@atexit.register
+def clean_1():
+    ...
+
+@atexit.register
+def clean_2():
+    ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;会先运行 &lt;code&gt;clean_2()&lt;/code&gt; 后运行 &lt;code&gt;clean_1()&lt;/code&gt;&lt;/li&gt;&lt;/p&gt;
+&lt;li&gt;如果 `clean()` 函数有参数，那么你可以不用装饰器，而是直接调用 `atexit.register(clean_1, 参数1, 参数2, 参数3=&#39;xxx&#39;)`&lt;/li&gt;
+&lt;li&gt;如果程序是被你没有处理过的系统信号杀死的，那么注册的函数无法正常执行&lt;/li&gt;
+&lt;li&gt;如果发生了严重的Python内部错误，你注册的函数无法正常执行&lt;/li&gt;
+&lt;li&gt;如果你手动调用了 `os._exit()`，你注册的函数无法正常执行&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;https://mp.weixin.qq.com/s/Q65F49ZhFV02mqVPyxILHg&lt;/p&gt;
+&lt;/blockquote&gt;
+">优雅地实现在 Python 退出时强制运行一段代码</a>
+      </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/"" data-c="
