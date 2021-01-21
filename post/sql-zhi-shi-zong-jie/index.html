@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>MySQL 优化 | 腰盐醋</title>
+<title>sql 知识总结 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1611199561586">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="MySQL 优化" />
-  <meta name="keywords" content="MySQL" />
+  <meta name="description" content="sql 知识总结" />
+  <meta name="keywords" content="Go,MySQL" />
 </head>
 
 <body>
@@ -220,10 +220,19 @@
   <div class="toc-wrapper auto-number auto"
     id="toc_wrapper">
     <ul class="markdownIt-TOC">
-<li><a href="#%E5%AE%9A%E4%BD%8D%E6%85%A2-sql">定位慢 SQL</a></li>
-<li><a href="#%E4%BD%BF%E7%94%A8%E4%B8%8D%E4%BA%86%E7%B4%A2%E5%BC%95%E7%9A%84%E5%9C%BA%E6%99%AF">使用不了索引的场景</a></li>
-<li><a href="#%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2">分页查询</a></li>
-<li><a href="#%E5%B8%B8%E8%A7%81%E9%9C%80%E8%A6%81%E6%B7%BB%E5%8A%A0%E7%B4%A2%E5%BC%95%E7%9A%84%E5%9C%BA%E6%99%AF">常见需要添加索引的场景</a></li>
+<li><a href="#1-sql-%E9%A9%B1%E5%8A%A8">1. sql 驱动</a></li>
+<li><a href="#2-sqldb">2. sql.DB</a></li>
+<li><a href="#3-%E8%BF%9E%E6%8E%A5%E6%B1%A0%E8%AE%BE%E7%BD%AE">3. 连接池设置</a></li>
+<li><a href="#4-dsn">4. DSN</a></li>
+<li><a href="#5-%E5%88%9D%E5%A7%8B%E5%8C%96-sqldb">5. 初始化 sql.DB</a></li>
+<li><a href="#5-prepare-%E5%92%8C-stmt">5. Prepare 和 Stmt</a></li>
+<li><a href="#6-exec">6. Exec()</a></li>
+<li><a href="#7-sqlresult">7. sql.Result</a></li>
+<li><a href="#8-query">8. Query()</a></li>
+<li><a href="#9-sqlrows">9. sql.Rows</a></li>
+<li><a href="#10-queryrow">10. QueryRow()</a></li>
+<li><a href="#11-context-%E4%B8%8A%E4%B8%8B%E6%96%87">11. Context 上下文</a></li>
+<li><a href="#12-%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86-sqltx">12. 事务处理 sql.Tx</a></li>
 </ul>
 
   </div>
@@ -489,8 +498,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/mysql-you-hua/">
-      MySQL 优化
+    <a class="post-title-link" href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/">
+      sql 知识总结
     </a>
   </h1>
   <div class="post-meta">
@@ -498,13 +507,19 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-08-25 18:05:46">2020-08-25</span>
+      <span class="publish-time" data-t="2021-01-21 10:39:29">2021-01-21</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
     <span class="meta-item">
       <i class="fa fa-folder-o"></i>
       <span class="pc-show language" data-lan="category-in">分类于</span>
+      
+      
+      <a href="http://weakcc.github.io/tag/Y1-XRtKZ3/">
+        <span>Go</span>
+      </a>、
+      
       
       
       <a href="http://weakcc.github.io/tag/VwbG72yxK/">
@@ -517,46 +532,258 @@
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>1<span class="language" data-lan="minute">分钟</span></span>
+      <span>12<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>199<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>2646<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <h1 id="定位慢-sql">定位慢 SQL</h1>
-<ul>
-<li>一种方法是查看慢查询日志</li>
-<li>另一种方法是 show process 查看正在执行的 SQL</li>
-</ul>
+              <h1 id="1-sql-驱动">1. sql 驱动</h1>
+<p>推荐驱动：<br>
+* MySQL/MariaDB  —— <a href="https://github.com/go-sql-driver/mysql/">github.com/go-sql-driver/mysql/</a><br>
+* Postgres SQL  —— <a href="https://github.com/lib/pq">github.com/lib/pq</a><br>
+* SQLite3  —— <a href="https://github.com/mattn/go-sqlite3">github.com/go-sql-driver/mysql/</a><br>
+* Oracle  —— <a href="https://github.com/mattn/go-oci8">github.com/go-sql-driver/mysql/</a><br>
+* SQL Serve  —— <a href="https://github.com/denisenkom/go-mssqldb">github.com/go-sql-driver/mysql/</a></p>
 <!-- more -->
-<h1 id="使用不了索引的场景">使用不了索引的场景</h1>
-<ul>
-<li>应该避免隐式转换</li>
-<li>like查询不能以%开头</li>
-<li>范围查询时，包含的数据比例不能太大</li>
-<li>不建议对条件字段做运算及函数操作</li>
-</ul>
-<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598350258439.png" alt="" loading="lazy"></figure>
-<h1 id="分页查询">分页查询</h1>
-<ul>
-<li>根据自增且连续主键排序的分页查询优化</li>
-<li>查询根据非主键字段排序的分页查询优化</li>
-</ul>
-<p><img src="http://weakcc.github.io/post-images/1598350670568.png" alt="" loading="lazy"><br>
-<img src="http://weakcc.github.io/post-images/1598350676387.png" alt="" loading="lazy"></p>
-<h1 id="常见需要添加索引的场景">常见需要添加索引的场景</h1>
-<ul>
-<li>数据检索时在条件字段添加索引</li>
-<li>聚合函数对聚合字段添加索引</li>
-<li>对排序字段添加索引</li>
-<li>为了防止回表添加索引</li>
-<li>关联查询在关联字段添加索引</li>
-</ul>
+<h1 id="2-sqldb">2. sql.DB</h1>
+<p><code>sql.DB</code> 结构是 <code>database/sql</code> 包封装的一个数据库操作对象，包含了操作数据库的基本方法。大部分时间我们操作数据库都使用它。<br>
+可以把 <code>sql.DB</code> 当做是连接池，它内部会自动维护 SQL 连接的关闭和创建。</p>
+<h1 id="3-连接池设置">3. 连接池设置</h1>
+<pre><code class="language-go">// 设置最大连接数
+db.SetMaxOpenConns(100)
+
+// 设置最大空闲连接数
+db.SetMaxIdleConns(25)
+
+// 设置每个链接的过期时间
+db.SetConnMaxLifetime(5 * time.Minute)
+</code></pre>
+<h1 id="4-dsn">4. DSN</h1>
+<p><code>DSN</code> 全称为 <code>Data Source Name</code>，表示数据库连接源，用于定义数据库的连接信息，不同数据库的 DSN 格式不同，MySQL 的 DSN 格式如下：</p>
+<pre><code class="language-go">// [用户名[:密码]@][协议(数据库服务器地址)]]/数据库名称?参数列表
+[username[:password]@][protocol[(address)]]/dbname[?param1=value1&amp;...&amp;paramN=valueN]
+</code></pre>
+<p>为了更加直观，我们可以使用 mysql.Config 来创建连接信息：</p>
+<pre><code class="language-go">// 设置数据库连接信息
+config := mysql.Config{
+    User:                 &quot;homestead&quot;,
+    Passwd:               &quot;secret&quot;,
+    Addr:                 &quot;127.0.0.1:33060&quot;,
+    Net:                  &quot;tcp&quot;,
+    DBName:               &quot;goblog&quot;,
+    AllowNativePasswords: true,
+}
+
+fmt.Println(&quot;conn: &quot;, config.FormatDSN())
+</code></pre>
+<h1 id="5-初始化-sqldb">5. 初始化 sql.DB</h1>
+<p>一般而言，我们使用 <code>Open()</code> 方法便可初始化并返回一个 <code>*sql.DB</code> 实例，如下：</p>
+<pre><code class="language-go">func Open(driverName, dataSourceName string) (*DB, error)
+</code></pre>
+<p>使用 <code>Open()</code> 方法只要传入驱动名称及对应的 DSN 便可，使用很简单，也很通用，当需要连接不同数据库时，只需要修改驱动名与 DSN 即可。配合 mysql.Config 使用：</p>
+<pre><code class="language-go">db, err = sql.Open(&quot;mysql&quot;, config.FormatDSN())
+</code></pre>
+<p>使用 <code>Open()</code> 时需要知道的是 —— 我们只是做好连接的准备，并未真是连接到数据库上。因未发生连接，所以即使配置信息有误，也不会报错。所以一般我们在使用的时候，会搭配 <code>Ping()</code> 进行测试：</p>
+<pre><code class="language-go">err = db.Ping()
+if err != nil {
+    log.Fatal(err)
+}
+</code></pre>
+<p><code>Ping()</code> 会与数据库服务器发生连接，如果连接信息有错误，err 就会有值，否为 nil。<br>
+DB 的连线都是被设计来当作长连线使用的，所以不该频繁的 Open、Close。Open 取得的 db 实例，要重复利用，不应该去重复生成。</p>
+<h1 id="5-prepare-和-stmt">5. Prepare 和 Stmt</h1>
+<p><code>sql.DB.Prepare()</code> 方法会返回一个 <code>sql.Stmt</code> 对象，与 Stmt 相关的方法如下：</p>
+<pre><code class="language-go">stmt.Exec()
+stmt.Query()
+stmt.QueryRow()
+stmt.Close()
+</code></pre>
+<p>做单独的语句查询时，谨记调用 <code>defer stmt.Close()</code> 来关闭 SQL 连接。<br>
+使用 Prepare 语句会发送两次请求到数据库服务器上，第一次是调用 Prepare() 语句时，第二次是调用以上提到的四个 Stmt 方法时：<br>
+<img src="http://weakcc.github.io/post-images/1611198623133.png" alt="" loading="lazy"><br>
+使用 Prepare 语句会发送两次请求到数据库服务器上，第一次是调用 Prepare() 语句时，第二次是调用以上提到的四个 Stmt 方法时：</p>
+<pre><code class="language-go">func (db *DB) Exec(query string, args ...interface{}) (Result, error)
+func (db *DB) Query(query string, args ...interface{}) (*Rows, error)
+func (db *DB) QueryRow(query string, args ...interface{}) *Row
+</code></pre>
+<h1 id="6-exec">6. Exec()</h1>
+<p>一般增加、删除、更新，或者修改表结构，都使用 <code>sql.DB</code> 中的 <code>Exec()</code> 方法来处理。<br>
+语法如下：</p>
+<pre><code class="language-go">func (db *DB) Exec(query string, args ...interface{}) (Result, error)
+</code></pre>
+<p>单参数为<b>纯文本模式</b>，不使用 Prepare，只发送一条 SQL 查询：</p>
+<pre><code class="language-go">db.Exec(&quot;DELETE FROM articles WHERE id = &quot; + strconv.FormatInt(a.ID, 10))
+</code></pre>
+<p>多参数为 <b>Prepare 模式</b>，底层使用 Prepare 语句，会发送两条 SQL 查询：</p>
+<pre><code class="language-go">query := &quot;UPDATE articles SET title = ?, body = ? WHERE id = ?&quot;
+rs, err := db.Exec(query, title, body, id)
+</code></pre>
+<p>第二个及以上的参数为 SQL 占位符对应的数据。<br>
+<code>Exec()</code> 方法会返回一个 <code>sql.Result</code> 类型的实例。</p>
+<h1 id="7-sqlresult">7. sql.Result</h1>
+<p>Result 的定义如下，包含两个方法：</p>
+<pre><code class="language-go">type Result interface {
+    LastInsertId() (int64, error)
+    RowsAffected() (int64, error)
+}
+</code></pre>
+<p><code>LastInsertId()</code> 方法只用在 <code>INSERT</code> 语句且数据表有自增 ID 时才有返回自增 ID 值，否则返回 0。<br>
+<code>RowsAffected()</code> 表示影响的数据表行数，我们以此来判断 <code>SQL</code> 语句是否执行成功。<br>
+SQL 语法正确的情况下 <code>RowsAffected()</code> 为 0 ，则表示 SQL 执行成功了，但是数据库里的数据没有任何变更。例如说我们的数据库中并没有 ID 为 6 的数据，这时候执行以下语句：</p>
+<pre><code class="language-go">DELETE FROM articles WHERE id=6
+</code></pre>
+<p>就会出现 SQL 执行成功了，但是数据未更改的情况。</p>
+<h1 id="8-query">8. Query()</h1>
+<p>一般使用 <code>sql.DB</code> 中的 <code>Query()</code> 来查询得到多条数据。语法如下：</p>
+<pre><code class="language-go">func (db *DB) Query(query string, args ...interface{}) (*Rows, error)
+</code></pre>
+<p>如下获取所有文章的例子：</p>
+<pre><code class="language-go">rows, err := db.Query(&quot;SELECT * from articles&quot;)
+</code></pre>
+<p><code>Query()</code> 方法返回一个 <code>sql.Rows</code> 结构体，代表一个查询结果集。<br>
+你可能发现了，Query 和 Exec 都可以执行 SQL 语句，<b>那他们的区别是什么呢？</b><br>
+Exec 只会返回最后插入 ID 和影响行数，而 Query 会返回数据表里的内容（结果集）。<br>
+或者可以这么记：</p>
+<blockquote>
+<p>Query 中文译为 <b>查询</b>，而 Exec 译为 <b>执行</b>。想查询数据，使用 Query。想执行命令，使用 Exec。</p>
+</blockquote>
+<h1 id="9-sqlrows">9. sql.Rows</h1>
+<p><code>sql.Rows</code> 所包含的方法如下：</p>
+<pre><code class="language-go">func (rs *Rows) Close() error                            //关闭结果集
+func (rs *Rows) ColumnTypes() ([]*ColumnType, error)    //返回数据表的列类型
+func (rs *Rows) Columns() ([]string, error)             //返回数据表列的名称
+func (rs *Rows) Err() error                      // 错误集
+func (rs *Rows) Next() bool                      // 游标，下一行
+func (rs *Rows) Scan(dest ...interface{}) error  // 扫描结构体
+func (rs *Rows) NextResultSet() bool            
+</code></pre>
+<p>结果集在检出完 err 以后，遍历数据之前，应调用 <code>defer rows.Close()</code> 来关闭 SQL 连接。<br>
+一般我们会使用 <code>rows.Next()</code> 来遍历数据，如：</p>
+<pre><code class="language-go">var articles []Article
+//2. 循环读取结果
+for rows.Next() {
+    var article Article
+    // 2.1 扫码每一行的结果并赋值到一个 article 对象中
+    err := rows.Scan(&amp;article.ID, &amp;article.Title, &amp;article.Body)
+    if err != nil {
+        log.Fatal(err)
+    }
+    // 2.2 将 article 追加到 articles 的这个数组中
+    articles = append(articles, article)
+}
+// 2.3 检测循环时是否发生错误
+err = rows.Err()
+if err != nil {
+    log.Fatal(err)
+}
+</code></pre>
+<p>循环完毕需检测是否发生错误。<br>
+<code>rows.Scan()</code> 参数的顺序很重要，需要和查询的结果的 column 对应。</p>
+<pre><code class="language-go">SELECT * from articles
+</code></pre>
+<p>而我们的 articles 的表结构为：</p>
+<pre><code class="language-go">CREATE TABLE `articles` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `body` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+</code></pre>
+<p>查询到的每一行的 column 顺序是 id, title, body，因此 rows.Scan 也需要按照此顺序不然会造成数据读取的错位。</p>
+<h1 id="10-queryrow">10. QueryRow()</h1>
+<p>如果是读取一行数据，可以使用 QueryRow()，语法定义如下：</p>
+<pre><code class="language-go">func (db *DB) QueryRow(query string, args ...interface{}) *Row
+</code></pre>
+<p>返回的是一个 <code>sql.Row</code> 对象，与其相关的调用有：</p>
+<pre><code class="language-go">func (r *Row) Scan(dest ...interface{}) error
+</code></pre>
+<p><code>sql.Row</code> 没有 <code>Close</code> 方法，当我们调用 <code>Scan()</code> 时就会自动关闭 SQL 连接。所以为了防止忘记关闭而浪费资源，一般需要养成连着调用 <code>Scan()</code> 习惯：</p>
+<pre><code class="language-go">article := Article{}
+query := &quot;SELECT * FROM articles WHERE id = ?&quot;
+err := db.QueryRow(query, id).Scan(&amp;article.ID, &amp;article.Title, &amp;article.Body)
+</code></pre>
+<p>以上我们从数据库中读取对应 ID 的一条数据，并立刻调用 <code>Scan()</code> 读取数据到 article 变量里。<br>
+当出现请求结果不止一条数据的情况，<code>QueryRow()</code> 会只使用第一条数据。</p>
+<h1 id="11-context-上下文">11. Context 上下文</h1>
+<p>三个常用的 SQL 请求方法都有其支持上下文的版本，如下：</p>
+<pre><code class="language-go">func (db *DB) Exec(query string, args ...interface{}) (Result, error)
+func (db *DB) ExecContext(ctx context.Context, query string, args ...interface{}) (Result, error)
+func (db *DB) Query(query string, args ...interface{}) (*Rows, error)
+func (db *DB) QueryContext(ctx context.Context, query string, args ...interface{}) (*Rows, error)
+func (db *DB) QueryRow(query string, args ...interface{}) *Row
+func (db *DB) QueryRowContext(ctx context.Context, query string, args ...interface{}) *Row
+</code></pre>
+<p>支持 Context 上下文的方法传参标准库 context 里的 context.Context 对象实例。<br>
+在一些特殊场景里，我们需要 SQL 请求在执行还未完成时，我们可以取消他们（cancel），或者为请求设置最长执行时间（timeout），就会用到这些方法。<br>
+在这里你只需要记住有这些方法即可，手动管理上下文 SQL  请求使用场景较少，篇幅考虑这里不做赘述。<br>
+另外需要知道的是，所有的请求方法底层都是用其上下文版本的方法调用，且传入默认的上下文，例如 Exec() 的源码：</p>
+<pre><code class="language-go">func (db *DB) Exec(query string, args ...interface{}) (Result, error) {
+    return db.ExecContext(context.Background(), query, args...)
+}
+</code></pre>
+<p>底层调用的是 <code>ExecContext()</code> 方法。<code>context.Background()</code> 是默认的上下文，这是一个空的 <code>context</code> ，我们无法对其进行取消、赋值、设置 deadline 等操作。</p>
+<h1 id="12-事务处理-sqltx">12. 事务处理 sql.Tx</h1>
+<p>在前面课程的 SQL 操作中，我们都没有开启事务，如果没有开启事务，当其中某个语句执行错误，则前面已经执行的 SQL 语句无法回滚。<br>
+对于一些要求比较严格的业务逻辑来说，如付款、转账等，应该在同一个事务中提交多条 SQL 语句，避免发生执行出错无法回滚事务的情况。<br>
+使用以下可以开启事务：</p>
+<pre><code class="language-go">func (db *DB) Begin() (*Tx, error)
+func (db *DB) BeginTx(ctx context.Context, opts *TxOptions) (*Tx, error)
+</code></pre>
+<p><code>Begin()</code> 和 <code>BeginTxt()</code> 方法返回一个 sql.Tx 结构体，他支持以上我们提到过的几种查询方法：</p>
+<pre><code class="language-go">func (tx *Tx) Exec(query string, args ...interface{}) (Result, error)
+func (tx *Tx) ExecContext(ctx context.Context, query string, args ...interface{}) (Result, error)
+func (tx *Tx) Query(query string, args ...interface{}) (*Rows, error)
+func (tx *Tx) QueryContext(ctx context.Context, query string, args ...interface{}) (*Rows, error)
+func (tx *Tx) QueryRow(query string, args ...interface{}) *Row
+func (tx *Tx) QueryRowContext(ctx context.Context, query string, args ...interface{}) *Row
+
+// 预编译 Prepare
+func (tx *Tx) Stmt(stmt *Stmt) *Stmt
+func (tx *Tx) StmtContext(ctx context.Context, stmt *Stmt) *Stmt
+func (tx *Tx) Prepare(query string) (*Stmt, error)
+func (tx *Tx) PrepareContext(ctx context.Context, query string) (*Stmt, error)
+</code></pre>
+<p>使用这同一个 <code>sql.Tx</code> 对数据库进行操作，就会在同一个事务中提交。</p>
+<p>当使用 <code>sql.Tx</code> 的操作方式操作数据后，需要使用 <code>sql.Tx</code> 的 <code>Commit()</code> 方法提交事务，如果出错，则可以使用 <code>sql.Tx</code> 中的 <code>Rollback()</code> 方法回滚事务，保持数据的一致性，下面是这两个方法的定义：</p>
+<pre><code class="language-go">func (tx *Tx) Commit() error
+func (tx *Tx) Rollback() error
+</code></pre>
+<p>下面是个简单的示例：</p>
+<pre><code class="language-go">func (s Service) DoSomething() (err error) {
+    // 1. 创建事务
+    tx, err := s.db.Begin()
+    if err != nil {
+        return
+    }
+    // 2. 如果请求失败，就回滚所有 SQL 操作，否则提交
+    //    defer 会在当前方法的最后执行
+    defer func() {
+        if err != nil {
+            tx.Rollback()
+            return err
+        }
+        err = tx.Commit()
+    }()
+
+    // 3. 执行各种请求
+    if _, err = tx.Exec(...); err != nil {
+        return err
+    }
+    if _, err = tx.Exec(...); err != nil {
+        return err
+    }
+    // ...
+    return nil
+}
+</code></pre>
+<p>需要注意的是，所有 SQL 操作都必须使用 <code>tx</code> 来操作，才能支持事务，如果中间使用 <code>db.Exec()</code> 那这条语句是无法回滚的。</p>
+
             </div>
             
               <div class="reward-btn">
@@ -572,7 +799,7 @@
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/mysql-you-hua/" title="MySQL 优化">http://weakcc.github.io/post/mysql-you-hua/</a>
+      <a href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/" title="sql 知识总结">http://weakcc.github.io/post/sql-zhi-shi-zong-jie/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -581,21 +808,19 @@
   </ul>
   <div class="tags">
     
+      <a href="http://weakcc.github.io/tag/Y1-XRtKZ3/"># Go</a>
+    
       <a href="http://weakcc.github.io/tag/VwbG72yxK/"># MySQL</a>
     
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="Redis 概览" href="http://weakcc.github.io/post/redis-gai-lan/">Redis 概览</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="Redis 概览" href="http://weakcc.github.io/post/redis-gai-lan/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法" href="http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/">MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法</a>
-        <a class="nav-mobile-next" title="MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法" href="http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/">下一篇</a>
+        <a class="nav-pc-next" title="优雅地实现在 Python 退出时强制运行一段代码" href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/">优雅地实现在 Python 退出时强制运行一段代码</a>
+        <a class="nav-mobile-next" title="优雅地实现在 Python 退出时强制运行一段代码" href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>

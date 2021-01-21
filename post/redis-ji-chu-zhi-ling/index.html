@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>Redis 基础指令 | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1606552749224">
+<link rel="shortcut icon" href="/favicon.ico?v=1611199561586">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -188,19 +188,19 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">11</span>
+        <span class="site-item-stat-count">13</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="">
-        <span class="site-item-stat-count">8</span>
+        <span class="site-item-stat-count">9</span>
         <span class="site-item-stat-name language" data-lan="category">分类</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="/tags/">
-        <span class="site-item-stat-count">8</span>
+        <span class="site-item-stat-count">9</span>
         <span class="site-item-stat-name language" data-lan="tag">标签</span>
       </a>
     </div>
@@ -854,6 +854,251 @@
     <div class="result" id="result">
       
       <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/"" data-c="
+          &lt;h1 id=&#34;1-sql-驱动&#34;&gt;1. sql 驱动&lt;/h1&gt;
+&lt;p&gt;推荐驱动：&lt;br&gt;
+* MySQL/MariaDB  —— &lt;a href=&#34;https://github.com/go-sql-driver/mysql/&#34;&gt;github.com/go-sql-driver/mysql/&lt;/a&gt;&lt;br&gt;
+* Postgres SQL  —— &lt;a href=&#34;https://github.com/lib/pq&#34;&gt;github.com/lib/pq&lt;/a&gt;&lt;br&gt;
+* SQLite3  —— &lt;a href=&#34;https://github.com/mattn/go-sqlite3&#34;&gt;github.com/go-sql-driver/mysql/&lt;/a&gt;&lt;br&gt;
+* Oracle  —— &lt;a href=&#34;https://github.com/mattn/go-oci8&#34;&gt;github.com/go-sql-driver/mysql/&lt;/a&gt;&lt;br&gt;
+* SQL Serve  —— &lt;a href=&#34;https://github.com/denisenkom/go-mssqldb&#34;&gt;github.com/go-sql-driver/mysql/&lt;/a&gt;&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h1 id=&#34;2-sqldb&#34;&gt;2. sql.DB&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;sql.DB&lt;/code&gt; 结构是 &lt;code&gt;database/sql&lt;/code&gt; 包封装的一个数据库操作对象，包含了操作数据库的基本方法。大部分时间我们操作数据库都使用它。&lt;br&gt;
+可以把 &lt;code&gt;sql.DB&lt;/code&gt; 当做是连接池，它内部会自动维护 SQL 连接的关闭和创建。&lt;/p&gt;
+&lt;h1 id=&#34;3-连接池设置&#34;&gt;3. 连接池设置&lt;/h1&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 设置最大连接数
+db.SetMaxOpenConns(100)
+
+// 设置最大空闲连接数
+db.SetMaxIdleConns(25)
+
+// 设置每个链接的过期时间
+db.SetConnMaxLifetime(5 * time.Minute)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;4-dsn&#34;&gt;4. DSN&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;DSN&lt;/code&gt; 全称为 &lt;code&gt;Data Source Name&lt;/code&gt;，表示数据库连接源，用于定义数据库的连接信息，不同数据库的 DSN 格式不同，MySQL 的 DSN 格式如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// [用户名[:密码]@][协议(数据库服务器地址)]]/数据库名称?参数列表
+[username[:password]@][protocol[(address)]]/dbname[?param1=value1&amp;amp;...&amp;amp;paramN=valueN]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;为了更加直观，我们可以使用 mysql.Config 来创建连接信息：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 设置数据库连接信息
+config := mysql.Config{
+    User:                 &amp;quot;homestead&amp;quot;,
+    Passwd:               &amp;quot;secret&amp;quot;,
+    Addr:                 &amp;quot;127.0.0.1:33060&amp;quot;,
+    Net:                  &amp;quot;tcp&amp;quot;,
+    DBName:               &amp;quot;goblog&amp;quot;,
+    AllowNativePasswords: true,
+}
+
+fmt.Println(&amp;quot;conn: &amp;quot;, config.FormatDSN())
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;5-初始化-sqldb&#34;&gt;5. 初始化 sql.DB&lt;/h1&gt;
+&lt;p&gt;一般而言，我们使用 &lt;code&gt;Open()&lt;/code&gt; 方法便可初始化并返回一个 &lt;code&gt;*sql.DB&lt;/code&gt; 实例，如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func Open(driverName, dataSourceName string) (*DB, error)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;使用 &lt;code&gt;Open()&lt;/code&gt; 方法只要传入驱动名称及对应的 DSN 便可，使用很简单，也很通用，当需要连接不同数据库时，只需要修改驱动名与 DSN 即可。配合 mysql.Config 使用：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;db, err = sql.Open(&amp;quot;mysql&amp;quot;, config.FormatDSN())
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;使用 &lt;code&gt;Open()&lt;/code&gt; 时需要知道的是 —— 我们只是做好连接的准备，并未真是连接到数据库上。因未发生连接，所以即使配置信息有误，也不会报错。所以一般我们在使用的时候，会搭配 &lt;code&gt;Ping()&lt;/code&gt; 进行测试：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;err = db.Ping()
+if err != nil {
+    log.Fatal(err)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;Ping()&lt;/code&gt; 会与数据库服务器发生连接，如果连接信息有错误，err 就会有值，否为 nil。&lt;br&gt;
+DB 的连线都是被设计来当作长连线使用的，所以不该频繁的 Open、Close。Open 取得的 db 实例，要重复利用，不应该去重复生成。&lt;/p&gt;
+&lt;h1 id=&#34;5-prepare-和-stmt&#34;&gt;5. Prepare 和 Stmt&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;sql.DB.Prepare()&lt;/code&gt; 方法会返回一个 &lt;code&gt;sql.Stmt&lt;/code&gt; 对象，与 Stmt 相关的方法如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;stmt.Exec()
+stmt.Query()
+stmt.QueryRow()
+stmt.Close()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;做单独的语句查询时，谨记调用 &lt;code&gt;defer stmt.Close()&lt;/code&gt; 来关闭 SQL 连接。&lt;br&gt;
+使用 Prepare 语句会发送两次请求到数据库服务器上，第一次是调用 Prepare() 语句时，第二次是调用以上提到的四个 Stmt 方法时：&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1611198623133.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+使用 Prepare 语句会发送两次请求到数据库服务器上，第一次是调用 Prepare() 语句时，第二次是调用以上提到的四个 Stmt 方法时：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (db *DB) Exec(query string, args ...interface{}) (Result, error)
+func (db *DB) Query(query string, args ...interface{}) (*Rows, error)
+func (db *DB) QueryRow(query string, args ...interface{}) *Row
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;6-exec&#34;&gt;6. Exec()&lt;/h1&gt;
+&lt;p&gt;一般增加、删除、更新，或者修改表结构，都使用 &lt;code&gt;sql.DB&lt;/code&gt; 中的 &lt;code&gt;Exec()&lt;/code&gt; 方法来处理。&lt;br&gt;
+语法如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (db *DB) Exec(query string, args ...interface{}) (Result, error)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;单参数为&lt;b&gt;纯文本模式&lt;/b&gt;，不使用 Prepare，只发送一条 SQL 查询：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;db.Exec(&amp;quot;DELETE FROM articles WHERE id = &amp;quot; + strconv.FormatInt(a.ID, 10))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;多参数为 &lt;b&gt;Prepare 模式&lt;/b&gt;，底层使用 Prepare 语句，会发送两条 SQL 查询：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;query := &amp;quot;UPDATE articles SET title = ?, body = ? WHERE id = ?&amp;quot;
+rs, err := db.Exec(query, title, body, id)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;第二个及以上的参数为 SQL 占位符对应的数据。&lt;br&gt;
+&lt;code&gt;Exec()&lt;/code&gt; 方法会返回一个 &lt;code&gt;sql.Result&lt;/code&gt; 类型的实例。&lt;/p&gt;
+&lt;h1 id=&#34;7-sqlresult&#34;&gt;7. sql.Result&lt;/h1&gt;
+&lt;p&gt;Result 的定义如下，包含两个方法：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Result interface {
+    LastInsertId() (int64, error)
+    RowsAffected() (int64, error)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;LastInsertId()&lt;/code&gt; 方法只用在 &lt;code&gt;INSERT&lt;/code&gt; 语句且数据表有自增 ID 时才有返回自增 ID 值，否则返回 0。&lt;br&gt;
+&lt;code&gt;RowsAffected()&lt;/code&gt; 表示影响的数据表行数，我们以此来判断 &lt;code&gt;SQL&lt;/code&gt; 语句是否执行成功。&lt;br&gt;
+SQL 语法正确的情况下 &lt;code&gt;RowsAffected()&lt;/code&gt; 为 0 ，则表示 SQL 执行成功了，但是数据库里的数据没有任何变更。例如说我们的数据库中并没有 ID 为 6 的数据，这时候执行以下语句：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;DELETE FROM articles WHERE id=6
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;就会出现 SQL 执行成功了，但是数据未更改的情况。&lt;/p&gt;
+&lt;h1 id=&#34;8-query&#34;&gt;8. Query()&lt;/h1&gt;
+&lt;p&gt;一般使用 &lt;code&gt;sql.DB&lt;/code&gt; 中的 &lt;code&gt;Query()&lt;/code&gt; 来查询得到多条数据。语法如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (db *DB) Query(query string, args ...interface{}) (*Rows, error)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如下获取所有文章的例子：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;rows, err := db.Query(&amp;quot;SELECT * from articles&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;Query()&lt;/code&gt; 方法返回一个 &lt;code&gt;sql.Rows&lt;/code&gt; 结构体，代表一个查询结果集。&lt;br&gt;
+你可能发现了，Query 和 Exec 都可以执行 SQL 语句，&lt;b&gt;那他们的区别是什么呢？&lt;/b&gt;&lt;br&gt;
+Exec 只会返回最后插入 ID 和影响行数，而 Query 会返回数据表里的内容（结果集）。&lt;br&gt;
+或者可以这么记：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Query 中文译为 &lt;b&gt;查询&lt;/b&gt;，而 Exec 译为 &lt;b&gt;执行&lt;/b&gt;。想查询数据，使用 Query。想执行命令，使用 Exec。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&#34;9-sqlrows&#34;&gt;9. sql.Rows&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;sql.Rows&lt;/code&gt; 所包含的方法如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (rs *Rows) Close() error                            //关闭结果集
+func (rs *Rows) ColumnTypes() ([]*ColumnType, error)    //返回数据表的列类型
+func (rs *Rows) Columns() ([]string, error)             //返回数据表列的名称
+func (rs *Rows) Err() error                      // 错误集
+func (rs *Rows) Next() bool                      // 游标，下一行
+func (rs *Rows) Scan(dest ...interface{}) error  // 扫描结构体
+func (rs *Rows) NextResultSet() bool            
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;结果集在检出完 err 以后，遍历数据之前，应调用 &lt;code&gt;defer rows.Close()&lt;/code&gt; 来关闭 SQL 连接。&lt;br&gt;
+一般我们会使用 &lt;code&gt;rows.Next()&lt;/code&gt; 来遍历数据，如：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;var articles []Article
+//2. 循环读取结果
+for rows.Next() {
+    var article Article
+    // 2.1 扫码每一行的结果并赋值到一个 article 对象中
+    err := rows.Scan(&amp;amp;article.ID, &amp;amp;article.Title, &amp;amp;article.Body)
+    if err != nil {
+        log.Fatal(err)
+    }
+    // 2.2 将 article 追加到 articles 的这个数组中
+    articles = append(articles, article)
+}
+// 2.3 检测循环时是否发生错误
+err = rows.Err()
+if err != nil {
+    log.Fatal(err)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;循环完毕需检测是否发生错误。&lt;br&gt;
+&lt;code&gt;rows.Scan()&lt;/code&gt; 参数的顺序很重要，需要和查询的结果的 column 对应。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;SELECT * from articles
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;而我们的 articles 的表结构为：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;CREATE TABLE `articles` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `body` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;查询到的每一行的 column 顺序是 id, title, body，因此 rows.Scan 也需要按照此顺序不然会造成数据读取的错位。&lt;/p&gt;
+&lt;h1 id=&#34;10-queryrow&#34;&gt;10. QueryRow()&lt;/h1&gt;
+&lt;p&gt;如果是读取一行数据，可以使用 QueryRow()，语法定义如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (db *DB) QueryRow(query string, args ...interface{}) *Row
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;返回的是一个 &lt;code&gt;sql.Row&lt;/code&gt; 对象，与其相关的调用有：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (r *Row) Scan(dest ...interface{}) error
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;sql.Row&lt;/code&gt; 没有 &lt;code&gt;Close&lt;/code&gt; 方法，当我们调用 &lt;code&gt;Scan()&lt;/code&gt; 时就会自动关闭 SQL 连接。所以为了防止忘记关闭而浪费资源，一般需要养成连着调用 &lt;code&gt;Scan()&lt;/code&gt; 习惯：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;article := Article{}
+query := &amp;quot;SELECT * FROM articles WHERE id = ?&amp;quot;
+err := db.QueryRow(query, id).Scan(&amp;amp;article.ID, &amp;amp;article.Title, &amp;amp;article.Body)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;以上我们从数据库中读取对应 ID 的一条数据，并立刻调用 &lt;code&gt;Scan()&lt;/code&gt; 读取数据到 article 变量里。&lt;br&gt;
+当出现请求结果不止一条数据的情况，&lt;code&gt;QueryRow()&lt;/code&gt; 会只使用第一条数据。&lt;/p&gt;
+&lt;h1 id=&#34;11-context-上下文&#34;&gt;11. Context 上下文&lt;/h1&gt;
+&lt;p&gt;三个常用的 SQL 请求方法都有其支持上下文的版本，如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (db *DB) Exec(query string, args ...interface{}) (Result, error)
+func (db *DB) ExecContext(ctx context.Context, query string, args ...interface{}) (Result, error)
+func (db *DB) Query(query string, args ...interface{}) (*Rows, error)
+func (db *DB) QueryContext(ctx context.Context, query string, args ...interface{}) (*Rows, error)
+func (db *DB) QueryRow(query string, args ...interface{}) *Row
+func (db *DB) QueryRowContext(ctx context.Context, query string, args ...interface{}) *Row
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;支持 Context 上下文的方法传参标准库 context 里的 context.Context 对象实例。&lt;br&gt;
+在一些特殊场景里，我们需要 SQL 请求在执行还未完成时，我们可以取消他们（cancel），或者为请求设置最长执行时间（timeout），就会用到这些方法。&lt;br&gt;
+在这里你只需要记住有这些方法即可，手动管理上下文 SQL  请求使用场景较少，篇幅考虑这里不做赘述。&lt;br&gt;
+另外需要知道的是，所有的请求方法底层都是用其上下文版本的方法调用，且传入默认的上下文，例如 Exec() 的源码：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (db *DB) Exec(query string, args ...interface{}) (Result, error) {
+    return db.ExecContext(context.Background(), query, args...)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;底层调用的是 &lt;code&gt;ExecContext()&lt;/code&gt; 方法。&lt;code&gt;context.Background()&lt;/code&gt; 是默认的上下文，这是一个空的 &lt;code&gt;context&lt;/code&gt; ，我们无法对其进行取消、赋值、设置 deadline 等操作。&lt;/p&gt;
+&lt;h1 id=&#34;12-事务处理-sqltx&#34;&gt;12. 事务处理 sql.Tx&lt;/h1&gt;
+&lt;p&gt;在前面课程的 SQL 操作中，我们都没有开启事务，如果没有开启事务，当其中某个语句执行错误，则前面已经执行的 SQL 语句无法回滚。&lt;br&gt;
+对于一些要求比较严格的业务逻辑来说，如付款、转账等，应该在同一个事务中提交多条 SQL 语句，避免发生执行出错无法回滚事务的情况。&lt;br&gt;
+使用以下可以开启事务：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (db *DB) Begin() (*Tx, error)
+func (db *DB) BeginTx(ctx context.Context, opts *TxOptions) (*Tx, error)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;Begin()&lt;/code&gt; 和 &lt;code&gt;BeginTxt()&lt;/code&gt; 方法返回一个 sql.Tx 结构体，他支持以上我们提到过的几种查询方法：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (tx *Tx) Exec(query string, args ...interface{}) (Result, error)
+func (tx *Tx) ExecContext(ctx context.Context, query string, args ...interface{}) (Result, error)
+func (tx *Tx) Query(query string, args ...interface{}) (*Rows, error)
+func (tx *Tx) QueryContext(ctx context.Context, query string, args ...interface{}) (*Rows, error)
+func (tx *Tx) QueryRow(query string, args ...interface{}) *Row
+func (tx *Tx) QueryRowContext(ctx context.Context, query string, args ...interface{}) *Row
+
+// 预编译 Prepare
+func (tx *Tx) Stmt(stmt *Stmt) *Stmt
+func (tx *Tx) StmtContext(ctx context.Context, stmt *Stmt) *Stmt
+func (tx *Tx) Prepare(query string) (*Stmt, error)
+func (tx *Tx) PrepareContext(ctx context.Context, query string) (*Stmt, error)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;使用这同一个 &lt;code&gt;sql.Tx&lt;/code&gt; 对数据库进行操作，就会在同一个事务中提交。&lt;/p&gt;
+&lt;p&gt;当使用 &lt;code&gt;sql.Tx&lt;/code&gt; 的操作方式操作数据后，需要使用 &lt;code&gt;sql.Tx&lt;/code&gt; 的 &lt;code&gt;Commit()&lt;/code&gt; 方法提交事务，如果出错，则可以使用 &lt;code&gt;sql.Tx&lt;/code&gt; 中的 &lt;code&gt;Rollback()&lt;/code&gt; 方法回滚事务，保持数据的一致性，下面是这两个方法的定义：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (tx *Tx) Commit() error
+func (tx *Tx) Rollback() error
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;下面是个简单的示例：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (s Service) DoSomething() (err error) {
+    // 1. 创建事务
+    tx, err := s.db.Begin()
+    if err != nil {
+        return
+    }
+    // 2. 如果请求失败，就回滚所有 SQL 操作，否则提交
+    //    defer 会在当前方法的最后执行
+    defer func() {
+        if err != nil {
+            tx.Rollback()
+            return err
+        }
+        err = tx.Commit()
+    }()
+
+    // 3. 执行各种请求
+    if _, err = tx.Exec(...); err != nil {
+        return err
+    }
+    if _, err = tx.Exec(...); err != nil {
+        return err
+    }
+    // ...
+    return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;需要注意的是，所有 SQL 操作都必须使用 &lt;code&gt;tx&lt;/code&gt; 来操作，才能支持事务，如果中间使用 &lt;code&gt;db.Exec()&lt;/code&gt; 那这条语句是无法回滚的。&lt;/p&gt;
+">sql 知识总结</a>
+      </div>
+      
+      <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/"" data-c="
           &lt;p&gt;如果有这样一个场景，你要给一个项目开发测试程序，程序开始运行的时候，会创建初始环境，测试完成以后，会清理环境。&lt;br&gt;
 使用 Python 自带的 &lt;code&gt;atexit&lt;/code&gt; 这个模块&lt;/p&gt;
@@ -910,13 +1155,13 @@ def clean_2():
           &lt;blockquote&gt;
 &lt;p&gt;https://learnku.com/articles/51820&lt;/p&gt;
 &lt;/blockquote&gt;
-">MySQL写sql的21个好习惯，学习工作效率翻倍</a>
+">MySQL 写 sql 的21个好习惯，学习工作效率翻倍</a>
       </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/python-zheng-ze/"" data-c="
           &lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;http://weakcc.github.io/post-images/1603761872681.jpeg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
-">Python正则</a>
+">Python 正则</a>
       </div>
       
       <div class="item">
@@ -1064,7 +1309,7 @@ if __name__ == &#39;__main__&#39;:
 # 小明
 # hello 小小
 &lt;/code&gt;&lt;/pre&gt;
-">Python装饰器</a>
+">Python 装饰器</a>
       </div>
       
       <div class="item">
@@ -1147,7 +1392,26 @@ a.bar()
 &lt;p&gt;经典类：首先去A类中查找，如果A类中没有，则继续去B类中找，如果B类中么有，则继续去D类中找，如果D类中么有，则继续去C类中找，如果还是未找到，则报错&lt;/p&gt;
 &lt;p&gt;新式类：首先去A类中查找，如果A类中没有，则继续去B类中找，如果B类中么有，则继续去C类中找，如果C类中么有，则继续去D类中找，如果还是未找到，则报错&lt;/p&gt;
 &lt;p&gt;注意：在上述查找过程中，一旦找到，则寻找过程立即中断，便不会再继续找了。&lt;/p&gt;
-">Python类多继承</a>
+">Python 类多继承</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/gitlab-server-de-da-jian/"" data-c="
+          &lt;p&gt;sudo yum install -y git vim gcc glibc-static telnet&lt;br&gt;
+sudo yum install -y curl policycoreutils-python openssh-server&lt;br&gt;
+sudo systemctl enable sshd&lt;br&gt;
+sudo systemctl start sshd&lt;br&gt;
+sudo yum install postfix&lt;br&gt;
+sudo systemctl enable postfix&lt;br&gt;
+sudo systemctl start postfix&lt;/p&gt;
+&lt;p&gt;touch /etc/yum.repos.d/gitlab-ce.repo&lt;/p&gt;
+&lt;p&gt;[gitlab-ce]&lt;br&gt;
+name=Gitlab CE Repository&lt;br&gt;
+baseurl=https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el$releasever&lt;br&gt;
+gpgcheck=0&lt;br&gt;
+enabled=1&lt;br&gt;
+gpgkey=https://packages.gitlab.com/gpg.key&lt;/p&gt;
+">GitLab Server 的搭建</a>
       </div>
       
       <div class="item">
