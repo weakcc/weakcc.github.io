@@ -8,8 +8,8 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>sql 知识总结 | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1611199561586">
+<title>Go sql 知识总结 | 腰盐醋</title>
+<link rel="shortcut icon" href="/favicon.ico?v=1611904879601">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -38,7 +38,7 @@
 
 
 
-  <meta name="description" content="sql 知识总结" />
+  <meta name="description" content="Go sql 知识总结" />
   <meta name="keywords" content="Go,MySQL" />
 </head>
 
@@ -189,7 +189,7 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">13</span>
+        <span class="site-item-stat-count">14</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
@@ -499,7 +499,7 @@
             <section class="post-header">
   <h1 class="post-title">
     <a class="post-title-link" href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/">
-      sql 知识总结
+      Go sql 知识总结
     </a>
   </h1>
   <div class="post-meta">
@@ -799,7 +799,7 @@ func (tx *Tx) Rollback() error
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/" title="sql 知识总结">http://weakcc.github.io/post/sql-zhi-shi-zong-jie/</a>
+      <a href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/" title="Go sql 知识总结">http://weakcc.github.io/post/sql-zhi-shi-zong-jie/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -815,6 +815,10 @@ func (tx *Tx) Rollback() error
   </div>
   <div class="nav">
     <div class="nav-prev">
+      
+        <i class="fa fa-chevron-left"></i>
+        <a class="nav-pc-next" title="二维数组根据某个字段排序" href="http://weakcc.github.io/post/er-wei-shu-zu-gen-ju-mou-ge-zi-duan-pai-xu/">二维数组根据某个字段排序</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="二维数组根据某个字段排序" href="http://weakcc.github.io/post/er-wei-shu-zu-gen-ju-mou-ge-zi-duan-pai-xu/">上一篇</a>
       
     </div>
     <div class="nav-next">
@@ -1295,6 +1299,58 @@ func (tx *Tx) Rollback() error
     <div class="result" id="result">
       
       <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/er-wei-shu-zu-gen-ju-mou-ge-zi-duan-pai-xu/"" data-c="
+          &lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;array_multisort(array_column($array, &#39;key&#39;), SORT_DESC, $array);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!-- more --&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;&amp;lt;?php
+
+$arr = [
+    [
+        &#39;a&#39; =&amp;gt; &#39;1&#39;,
+        &#39;b&#39; =&amp;gt; &#39;你&#39;
+    ],
+    [
+        &#39;a&#39; =&amp;gt; &#39;3&#39;,
+        &#39;b&#39; =&amp;gt; &#39;我&#39;
+    ],
+    [
+        &#39;a&#39; =&amp;gt; &#39;2&#39;,
+        &#39;b&#39; =&amp;gt; &#39;他&#39;
+    ],
+];
+
+array_multisort(array_column($arr, &#39;a&#39;), SORT_ASC, $arr);
+
+print_r($arr);
+
+//Array
+//(
+//    [0] =&amp;gt; Array
+//    (
+//            [a] =&amp;gt; 1
+//            [b] =&amp;gt; 你
+//        )
+//
+//    [1] =&amp;gt; Array
+//(
+//            [a] =&amp;gt; 2
+//            [b] =&amp;gt; 他
+//        )
+//
+//    [2] =&amp;gt; Array
+//(
+//            [a] =&amp;gt; 3
+//            [b] =&amp;gt; 我
+//        )
+//
+//)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!-- more --&gt;
+">二维数组根据某个字段排序</a>
+      </div>
+      
+      <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/"" data-c="
           &lt;h1 id=&#34;1-sql-驱动&#34;&gt;1. sql 驱动&lt;/h1&gt;
 &lt;p&gt;推荐驱动：&lt;br&gt;
@@ -1536,7 +1592,7 @@ func (tx *Tx) Rollback() error
 }
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;需要注意的是，所有 SQL 操作都必须使用 &lt;code&gt;tx&lt;/code&gt; 来操作，才能支持事务，如果中间使用 &lt;code&gt;db.Exec()&lt;/code&gt; 那这条语句是无法回滚的。&lt;/p&gt;
-">sql 知识总结</a>
+">Go sql 知识总结</a>
       </div>
       
       <div class="item">

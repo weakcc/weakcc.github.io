@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-01-21T03:26:27.164Z</updated>
+    <updated>2021-01-29T07:21:22.301Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -11,7 +11,65 @@
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
     <entry>
-        <title type="html"><![CDATA[sql 知识总结]]></title>
+        <title type="html"><![CDATA[二维数组根据某个字段排序]]></title>
+        <id>http://weakcc.github.io/post/er-wei-shu-zu-gen-ju-mou-ge-zi-duan-pai-xu/</id>
+        <link href="http://weakcc.github.io/post/er-wei-shu-zu-gen-ju-mou-ge-zi-duan-pai-xu/">
+        </link>
+        <updated>2021-01-29T07:13:28.000Z</updated>
+        <summary type="html"><![CDATA[<pre><code class="language-php">array_multisort(array_column($array, 'key'), SORT_DESC, $array);
+</code></pre>
+]]></summary>
+        <content type="html"><![CDATA[<pre><code class="language-php">array_multisort(array_column($array, 'key'), SORT_DESC, $array);
+</code></pre>
+<!-- more -->
+<pre><code class="language-php">&lt;?php
+
+$arr = [
+    [
+        'a' =&gt; '1',
+        'b' =&gt; '你'
+    ],
+    [
+        'a' =&gt; '3',
+        'b' =&gt; '我'
+    ],
+    [
+        'a' =&gt; '2',
+        'b' =&gt; '他'
+    ],
+];
+
+array_multisort(array_column($arr, 'a'), SORT_ASC, $arr);
+
+print_r($arr);
+
+//Array
+//(
+//    [0] =&gt; Array
+//    (
+//            [a] =&gt; 1
+//            [b] =&gt; 你
+//        )
+//
+//    [1] =&gt; Array
+//(
+//            [a] =&gt; 2
+//            [b] =&gt; 他
+//        )
+//
+//    [2] =&gt; Array
+//(
+//            [a] =&gt; 3
+//            [b] =&gt; 我
+//        )
+//
+//)
+</code></pre>
+<!-- more -->
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Go sql 知识总结]]></title>
         <id>http://weakcc.github.io/post/sql-zhi-shi-zong-jie/</id>
         <link href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/">
         </link>
@@ -364,160 +422,6 @@ def clean_2():
         </link>
         <updated>2020-10-27T01:23:45.000Z</updated>
         <content type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1603761872681.jpeg" alt="" loading="lazy"></figure>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Python 装饰器]]></title>
-        <id>http://weakcc.github.io/post/python-zhuang-shi-qi/</id>
-        <link href="http://weakcc.github.io/post/python-zhuang-shi-qi/">
-        </link>
-        <updated>2020-10-27T01:06:05.000Z</updated>
-        <summary type="html"><![CDATA[<p><code>装饰器(Decorator)</code>本质上就是个接受一个函数作为参数，并返回一个函数的高阶函数。</p>
-<p><b>装饰器的作用</b>：可以在代码运行期间动态增加函数功能，即动态扩展函数功能的作用。</p>
-]]></summary>
-        <content type="html"><![CDATA[<p><code>装饰器(Decorator)</code>本质上就是个接受一个函数作为参数，并返回一个函数的高阶函数。</p>
-<p><b>装饰器的作用</b>：可以在代码运行期间动态增加函数功能，即动态扩展函数功能的作用。</p>
-<!-- more -->
-<h3 id="第一步">第一步</h3>
-<p>准备一个简单的函数，并知道函数也是一个对象，这个对象有一个 <code>_name_</code> 的属性。</p>
-<pre><code class="language-python">def show(a, b):
-    print(a, b)
-
-show(1, 2)
-print(show.__name__)
-
-# 1 2
-# show
-</code></pre>
-<h3 id="第二步">第二步</h3>
-<p>装饰器简单语法的使用以及 <code>@</code> 语法的使用。</p>
-<pre><code class="language-python">def log(func):
-    def wrapper(*args, **kwargs):
-        print(&quot;我在show之前打印&quot;)
-        func(*args, **kwargs)
-        print(&quot;我在show之后打印&quot;)
-    return wrapper
-
-@log
-def show(a, b):
-    print(a, b)
-
-show(1, 2)
-print(show.__name__)
-
-# 我在show之前打印
-# 1 2
-# 我在show之后打印
-# wrapper
-</code></pre>
-<blockquote>
-<p>扩展了 <code>show</code> 函数本身的功能，调用函数对象 <code>__name__</code> 的属性得到不再是 <code>show</code> 而是 <code>wrapper</code>，显示是不合理的。</p>
-</blockquote>
-<h3 id="第三步">第三步</h3>
-<p>一个完整的 <code>decorator</code> 的写法，<code>functools</code> 库的调用，<code>@functools.wrap()</code> 的使用。</p>
-<pre><code class="language-python">import functools
-def log(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        print(&quot;我在show之前打印&quot;)
-        func(*args, **kwargs)
-        print(&quot;我在show之后打印&quot;)
-    return wrapper
-
-@log
-def show(a, b):
-    print(a, b)
-
-show(1, 2)
-print(show.__name__)
-
-# 我在show之前打印
-# 1 2
-# 我在show之后打印
-# show
-</code></pre>
-<h3 id="第四步">第四步</h3>
-<p>学会当一个装饰器本身需要传入参数时，如何写装饰器。</p>
-<pre><code class="language-python">import functools
-def log(text):
-    def decor(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            print(&quot;我在show之前打印&quot;)
-            print(&quot;====&quot;, text, &quot;====&quot;)
-            func(*args, **kwargs)
-            print(&quot;我在show之后打印&quot;)
-        return wrapper
-    return decor
-
-@log(&quot;我是传入的参数&quot;)
-def show(a, b):
-    print(a, b)
-
-show(1, 2)
-print(show.__name__)
-
-# 我在show之前打印
-# ==== 我是传入的参数 ====
-# 1 2
-# 我在show之后打印
-# show
-</code></pre>
-<h3 id="第五步">第五步</h3>
-<p>类装饰器</p>
-<pre><code class="language-python">class A(object):
-    def __init__(self, func):
-        self.func = func
-
-    def __call__(self, *args, **kwargs):
-        print(&quot;== before func ==&quot;)
-        return self.func(*args, **kwargs)
-
-
-@A
-def test_func(name):
-    return 'hello ' + name
-
-
-if __name__ == '__main__':
-    t = test_func(&quot;小小&quot;)
-    print(t)
-
-# == before func ==
-# hello 小小
-</code></pre>
-<h3 id="第六步">第六步</h3>
-<p>带参数的类装饰器</p>
-<pre><code class="language-python">from functools import wraps
-
-
-class A(object):
-    def __init__(self, name):
-        self.name = name
-
-    def __call__(self, func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            print(&quot;== before func ==&quot;)
-            print(self.name)
-            return func(*args, **kwargs)
-
-        return wrapper
-
-
-@A(&quot;小明&quot;)
-def test_func(name):
-    return 'hello ' + name
-
-
-if __name__ == '__main__':
-    t = test_func(&quot;小小&quot;)
-    print(t)
-    
-# == before func ==
-# 小明
-# hello 小小
-</code></pre>
 ]]></content>
     </entry>
 </feed>
