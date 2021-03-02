@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>二维数组根据某个字段排序 | 腰盐醋</title>
+<title>PHP 在操作断点续传时文件如何分割合并 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1614651531535">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="二维数组根据某个字段排序" />
-  <meta name="keywords" content="PHP" />
+  <meta name="description" content="PHP 在操作断点续传时文件如何分割合并" />
+  <meta name="keywords" content="" />
 </head>
 
 <body>
@@ -300,8 +300,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/er-wei-shu-zu-gen-ju-mou-ge-zi-duan-pai-xu/">
-      二维数组根据某个字段排序
+    <a class="post-title-link" href="http://weakcc.github.io/post/php-zai-cao-zuo-duan-dian-xu-chuan-shi-wen-jian-ru-he-fen-ge-he-bing/">
+      PHP 在操作断点续传时文件如何分割合并
     </a>
   </h1>
   <div class="post-meta">
@@ -309,22 +309,9 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2021-01-29 15:13:28">2021-01-29</span>
+      <span class="publish-time" data-t="2021-03-02 10:17:45">2021-03-02</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
-    
-    <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/IuY5uV6ll/">
-        <span>PHP</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
@@ -333,59 +320,61 @@
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>63<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>154<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <pre><code class="language-php">array_multisort(array_column($array, 'key'), SORT_DESC, $array);
-</code></pre>
+              <p>php 实现断点续传，就需要把大文件分割成多个小文件，然后单个上传。传完后在合并。</p>
 <!-- more -->
 <pre><code class="language-php">&lt;?php
 
-$arr = [
-    [
-        'a' =&gt; '1',
-        'b' =&gt; '你'
-    ],
-    [
-        'a' =&gt; '3',
-        'b' =&gt; '我'
-    ],
-    [
-        'a' =&gt; '2',
-        'b' =&gt; '他'
-    ],
-];
+/**
+ * 分隔文件
+ */
+function file_split($filePath, $tmpDir = &quot;tmp&quot;, $fileSize = 1024)
+{
+    $fp = fopen($filePath, 'rb');
+    $i = 0;
+    $no = 1;
+    while (!feof($fp)) {
+        $file = fread($fp, $fileSize);
+        $fileName = pathinfo($filePath, PATHINFO_FILENAME);
+        $tmpFp = fopen('./' . $tmpDir . '/' . $fileName . sprintf('%04d', $no) . '.' . $i . '-' . ($i + $fileSize) . '.tmp', 'wb');
+        fwrite($tmpFp, $file, $fileSize);
+        fclose($tmpFp);
+        $i += $fileSize + 1;
+        $no++;
+    }
+    fclose($fp);
+}
 
-array_multisort(array_column($arr, 'a'), SORT_ASC, $arr);
+/**
+ * 合并文件
+ */
+function file_merge($tmpDir, $mergeFileName = 'merge.zip', $fileSize = 1024)
+{
+    $tmpFilePaths = glob($tmpDir . '/*.tmp');
+    @unlink($mergeFileName);
+    $fp = fopen($mergeFileName, 'w+');
+    foreach ($tmpFilePaths as $v) {
+        $tmpFp = fopen($v, 'rb');
+        $content = fread($tmpFp, $fileSize);
+        fwrite($fp, $content, $fileSize);
+        unset($content);
+        unlink($v);
+        fclose($tmpFp);
+    }
+    fclose($fp);
+}
 
-print_r($arr);
-
-//Array
-//(
-//    [0] =&gt; Array
-//    (
-//            [a] =&gt; 1
-//            [b] =&gt; 你
-//        )
-//
-//    [1] =&gt; Array
-//(
-//            [a] =&gt; 2
-//            [b] =&gt; 他
-//        )
-//
-//    [2] =&gt; Array
-//(
-//            [a] =&gt; 3
-//            [b] =&gt; 我
-//        )
-//
-//)
+$dir = 'tmp';
+// 切割文件
+file_split('./1.zip', $dir);
+// 合并文件
+file_merge($dir);
 </code></pre>
-<!-- more -->
 
             </div>
             
@@ -402,7 +391,7 @@ print_r($arr);
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/er-wei-shu-zu-gen-ju-mou-ge-zi-duan-pai-xu/" title="二维数组根据某个字段排序">http://weakcc.github.io/post/er-wei-shu-zu-gen-ju-mou-ge-zi-duan-pai-xu/</a>
+      <a href="http://weakcc.github.io/post/php-zai-cao-zuo-duan-dian-xu-chuan-shi-wen-jian-ru-he-fen-ge-he-bing/" title="PHP 在操作断点续传时文件如何分割合并">http://weakcc.github.io/post/php-zai-cao-zuo-duan-dian-xu-chuan-shi-wen-jian-ru-he-fen-ge-he-bing/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -411,21 +400,15 @@ print_r($arr);
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/IuY5uV6ll/"># PHP</a>
-    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="PHP 在操作断点续传时文件如何分割合并" href="http://weakcc.github.io/post/php-zai-cao-zuo-duan-dian-xu-chuan-shi-wen-jian-ru-he-fen-ge-he-bing/">PHP 在操作断点续传时文件如何分割合并</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="PHP 在操作断点续传时文件如何分割合并" href="http://weakcc.github.io/post/php-zai-cao-zuo-duan-dian-xu-chuan-shi-wen-jian-ru-he-fen-ge-he-bing/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="Go sql 知识总结" href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/">Go sql 知识总结</a>
-        <a class="nav-mobile-next" title="Go sql 知识总结" href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/">下一篇</a>
+        <a class="nav-pc-next" title="二维数组根据某个字段排序" href="http://weakcc.github.io/post/er-wei-shu-zu-gen-ju-mou-ge-zi-duan-pai-xu/">二维数组根据某个字段排序</a>
+        <a class="nav-mobile-next" title="二维数组根据某个字段排序" href="http://weakcc.github.io/post/er-wei-shu-zu-gen-ju-mou-ge-zi-duan-pai-xu/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
