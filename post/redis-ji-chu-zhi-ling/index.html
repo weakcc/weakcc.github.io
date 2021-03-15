@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>Redis 基础指令 | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1615797652584">
+<link rel="shortcut icon" href="/favicon.ico?v=1615801089219">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -177,7 +177,8 @@
       <div class="sidebar-body pisces" id="sidebar_body">
         
           
-            
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -213,6 +214,222 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84">数据结构</a>
+<ul>
+<li><a href="#%E5%AD%97%E7%AC%A6%E4%B8%B2-string">字符串 String</a>
+<ul>
+<li><a href="#%E5%8D%95%E5%80%BC%E7%BC%93%E5%AD%98">单值缓存</a></li>
+<li><a href="#%E5%AF%B9%E8%B1%A1%E7%BC%93%E5%AD%98">对象缓存</a></li>
+<li><a href="#%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB%E6%95%B0%E6%88%96%E7%BD%91%E9%A1%B5%E6%B5%8F%E8%A7%88%E6%95%B0%E7%BB%9F%E8%AE%A1">文章阅读数或网页浏览数统计</a></li>
+<li><a href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81">分布式锁</a></li>
+</ul>
+</li>
+<li><a href="#%E5%88%97%E8%A1%A8-list">列表 List</a></li>
+<li><a href="#%E9%9B%86%E5%90%88-set">集合 Set</a>
+<ul>
+<li><a href="#%E6%8A%BD%E5%A5%96%E9%80%BB%E8%BE%91">抽奖逻辑</a></li>
+<li><a href="#%E6%96%87%E7%AB%A0%E7%82%B9%E8%B5%9E">文章点赞</a></li>
+<li><a href="#%E5%85%B1%E5%90%8C%E5%A5%BD%E5%8F%8B%E7%BB%9F%E8%AE%A1">共同好友统计</a></li>
+</ul>
+</li>
+<li><a href="#%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88-sortedset">有序集合 SortedSet</a>
+<ul>
+<li><a href="#%E7%94%A8%E4%BA%8E%E6%8E%92%E5%90%8D">用于排名</a></li>
+</ul>
+</li>
+<li><a href="#%E5%93%88%E5%B8%8C%E5%AD%97%E5%85%B8-hash">哈希字典 Hash</a>
+<ul>
+<li><a href="#%E5%AF%B9%E8%B1%A1%E7%BC%93%E5%AD%98-2">对象缓存</a></li>
+<li><a href="#%E5%BD%93%E5%81%9A%E6%95%B0%E6%8D%AE%E5%BA%93">当做数据库</a></li>
+<li><a href="#%E5%81%9A%E8%B4%AD%E7%89%A9%E8%BD%A6">做购物车</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</div>
+
+<script>
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
+      }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0] && elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
+    });
+  }
+
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
           
         
       </div>
@@ -328,18 +545,118 @@
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>0<span class="language" data-lan="minute">分钟</span></span>
+      <span>6<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>0<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>1307<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
               <figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598845148125.png" alt="" loading="lazy"></figure>
+<!-- more -->
+<p>Redis 默认有<code>16</code>个数据库(编号为0~15)，默认使用第<code>0</code>个，通过命令<code>select</code>任意切换数据库</p>
+<h1 id="数据结构">数据结构</h1>
+<h2 id="字符串-string">字符串 String</h2>
+<h3 id="单值缓存">单值缓存</h3>
+<p>即简单键值对数据缓存；有一些数据需要共享，比如在没有统一授权中心的多个系统中，可以通过相同的算法共享 token 字符串进行各系统统一认证</p>
+<pre><code class="language-shell"># 其中一个系统登录生成 token
+127.0.0.1:6379&gt; set userId mytoken # 存入 token
+OK
+127.0.0.1:6379&gt; get userId # 其他系统取出 token 进行验证
+&quot;mytoken&quot;
+</code></pre>
+<h3 id="对象缓存">对象缓存</h3>
+<p>比如之前都喜欢用 Session 保存用户数据，然后在每个网页中进行使用，但对于分布式或是集群系统就需要做 Session 共享了，一般会将用户信息转为 Json 字符串进行缓存</p>
+<pre><code class="language-shell"># 登录之后获取用户信息，将其组装成 Json 字符串
+127.0.0.1:6379&gt; set userData:userId &quot;{'username':'Zoe', 'age':18}&quot; # 将 Json 字符串保存
+OK
+127.0.0.1:6379&gt; get userData:userId # 根据用户ID 获取数据，并解析
+&quot;{'username':'Zoe', 'age':18}&quot;
+</code></pre>
+<h3 id="文章阅读数或网页浏览数统计">文章阅读数或网页浏览数统计</h3>
+<p>字符串还可以存储数字格式的值，利用这个特性实现计数器功能，比如浏览数，购买数，点赞数等。可以使用<code>INCR</code>命令来初始化对应的键值</p>
+<pre><code class="language-shell"># 网页访问量统计
+127.0.0.1:6379&gt; incr viewCount
+(integer) 1
+127.0.0.1:6379&gt; get viewCount
+&quot;1&quot;
+127.0.0.1:6379&gt; incrby viewCount 5 # 可以自定义步长
+(integer) 6
+127.0.0.1:6379&gt; get viewCount
+&quot;6&quot;
+</code></pre>
+<h3 id="分布式锁">分布式锁</h3>
+<p>单体程序，多线程通过线程锁来控制资源抢占，对于分布式系统就用线程锁就不行了，借助于 <code>setnx</code> (set if not exists的缩写)来完成，及如果没有值就能新增成功，否则就失败，和资源被占就要等待原理是一样的，当然还得考虑对应值的过期和删除，不然一直占用也不行</p>
+<pre><code class="language-shell"># 秒杀 需要对产品001进行秒杀
+127.0.0.1:6379&gt; setnx product:001 true # 先锁住，然后进行业务处理
+(integer) 1
+127.0.0.1:6379&gt; setnx product:001 false # 锁住过程不会让其他线程进来
+(integer) 0
+127.0.0.1:6379&gt; del product:001 # 释放掉锁，即删除
+(integer) 1
+127.0.0.1:6379&gt; setnx product:001 true # 再进来就会成功，又被锁住
+(integer) 1
+127.0.0.1:6379&gt; expire product:001 10 # 不用手动释放的话，可以设置过期时间
+(integer) 1
+127.0.0.1:6379&gt; ttl product:001 # 查看还有多久过期
+(integer) 8
+127.0.0.1:6379&gt; ttl product:001 # 超时
+(integer) -2
+127.0.0.1:6379&gt; setnx product:001 true # 可以重新设置了
+(integer) 1
+127.0.0.1:6379&gt; get product:001 # 获取到值
+&quot;true&quot;
+127.0.0.1:6379&gt; set product:002 true ex 10 nx # 为了命令的原子性操作，可以在加锁的同时设置过期时间
+OK
+127.0.0.1:6379&gt; get product:002 # 获取到值
+&quot;true&quot;
+</code></pre>
+<h2 id="列表-list">列表 List</h2>
+<p>可以基于 Redis 的列表实现类似栈和队列的数据结构，基于 Redis 的消息队列</p>
+<pre><code class="language-shell">127.0.0.1:6379&gt; rpush skills 'PHP'
+(integer) 1
+127.0.0.1:6379&gt; rpush skills 'Java'
+(integer) 2
+127.0.0.1:6379&gt; rpush skills 'Go'
+(integer) 3
+127.0.0.1:6379&gt; lrange skills 0 -1
+1) &quot;PHP&quot;
+2) &quot;Java&quot;
+3) &quot;Go&quot;
+127.0.0.1:6379&gt; lpop skills
+&quot;PHP&quot;
+127.0.0.1:6379&gt; lpop skills
+&quot;Java&quot;
+</code></pre>
+<p>上述数据添加和获取符合「先入先出」规则，所以是一个标准的队列结构</p>
+<h2 id="集合-set">集合 Set</h2>
+<p>Redis 集合具备无序性，所以当你向集合添加多个元素时，返回的结果和添加时的排序并不一致。当业务场景需要对集合数据做去重处理而又不需要确保数据顺序时，Redis 集合是个不错的选择。</p>
+<h3 id="抽奖逻辑">抽奖逻辑</h3>
+<p>抽奖小伙伴们不陌生了吧，不管是公司年会抽奖，还是公众号参与抽奖，应该几乎不用亲手抓阄了吧。都是通过程序，把人员都放在一起，然后随机抽取，Set 很符合这种应用场景</p>
+<h3 id="文章点赞">文章点赞</h3>
+<p>发表文章之后，可以进行点赞、取消点赞等相关操作</p>
+<h3 id="共同好友统计">共同好友统计</h3>
+<h2 id="有序集合-sortedset">有序集合 SortedSet</h2>
+<p>我们的业务场景既要去重，又要确保排序，有序集合就非常适用。</p>
+<h3 id="用于排名">用于排名</h3>
+<p>比如考试成绩的排名，新闻热度排行榜，直播打赏排名，热门阅读、热门讨论等</p>
+<h2 id="哈希字典-hash">哈希字典 Hash</h2>
+<h3 id="对象缓存-2">对象缓存</h3>
+<p>String 也能做，为什么还要用 Hash ?，String 一般用于简单对象的缓存，比如字段不多，记录也不多的情况，便于序列化解析。平时项目中有配置信息或下拉数据信息，会用于各个页面，这种变化频率不高，但需频繁的读取的数据，将其进行缓存减少数据库访问是不错的选择</p>
+<h3 id="当做数据库">当做数据库</h3>
+<h3 id="做购物车">做购物车</h3>
+<ul>
+<li>以用户ID为Key</li>
+<li>商品ID为Field</li>
+<li>商品数量为Value</li>
+</ul>
+<blockquote>
+<p>https://www.sohu.com/a/422681400_468635</p>
+</blockquote>
 
             </div>
             
@@ -1675,6 +1992,106 @@ gpgkey=https://packages.gitlab.com/gpg.key&lt;/p&gt;
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/redis-ji-chu-zhi-ling/"" data-c="
           &lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;http://weakcc.github.io/post-images/1598845148125.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;Redis 默认有&lt;code&gt;16&lt;/code&gt;个数据库(编号为0~15)，默认使用第&lt;code&gt;0&lt;/code&gt;个，通过命令&lt;code&gt;select&lt;/code&gt;任意切换数据库&lt;/p&gt;
+&lt;h1 id=&#34;数据结构&#34;&gt;数据结构&lt;/h1&gt;
+&lt;h2 id=&#34;字符串-string&#34;&gt;字符串 String&lt;/h2&gt;
+&lt;h3 id=&#34;单值缓存&#34;&gt;单值缓存&lt;/h3&gt;
+&lt;p&gt;即简单键值对数据缓存；有一些数据需要共享，比如在没有统一授权中心的多个系统中，可以通过相同的算法共享 token 字符串进行各系统统一认证&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# 其中一个系统登录生成 token
+127.0.0.1:6379&amp;gt; set userId mytoken # 存入 token
+OK
+127.0.0.1:6379&amp;gt; get userId # 其他系统取出 token 进行验证
+&amp;quot;mytoken&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;对象缓存&#34;&gt;对象缓存&lt;/h3&gt;
+&lt;p&gt;比如之前都喜欢用 Session 保存用户数据，然后在每个网页中进行使用，但对于分布式或是集群系统就需要做 Session 共享了，一般会将用户信息转为 Json 字符串进行缓存&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# 登录之后获取用户信息，将其组装成 Json 字符串
+127.0.0.1:6379&amp;gt; set userData:userId &amp;quot;{&#39;username&#39;:&#39;Zoe&#39;, &#39;age&#39;:18}&amp;quot; # 将 Json 字符串保存
+OK
+127.0.0.1:6379&amp;gt; get userData:userId # 根据用户ID 获取数据，并解析
+&amp;quot;{&#39;username&#39;:&#39;Zoe&#39;, &#39;age&#39;:18}&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;文章阅读数或网页浏览数统计&#34;&gt;文章阅读数或网页浏览数统计&lt;/h3&gt;
+&lt;p&gt;字符串还可以存储数字格式的值，利用这个特性实现计数器功能，比如浏览数，购买数，点赞数等。可以使用&lt;code&gt;INCR&lt;/code&gt;命令来初始化对应的键值&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# 网页访问量统计
+127.0.0.1:6379&amp;gt; incr viewCount
+(integer) 1
+127.0.0.1:6379&amp;gt; get viewCount
+&amp;quot;1&amp;quot;
+127.0.0.1:6379&amp;gt; incrby viewCount 5 # 可以自定义步长
+(integer) 6
+127.0.0.1:6379&amp;gt; get viewCount
+&amp;quot;6&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;分布式锁&#34;&gt;分布式锁&lt;/h3&gt;
+&lt;p&gt;单体程序，多线程通过线程锁来控制资源抢占，对于分布式系统就用线程锁就不行了，借助于 &lt;code&gt;setnx&lt;/code&gt; (set if not exists的缩写)来完成，及如果没有值就能新增成功，否则就失败，和资源被占就要等待原理是一样的，当然还得考虑对应值的过期和删除，不然一直占用也不行&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# 秒杀 需要对产品001进行秒杀
+127.0.0.1:6379&amp;gt; setnx product:001 true # 先锁住，然后进行业务处理
+(integer) 1
+127.0.0.1:6379&amp;gt; setnx product:001 false # 锁住过程不会让其他线程进来
+(integer) 0
+127.0.0.1:6379&amp;gt; del product:001 # 释放掉锁，即删除
+(integer) 1
+127.0.0.1:6379&amp;gt; setnx product:001 true # 再进来就会成功，又被锁住
+(integer) 1
+127.0.0.1:6379&amp;gt; expire product:001 10 # 不用手动释放的话，可以设置过期时间
+(integer) 1
+127.0.0.1:6379&amp;gt; ttl product:001 # 查看还有多久过期
+(integer) 8
+127.0.0.1:6379&amp;gt; ttl product:001 # 超时
+(integer) -2
+127.0.0.1:6379&amp;gt; setnx product:001 true # 可以重新设置了
+(integer) 1
+127.0.0.1:6379&amp;gt; get product:001 # 获取到值
+&amp;quot;true&amp;quot;
+127.0.0.1:6379&amp;gt; set product:002 true ex 10 nx # 为了命令的原子性操作，可以在加锁的同时设置过期时间
+OK
+127.0.0.1:6379&amp;gt; get product:002 # 获取到值
+&amp;quot;true&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;列表-list&#34;&gt;列表 List&lt;/h2&gt;
+&lt;p&gt;可以基于 Redis 的列表实现类似栈和队列的数据结构，基于 Redis 的消息队列&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;127.0.0.1:6379&amp;gt; rpush skills &#39;PHP&#39;
+(integer) 1
+127.0.0.1:6379&amp;gt; rpush skills &#39;Java&#39;
+(integer) 2
+127.0.0.1:6379&amp;gt; rpush skills &#39;Go&#39;
+(integer) 3
+127.0.0.1:6379&amp;gt; lrange skills 0 -1
+1) &amp;quot;PHP&amp;quot;
+2) &amp;quot;Java&amp;quot;
+3) &amp;quot;Go&amp;quot;
+127.0.0.1:6379&amp;gt; lpop skills
+&amp;quot;PHP&amp;quot;
+127.0.0.1:6379&amp;gt; lpop skills
+&amp;quot;Java&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;上述数据添加和获取符合「先入先出」规则，所以是一个标准的队列结构&lt;/p&gt;
+&lt;h2 id=&#34;集合-set&#34;&gt;集合 Set&lt;/h2&gt;
+&lt;p&gt;Redis 集合具备无序性，所以当你向集合添加多个元素时，返回的结果和添加时的排序并不一致。当业务场景需要对集合数据做去重处理而又不需要确保数据顺序时，Redis 集合是个不错的选择。&lt;/p&gt;
+&lt;h3 id=&#34;抽奖逻辑&#34;&gt;抽奖逻辑&lt;/h3&gt;
+&lt;p&gt;抽奖小伙伴们不陌生了吧，不管是公司年会抽奖，还是公众号参与抽奖，应该几乎不用亲手抓阄了吧。都是通过程序，把人员都放在一起，然后随机抽取，Set 很符合这种应用场景&lt;/p&gt;
+&lt;h3 id=&#34;文章点赞&#34;&gt;文章点赞&lt;/h3&gt;
+&lt;p&gt;发表文章之后，可以进行点赞、取消点赞等相关操作&lt;/p&gt;
+&lt;h3 id=&#34;共同好友统计&#34;&gt;共同好友统计&lt;/h3&gt;
+&lt;h2 id=&#34;有序集合-sortedset&#34;&gt;有序集合 SortedSet&lt;/h2&gt;
+&lt;p&gt;我们的业务场景既要去重，又要确保排序，有序集合就非常适用。&lt;/p&gt;
+&lt;h3 id=&#34;用于排名&#34;&gt;用于排名&lt;/h3&gt;
+&lt;p&gt;比如考试成绩的排名，新闻热度排行榜，直播打赏排名，热门阅读、热门讨论等&lt;/p&gt;
+&lt;h2 id=&#34;哈希字典-hash&#34;&gt;哈希字典 Hash&lt;/h2&gt;
+&lt;h3 id=&#34;对象缓存-2&#34;&gt;对象缓存&lt;/h3&gt;
+&lt;p&gt;String 也能做，为什么还要用 Hash ?，String 一般用于简单对象的缓存，比如字段不多，记录也不多的情况，便于序列化解析。平时项目中有配置信息或下拉数据信息，会用于各个页面，这种变化频率不高，但需频繁的读取的数据，将其进行缓存减少数据库访问是不错的选择&lt;/p&gt;
+&lt;h3 id=&#34;当做数据库&#34;&gt;当做数据库&lt;/h3&gt;
+&lt;h3 id=&#34;做购物车&#34;&gt;做购物车&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;以用户ID为Key&lt;/li&gt;
+&lt;li&gt;商品ID为Field&lt;/li&gt;
+&lt;li&gt;商品数量为Value&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;https://www.sohu.com/a/422681400_468635&lt;/p&gt;
+&lt;/blockquote&gt;
 ">Redis 基础指令</a>
       </div>
       
