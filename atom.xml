@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-03-15T03:20:53.038Z</updated>
+    <updated>2021-03-15T05:02:13.430Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,61 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[Docker安装并配置Redis]]></title>
+        <id>http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/</id>
+        <link href="http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/">
+        </link>
+        <updated>2021-03-15T04:35:01.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="选择一个合适的-docker-版本">选择一个合适的 docker 版本</h1>
+<p><a href="https://hub.docker.com/_/redis?tab=tags&amp;page=1&amp;ordering=last_updated">https://hub.docker.com/_/redis?tab=tags&amp;page=1&amp;ordering=last_updated</a></p>
+]]></summary>
+        <content type="html"><![CDATA[<h1 id="选择一个合适的-docker-版本">选择一个合适的 docker 版本</h1>
+<p><a href="https://hub.docker.com/_/redis?tab=tags&amp;page=1&amp;ordering=last_updated">https://hub.docker.com/_/redis?tab=tags&amp;page=1&amp;ordering=last_updated</a></p>
+<!-- more -->
+<h1 id="使用-docker-安装-redis">使用 docker 安装 redis</h1>
+<pre><code class="language-shell">sudo docker pull redis
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1615783536958.png" alt="" loading="lazy"></figure>
+<h1 id="准备-redis-的配置文件">准备 redis 的配置文件</h1>
+<p>redis 中文官方网站：<a href="http://www.redis.cn/download.html">http://www.redis.cn/download.html</a><br>
+<img src="http://weakcc.github.io/post-images/1615783307536.png" alt="" loading="lazy"><br>
+解压<br>
+<img src="http://weakcc.github.io/post-images/1615783445135.png" alt="" loading="lazy"></p>
+<h1 id="修改-redisconf-配置文件">修改 redis.conf 配置文件</h1>
+<ul>
+<li>bind 127.0.0.1 # 注释掉，使 redis 可以外部访问</li>
+<li>daemonize no # 用守护线程的方式启动</li>
+<li>requirepass 你的密码 # 给 redis 设置密码</li>
+<li>appendonly yes # redis 持久化开启</li>
+</ul>
+# 创建本地与 docker 映射的目录
+```shell
+sudo mkdir /data/redis
+sudo mkdir /data/redis/data
+```
+<p>把配置文件<code>redis.conf</code>拷贝到刚才创建好的<code>/data/redis</code>目录下</p>
+<h1 id="启动-docker">启动 docker</h1>
+<pre><code class="language-shell">sudo docker run -p 6379:6379 --name redis -v /data/redis/redis.conf:/etc/redis/redis.conf  -v /data/redis/data:/data -d redis redis-server /etc/redis/redis.conf --appendonly yes
+</code></pre>
+<p>参数解释：</p>
+<blockquote>
+<p>-p 6379:6379:把容器内的6379端口映射到宿主机6379端口<br>
+-v /data/redis/redis.conf:/etc/redis/redis.conf：把宿主机配置好的 redis.conf 放到容器内的这个位置中<br>
+-v /data/redis/data:/data：把 redis 持久化的数据在宿主机内显示，做数据备份<br>
+redis-server /etc/redis/redis.conf：这个是关键配置，让 redis 不是无配置启动，而是按照这个 redis.conf 的配置启动<br>
+-appendonly yes：redis 启动后数据持久化</p>
+</blockquote>
+<h1 id="查看是否启动成功">查看是否启动成功</h1>
+<p>是否启动成功</p>
+<pre><code class="language-shell">sudo docker ps
+</code></pre>
+<p>查看一下日志（没有启动成功也可以通过日志查看原因）</p>
+<pre><code>sudo docker logs redis
+</code></pre>
+<figure data-type="image" tabindex="2"><img src="http://weakcc.github.io/post-images/1615784431566.png" alt="" loading="lazy"></figure>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[悲观锁和乐观锁]]></title>
         <id>http://weakcc.github.io/post/bei-guan-suo-he-le-guan-suo/</id>
@@ -432,86 +487,6 @@ func (tx *Tx) Rollback() error
 }
 </code></pre>
 <p>需要注意的是，所有 SQL 操作都必须使用 <code>tx</code> 来操作，才能支持事务，如果中间使用 <code>db.Exec()</code> 那这条语句是无法回滚的。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[优雅地实现在 Python 退出时强制运行一段代码]]></title>
-        <id>http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/</id>
-        <link href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/">
-        </link>
-        <updated>2020-11-28T08:30:15.000Z</updated>
-        <summary type="html"><![CDATA[<p>如果有这样一个场景，你要给一个项目开发测试程序，程序开始运行的时候，会创建初始环境，测试完成以后，会清理环境。<br>
-使用 Python 自带的 <code>atexit</code> 这个模块</p>
-<pre><code class="language-python">import atexit
-
-@atexit.register
-def clean():
-    print(&quot;清理环境相关的代码&quot;)
-
-def test():
-    print(&quot;这里先执行&quot;)
-    example = {'a': 1, 'b': 2}
-    print(example['c'])  # 显然这里会报错
-
-test()
-
-# 这里先执行
-# Traceback (most recent call last):
-# 清理环境相关的代码
-#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 15, in &lt;module&gt;
-#     test()
-#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 12, in test
-#     print(example['c'])  # 显然这里会报错
-# KeyError: 'c'
-</code></pre>
-]]></summary>
-        <content type="html"><![CDATA[<p>如果有这样一个场景，你要给一个项目开发测试程序，程序开始运行的时候，会创建初始环境，测试完成以后，会清理环境。<br>
-使用 Python 自带的 <code>atexit</code> 这个模块</p>
-<pre><code class="language-python">import atexit
-
-@atexit.register
-def clean():
-    print(&quot;清理环境相关的代码&quot;)
-
-def test():
-    print(&quot;这里先执行&quot;)
-    example = {'a': 1, 'b': 2}
-    print(example['c'])  # 显然这里会报错
-
-test()
-
-# 这里先执行
-# Traceback (most recent call last):
-# 清理环境相关的代码
-#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 15, in &lt;module&gt;
-#     test()
-#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 12, in test
-#     print(example['c'])  # 显然这里会报错
-# KeyError: 'c'
-</code></pre>
-<!-- more -->
-<p><code>atexit</code> 使用中有下面几个注意事项：</p>
-<ul>
-<li>你可以注册多个退出函数，他们会按照注册时间从晚到早以此执行。例如
-<pre><code class="language-python">import atexit
-
-@atexit.register
-def clean_1():
-    ...
-
-@atexit.register
-def clean_2():
-    ...
-</code></pre>
-<p>会先运行 <code>clean_2()</code> 后运行 <code>clean_1()</code></li></p>
-<li>如果 `clean()` 函数有参数，那么你可以不用装饰器，而是直接调用 `atexit.register(clean_1, 参数1, 参数2, 参数3='xxx')`</li>
-<li>如果程序是被你没有处理过的系统信号杀死的，那么注册的函数无法正常执行</li>
-<li>如果发生了严重的Python内部错误，你注册的函数无法正常执行</li>
-<li>如果你手动调用了 `os._exit()`，你注册的函数无法正常执行</li>
-</ul>
-<blockquote>
-<p>https://mp.weixin.qq.com/s/Q65F49ZhFV02mqVPyxILHg</p>
-</blockquote>
 ]]></content>
     </entry>
 </feed>

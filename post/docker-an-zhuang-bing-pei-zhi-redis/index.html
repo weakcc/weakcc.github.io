@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法 | 腰盐醋</title>
+<title>Docker安装并配置Redis | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1615784526576">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法" />
-  <meta name="keywords" content="MySQL" />
+  <meta name="description" content="Docker安装并配置Redis" />
+  <meta name="keywords" content="" />
 </head>
 
 <body>
@@ -177,7 +177,8 @@
       <div class="sidebar-body pisces" id="sidebar_body">
         
           
-            
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -213,6 +214,196 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#%E9%80%89%E6%8B%A9%E4%B8%80%E4%B8%AA%E5%90%88%E9%80%82%E7%9A%84-docker-%E7%89%88%E6%9C%AC">选择一个合适的 docker 版本</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8-docker-%E5%AE%89%E8%A3%85-redis">使用 docker 安装 redis</a></li>
+<li><a href="#%E5%87%86%E5%A4%87-redis-%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">准备 redis 的配置文件</a></li>
+<li><a href="#%E4%BF%AE%E6%94%B9-redisconf-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">修改 redis.conf 配置文件</a></li>
+<li><a href="#%E5%90%AF%E5%8A%A8-docker">启动 docker</a></li>
+<li><a href="#%E6%9F%A5%E7%9C%8B%E6%98%AF%E5%90%A6%E5%90%AF%E5%8A%A8%E6%88%90%E5%8A%9F">查看是否启动成功</a></li>
+</ul>
+
+  </div>
+</div>
+
+<script>
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
+      }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0] && elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
+    });
+  }
+
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
           
         
       </div>
@@ -300,8 +491,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/">
-      MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法
+    <a class="post-title-link" href="http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/">
+      Docker安装并配置Redis
     </a>
   </h1>
   <div class="post-meta">
@@ -309,46 +500,67 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-08-25 17:34:51">2020-08-25</span>
+      <span class="publish-time" data-t="2021-03-15 12:35:01">2021-03-15</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
     <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/VwbG72yxK/">
-        <span>MySQL</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>1<span class="language" data-lan="minute">分钟</span></span>
+      <span>2<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>28<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>357<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598348346116.png" alt="" loading="lazy"></figure>
+              <h1 id="选择一个合适的-docker-版本">选择一个合适的 docker 版本</h1>
+<p><a href="https://hub.docker.com/_/redis?tab=tags&amp;page=1&amp;ordering=last_updated">https://hub.docker.com/_/redis?tab=tags&amp;page=1&amp;ordering=last_updated</a></p>
 <!-- more -->
-<p>已 MAMP 为例：<br>
-<img src="http://weakcc.github.io/post-images/1598348508212.png" alt="" loading="lazy"><br>
-<img src="http://weakcc.github.io/post-images/1598348628532.png" alt="" loading="lazy"><br>
-在[mysqld]下面添加这段</p>
-<pre><code>sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION  
+<h1 id="使用-docker-安装-redis">使用 docker 安装 redis</h1>
+<pre><code class="language-shell">sudo docker pull redis
 </code></pre>
-<p><img src="http://weakcc.github.io/post-images/1598348771324.png" alt="" loading="lazy"><br>
-最后重启 MAMP 就可以了</p>
+<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1615783536958.png" alt="" loading="lazy"></figure>
+<h1 id="准备-redis-的配置文件">准备 redis 的配置文件</h1>
+<p>redis 中文官方网站：<a href="http://www.redis.cn/download.html">http://www.redis.cn/download.html</a><br>
+<img src="http://weakcc.github.io/post-images/1615783307536.png" alt="" loading="lazy"><br>
+解压<br>
+<img src="http://weakcc.github.io/post-images/1615783445135.png" alt="" loading="lazy"></p>
+<h1 id="修改-redisconf-配置文件">修改 redis.conf 配置文件</h1>
+<ul>
+<li>bind 127.0.0.1 # 注释掉，使 redis 可以外部访问</li>
+<li>daemonize no # 用守护线程的方式启动</li>
+<li>requirepass 你的密码 # 给 redis 设置密码</li>
+<li>appendonly yes # redis 持久化开启</li>
+</ul>
+# 创建本地与 docker 映射的目录
+```shell
+sudo mkdir /data/redis
+sudo mkdir /data/redis/data
+```
+<p>把配置文件<code>redis.conf</code>拷贝到刚才创建好的<code>/data/redis</code>目录下</p>
+<h1 id="启动-docker">启动 docker</h1>
+<pre><code class="language-shell">sudo docker run -p 6379:6379 --name redis -v /data/redis/redis.conf:/etc/redis/redis.conf  -v /data/redis/data:/data -d redis redis-server /etc/redis/redis.conf --appendonly yes
+</code></pre>
+<p>参数解释：</p>
+<blockquote>
+<p>-p 6379:6379:把容器内的6379端口映射到宿主机6379端口<br>
+-v /data/redis/redis.conf:/etc/redis/redis.conf：把宿主机配置好的 redis.conf 放到容器内的这个位置中<br>
+-v /data/redis/data:/data：把 redis 持久化的数据在宿主机内显示，做数据备份<br>
+redis-server /etc/redis/redis.conf：这个是关键配置，让 redis 不是无配置启动，而是按照这个 redis.conf 的配置启动<br>
+-appendonly yes：redis 启动后数据持久化</p>
+</blockquote>
+<h1 id="查看是否启动成功">查看是否启动成功</h1>
+<p>是否启动成功</p>
+<pre><code class="language-shell">sudo docker ps
+</code></pre>
+<p>查看一下日志（没有启动成功也可以通过日志查看原因）</p>
+<pre><code>sudo docker logs redis
+</code></pre>
+<figure data-type="image" tabindex="2"><img src="http://weakcc.github.io/post-images/1615784431566.png" alt="" loading="lazy"></figure>
 
             </div>
             
@@ -365,7 +577,7 @@
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/" title="MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法">http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/</a>
+      <a href="http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/" title="Docker安装并配置Redis">http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -374,18 +586,16 @@
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/VwbG72yxK/"># MySQL</a>
-    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="MySQL 优化" href="http://weakcc.github.io/post/mysql-you-hua/">MySQL 优化</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="MySQL 优化" href="http://weakcc.github.io/post/mysql-you-hua/">上一篇</a>
-      
     </div>
     <div class="nav-next">
+      
+        <a class="nav-pc-next" title="悲观锁和乐观锁" href="http://weakcc.github.io/post/bei-guan-suo-he-le-guan-suo/">悲观锁和乐观锁</a>
+        <a class="nav-mobile-next" title="悲观锁和乐观锁" href="http://weakcc.github.io/post/bei-guan-suo-he-le-guan-suo/">下一篇</a>
+        <i class="fa fa-chevron-right"></i>
       
     </div>
   </div>
