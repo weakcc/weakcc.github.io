@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1615784955951">
+<link rel="shortcut icon" href="/favicon.ico?v=1615785062136">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -1341,7 +1341,8 @@ redis-server /etc/redis/redis.conf：这个是关键配置，让 redis 不是无
 &lt;p&gt;在关系数据库管理系统里，悲观并发控制（又名&lt;code&gt;悲观锁&lt;/code&gt;，Pessimistic Concurrency Control，缩写&lt;code&gt;PCC&lt;/code&gt;）是一种并发控制的方法。&lt;/p&gt;
 &lt;p&gt;悲观锁：总是假设最坏的情况，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会阻塞直到它拿到锁（&lt;b&gt;共享资源每次只给一个线程使用，其它线程阻塞，用完后再把资源转让给其它线程&lt;/b&gt;）。&lt;/p&gt;
 &lt;!-- more --&gt;
-&lt;pre&gt;&lt;code class=&#34;language-mysql&#34;&gt;//0.开始事务            
+&lt;pre&gt;&lt;code class=&#34;language-mysql&#34;&gt;
+//0.开始事务            
 begin;/begin work;/start transaction; (三者选一就可以)              
 //1.查询出商品信息               
 select status from t_goods where id=1 for update;              
@@ -1351,6 +1352,7 @@ insert into t_orders (id,goods_id) values (null,1);
 update t_goods set status=2;              
 //4.提交事务             
 commit;
+
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;悲观并发控制实际上是&lt;code&gt;先取锁再访问&lt;/code&gt;的保守策略，为数据处理的安全提供了保证。但是在效率方面，处理加锁的机制会让数据库产生额外的开销，还有增加产生死锁的机会；另外，在只读型事务处理中由于不会产生冲突，也没必要使用锁，这样做只能增加系统负载；还有会降低了并行性，一个事务如果锁定了某行数据，其他事务就必须等待该事务处理完才可以处理那行数。&lt;br&gt;
 需要注意的是，&lt;code&gt;FOR UPDATE&lt;/code&gt; 生效需要同时满足两个条件时才生效：&lt;/p&gt;
@@ -1362,11 +1364,13 @@ commit;
 &lt;p&gt;在关系数据库管理系统里，乐观并发控制（又名&lt;code&gt;乐观锁&lt;/code&gt;，Optimistic Concurrency Control，缩写&lt;code&gt;OCC&lt;/code&gt;）是一种并发控制的方法。&lt;/p&gt;
 &lt;p&gt;乐观锁：总是假设最好的情况，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号机制&lt;code&gt;version&lt;/code&gt;和 CAS（Compare And Swap 比较与交换）算法实现（&lt;b&gt;乐观锁适用于多读的应用类型，这样可以提高吞吐量&lt;/b&gt;）。&lt;/p&gt;
 &lt;p&gt;使用版本号时，可以在数据初始化时指定一个版本号，每次对数据的更新操作都对版本号执行+1操作。并判断当前版本号是不是该数据的最新的版本号。&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-mysql&#34;&gt;1.查询出商品信息
+&lt;pre&gt;&lt;code class=&#34;language-mysql&#34;&gt;
+1.查询出商品信息
 select (status,status,version) from t_goods where id=#{id}
 2.根据商品信息生成订单
 3.修改商品 status 为2
 update t_goods set status=2,version=version+1 where id=#{id} and version=#{version};
+
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;乐观并发控制相信事务之间的数据竞争(data race)的概率是比较小的，因此尽可能直接做下去，直到提交的时候才去锁定，所以不会产生任何锁和死锁。&lt;br&gt;
 需要注意的是，如果运用的不是版本号而是商品库存等其他字段可能会出现&lt;code&gt;ABA&lt;/code&gt;问题：&lt;/p&gt;
