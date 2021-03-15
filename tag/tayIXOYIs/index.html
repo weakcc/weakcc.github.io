@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1615768962877">
+<link rel="shortcut icon" href="/favicon.ico?v=1615769395770">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -561,7 +561,12 @@ update t_goods set status=2,version=version+1 where id=#{id} and version=#{versi
 &lt;p&gt;乐观并发控制相信事务之间的数据竞争(data race)的概率是比较小的，因此尽可能直接做下去，直到提交的时候才去锁定，所以不会产生任何锁和死锁。&lt;br&gt;
 需要注意的是，如果运用的不是版本号而是商品库存等其他字段可能会出现&lt;code&gt;ABA&lt;/code&gt;问题：&lt;/p&gt;
 &lt;p&gt;如果一个变量 V 初次读取的时候是 A 值，并且在准备赋值的时候检查到它仍然是 A 值，那我们就能说明它的值没有被其他线程修改过了吗？很明显是不能的，因为在这段时间它的值可能被改为其他值，然后又改回 A，那 CAS 操作就会误认为它从来没有被修改过。这个问题被称为 CAS 操作的 &lt;code&gt;ABA&lt;/code&gt; 问题。&lt;/p&gt;
-">悲观锁和乐观锁</a>
+&lt;p&gt;使用场景：&lt;/p&gt;
+&lt;ul&gt;
+    &lt;li&gt;响应速度：如果需要非常高的响应速度，建议采用乐观锁方案，成功就执行，不成功就失败，不需要等待其他并发去释放锁&lt;/li&gt;
+    &lt;li&gt;冲突频率：如果冲突频率非常高，建议采用悲观锁，保证成功率，如果冲突频率大，乐观锁会需要多次重试才能成功，代价比较大&lt;/li&gt;
+    &lt;li&gt;重试代价：如果重试代价大，建议采用悲观锁&lt;/li&gt;
+&lt;/ul&gt;">悲观锁和乐观锁</a>
       </div>
       
       <div class="item">
