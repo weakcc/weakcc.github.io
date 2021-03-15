@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-03-15T05:02:13.430Z</updated>
+    <updated>2021-03-15T05:05:55.829Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -63,6 +63,9 @@ redis-server /etc/redis/redis.conf：这个是关键配置，让 redis 不是无
 <pre><code>sudo docker logs redis
 </code></pre>
 <figure data-type="image" tabindex="2"><img src="http://weakcc.github.io/post-images/1615784431566.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>https://blog.csdn.net/qq_17623363/article/details/106418353</p>
+</blockquote>
 ]]></content>
     </entry>
     <entry>
