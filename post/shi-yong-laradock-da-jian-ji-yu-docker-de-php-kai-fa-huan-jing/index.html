@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>悲观锁和乐观锁 | 腰盐醋</title>
+<title>使用 Laradock 搭建基于 Docker 的 PHP 开发环境 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1615797178904">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="悲观锁和乐观锁" />
-  <meta name="keywords" content="MySQL" />
+  <meta name="description" content="使用 Laradock 搭建基于 Docker 的 PHP 开发环境" />
+  <meta name="keywords" content="Laravel,Docker,PHP" />
 </head>
 
 <body>
@@ -220,8 +220,12 @@
   <div class="toc-wrapper auto-number auto"
     id="toc_wrapper">
     <ul class="markdownIt-TOC">
-<li><a href="#%E6%82%B2%E8%A7%82%E9%94%81">悲观锁</a></li>
-<li><a href="#%E4%B9%90%E8%A7%82%E9%94%81">乐观锁</a></li>
+<li><a href="#%E9%A6%96%E5%85%88%E5%B0%86-laradock-%E9%A1%B9%E7%9B%AE%E4%BB%A3%E7%A0%81%E5%85%8B%E9%9A%86%E5%88%B0%E6%9C%AC%E5%9C%B0">首先将 Laradock 项目代码克隆到本地</a></li>
+<li><a href="#%E8%BF%9B%E5%85%A5-laradock-%E7%9B%AE%E5%BD%95%E5%B0%86-env-example-%E9%87%8D%E5%91%BD%E5%90%8D%E4%B8%BA-env">进入 laradock 目录将 env-example 重命名为 .env</a></li>
+<li><a href="#%E8%BF%90%E8%A1%8C%E5%AE%B9%E5%99%A8">运行容器</a></li>
+<li><a href="#%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE">创建项目</a></li>
+<li><a href="#%E5%81%9A-nginx-%E9%85%8D%E7%BD%AE">做 nginx 配置</a></li>
+<li><a href="#%E9%94%99%E8%AF%AF">错误</a></li>
 </ul>
 
   </div>
@@ -487,8 +491,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/bei-guan-suo-he-le-guan-suo/">
-      悲观锁和乐观锁
+    <a class="post-title-link" href="http://weakcc.github.io/post/shi-yong-laradock-da-jian-ji-yu-docker-de-php-kai-fa-huan-jing/">
+      使用 Laradock 搭建基于 Docker 的 PHP 开发环境
     </a>
   </h1>
   <div class="post-meta">
@@ -496,7 +500,7 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2021-03-15 08:18:20">2021-03-15</span>
+      <span class="publish-time" data-t="2021-03-15 15:31:19">2021-03-15</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
@@ -505,8 +509,20 @@
       <span class="pc-show language" data-lan="category-in">分类于</span>
       
       
-      <a href="http://weakcc.github.io/tag/VwbG72yxK/">
-        <span>MySQL</span>
+      <a href="http://weakcc.github.io/tag/jToeViyOW/">
+        <span>Laravel</span>
+      </a>、
+      
+      
+      
+      <a href="http://weakcc.github.io/tag/-1C81uOvV/">
+        <span>Docker</span>
+      </a>、
+      
+      
+      
+      <a href="http://weakcc.github.io/tag/IuY5uV6ll/">
+        <span>PHP</span>
       </a>
       
       
@@ -515,61 +531,57 @@
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>4<span class="language" data-lan="minute">分钟</span></span>
+      <span>1<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>1009<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>169<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <h1 id="悲观锁">悲观锁</h1>
-<p>在关系数据库管理系统里，悲观并发控制（又名<code>悲观锁</code>，Pessimistic Concurrency Control，缩写<code>PCC</code>）是一种并发控制的方法。</p>
-<p>悲观锁：总是假设最坏的情况，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会阻塞直到它拿到锁（<b>共享资源每次只给一个线程使用，其它线程阻塞，用完后再把资源转让给其它线程</b>）。</p>
+              <h1 id="首先将-laradock-项目代码克隆到本地">首先将 Laradock 项目代码克隆到本地</h1>
+<pre><code class="language-shell">git clone https://github.com/Laradock/laradock.git
+</code></pre>
+<h1 id="进入-laradock-目录将-env-example-重命名为-env">进入 laradock 目录将 env-example 重命名为 .env</h1>
+<pre><code class="language-shell">cp env-example .env
+</code></pre>
 <!-- more -->
-<pre><code class="language-mysql">
-//0.开始事务            
-begin;/begin work;/start transaction; (三者选一就可以)              
-//1.查询出商品信息               
-select status from t_goods where id=1 for update;              
-//2.根据商品信息生成订单                
-insert into t_orders (id,goods_id) values (null,1);              
-//3.修改商品 status 为2               
-update t_goods set status=2;              
-//4.提交事务             
-commit;
-
+<p>编辑<code>.env</code>文件</p>
+<pre><code># 编辑
+APP_CODE_PATH_HOST=../ # 项目路径
+CHANGE_SOURCE=true # 切换源
+WORKSPACE_TIMEZONE=PRC # 时区
+PHP_VERSION=7.3
+MYSQL_VERSION=8.0
+# 新增
+DB_HOST=mysql
+REDIS_HOST=redis
+QUEUE_HOST=beanstalkd
 </code></pre>
-<p>悲观并发控制实际上是<code>先取锁再访问</code>的保守策略，为数据处理的安全提供了保证。但是在效率方面，处理加锁的机制会让数据库产生额外的开销，还有增加产生死锁的机会；另外，在只读型事务处理中由于不会产生冲突，也没必要使用锁，这样做只能增加系统负载；还有会降低了并行性，一个事务如果锁定了某行数据，其他事务就必须等待该事务处理完才可以处理那行数。<br>
-需要注意的是，<code>FOR UPDATE</code> 生效需要同时满足两个条件时才生效：</p>
-<ul>
-    <li>数据库的引擎为 innoDB</li>
-    <li>操作位于事务块中（BEGIN/COMMIT）</li>
-</ul>
-<h1 id="乐观锁">乐观锁</h1>
-<p>在关系数据库管理系统里，乐观并发控制（又名<code>乐观锁</code>，Optimistic Concurrency Control，缩写<code>OCC</code>）是一种并发控制的方法。</p>
-<p>乐观锁：总是假设最好的情况，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号机制<code>version</code>和 CAS（Compare And Swap 比较与交换）算法实现（<b>乐观锁适用于多读的应用类型，这样可以提高吞吐量</b>）。</p>
-<p>使用版本号时，可以在数据初始化时指定一个版本号，每次对数据的更新操作都对版本号执行+1操作。并判断当前版本号是不是该数据的最新的版本号。</p>
-<pre><code class="language-mysql">
-1.查询出商品信息
-select (status,status,version) from t_goods where id=#{id}
-2.根据商品信息生成订单
-3.修改商品 status 为2
-update t_goods set status=2,version=version+1 where id=#{id} and version=#{version};
-
+<h1 id="运行容器">运行容器</h1>
+<pre><code class="language-shell">docker-compose up -d nginx mysql redis beanstalkd
 </code></pre>
-<p>乐观并发控制相信事务之间的数据竞争(data race)的概率是比较小的，因此尽可能直接做下去，直到提交的时候才去锁定，所以不会产生任何锁和死锁。<br>
-需要注意的是，如果运用的不是版本号而是商品库存等其他字段可能会出现<code>ABA</code>问题：</p>
-<p>如果一个变量 V 初次读取的时候是 A 值，并且在准备赋值的时候检查到它仍然是 A 值，那我们就能说明它的值没有被其他线程修改过了吗？很明显是不能的，因为在这段时间它的值可能被改为其他值，然后又改回 A，那 CAS 操作就会误认为它从来没有被修改过。这个问题被称为 CAS 操作的 <code>ABA</code> 问题。</p>
-<p>使用场景：</p>
-<ul>
-    <li>响应速度：如果需要非常高的响应速度，建议采用乐观锁方案，成功就执行，不成功就失败，不需要等待其他并发去释放锁</li>
-    <li>冲突频率：如果冲突频率非常高，建议采用悲观锁，保证成功率，如果冲突频率大，乐观锁会需要多次重试才能成功，代价比较大</li>
-    <li>重试代价：如果重试代价大，建议采用悲观锁</li>
-</ul>
+<h1 id="创建项目">创建项目</h1>
+<pre><code class="language-shell">composer create-project --prefer-dist laravel/laravel test
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1615796925712.png" alt="" loading="lazy"></figure>
+<h1 id="做-nginx-配置">做 nginx 配置</h1>
+<p><img src="http://weakcc.github.io/post-images/1615797075338.png" alt="" loading="lazy"><br>
+<img src="http://weakcc.github.io/post-images/1615797081492.png" alt="" loading="lazy"><br>
+重启 nginx</p>
+<pre><code class="language-shell">docker-compose up -d nginx
+</code></pre>
+<p>就可以通过浏览器访问了。</p>
+<h1 id="错误">错误</h1>
+<p>问题：<br>
+ERROR: for nginx  Cannot start service nginx: Ports are not available: port is already allocated.<br>
+<img src="http://weakcc.github.io/post-images/1615794973501.png" alt="" loading="lazy"><br>
+解决：<br>
+指定80端口已经被占用，关闭相应的服务再重新运行上述命令即可</p>
+
             </div>
             
               <div class="reward-btn">
@@ -585,7 +597,7 @@ update t_goods set status=2,version=version+1 where id=#{id} and version=#{versi
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/bei-guan-suo-he-le-guan-suo/" title="悲观锁和乐观锁">http://weakcc.github.io/post/bei-guan-suo-he-le-guan-suo/</a>
+      <a href="http://weakcc.github.io/post/shi-yong-laradock-da-jian-ji-yu-docker-de-php-kai-fa-huan-jing/" title="使用 Laradock 搭建基于 Docker 的 PHP 开发环境">http://weakcc.github.io/post/shi-yong-laradock-da-jian-ji-yu-docker-de-php-kai-fa-huan-jing/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -594,21 +606,21 @@ update t_goods set status=2,version=version+1 where id=#{id} and version=#{versi
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/VwbG72yxK/"># MySQL</a>
+      <a href="http://weakcc.github.io/tag/jToeViyOW/"># Laravel</a>
+    
+      <a href="http://weakcc.github.io/tag/-1C81uOvV/"># Docker</a>
+    
+      <a href="http://weakcc.github.io/tag/IuY5uV6ll/"># PHP</a>
     
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="Docker安装并配置Redis" href="http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/">Docker安装并配置Redis</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="Docker安装并配置Redis" href="http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="PHP 在操作断点续传时文件如何分割合并" href="http://weakcc.github.io/post/php-zai-cao-zuo-duan-dian-xu-chuan-shi-wen-jian-ru-he-fen-ge-he-bing/">PHP 在操作断点续传时文件如何分割合并</a>
-        <a class="nav-mobile-next" title="PHP 在操作断点续传时文件如何分割合并" href="http://weakcc.github.io/post/php-zai-cao-zuo-duan-dian-xu-chuan-shi-wen-jian-ru-he-fen-ge-he-bing/">下一篇</a>
+        <a class="nav-pc-next" title="Docker安装并配置Redis" href="http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/">Docker安装并配置Redis</a>
+        <a class="nav-mobile-next" title="Docker安装并配置Redis" href="http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>

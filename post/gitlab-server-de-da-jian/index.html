@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>GitLab Server 的搭建 | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1615785062136">
+<link rel="shortcut icon" href="/favicon.ico?v=1615797178904">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -188,19 +188,19 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">17</span>
+        <span class="site-item-stat-count">18</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="">
-        <span class="site-item-stat-count">10</span>
+        <span class="site-item-stat-count">11</span>
         <span class="site-item-stat-name language" data-lan="category">分类</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="/tags/">
-        <span class="site-item-stat-count">10</span>
+        <span class="site-item-stat-count">11</span>
         <span class="site-item-stat-name language" data-lan="tag">标签</span>
       </a>
     </div>
@@ -850,6 +850,50 @@ gpgkey=https://packages.gitlab.com/gpg.key</p>
       <hr>
     </div>
     <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/shi-yong-laradock-da-jian-ji-yu-docker-de-php-kai-fa-huan-jing/"" data-c="
+          &lt;h1 id=&#34;首先将-laradock-项目代码克隆到本地&#34;&gt;首先将 Laradock 项目代码克隆到本地&lt;/h1&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;git clone https://github.com/Laradock/laradock.git
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;进入-laradock-目录将-env-example-重命名为-env&#34;&gt;进入 laradock 目录将 env-example 重命名为 .env&lt;/h1&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;cp env-example .env
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;编辑&lt;code&gt;.env&lt;/code&gt;文件&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# 编辑
+APP_CODE_PATH_HOST=../ # 项目路径
+CHANGE_SOURCE=true # 切换源
+WORKSPACE_TIMEZONE=PRC # 时区
+PHP_VERSION=7.3
+MYSQL_VERSION=8.0
+# 新增
+DB_HOST=mysql
+REDIS_HOST=redis
+QUEUE_HOST=beanstalkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;运行容器&#34;&gt;运行容器&lt;/h1&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;docker-compose up -d nginx mysql redis beanstalkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;创建项目&#34;&gt;创建项目&lt;/h1&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;composer create-project --prefer-dist laravel/laravel test
+&lt;/code&gt;&lt;/pre&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;http://weakcc.github.io/post-images/1615796925712.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;h1 id=&#34;做-nginx-配置&#34;&gt;做 nginx 配置&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&#34;http://weakcc.github.io/post-images/1615797075338.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1615797081492.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+重启 nginx&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;docker-compose up -d nginx
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;就可以通过浏览器访问了。&lt;/p&gt;
+&lt;h1 id=&#34;错误&#34;&gt;错误&lt;/h1&gt;
+&lt;p&gt;问题：&lt;br&gt;
+ERROR: for nginx  Cannot start service nginx: Ports are not available: port is already allocated.&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1615794973501.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+解决：&lt;br&gt;
+指定80端口已经被占用，关闭相应的服务再重新运行上述命令即可&lt;/p&gt;
+">使用 Laradock 搭建基于 Docker 的 PHP 开发环境</a>
+      </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/"" data-c="
