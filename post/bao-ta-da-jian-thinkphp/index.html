@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>宝塔搭建 ThinkPHP | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1620983127320">
+<link rel="shortcut icon" href="/favicon.ico?v=1620983260768">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -189,7 +189,7 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">20</span>
+        <span class="site-item-stat-count">21</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
@@ -1169,6 +1169,192 @@
 - dd 删除当前 cell
 - z 撤销删除&lt;/code&gt;&lt;/pre&gt;
 ">jupyter 基本使用</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/mysql-80-bi-zhi-bi-hui/"" data-c="
+          &lt;h1 id=&#34;安装与配置&#34;&gt;安装与配置&lt;/h1&gt;
+&lt;p&gt;MySQL 8.0 下载地址&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.15-linux-glibc2.12-x86_64.tar.xz
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!-- more --&gt;
+&lt;h2 id=&#34;下载&#34;&gt;下载&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;wget https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.15-linux-glibc2.12-x86_64.tar.xz
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;解压&#34;&gt;解压&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;# 将文件改为tar格式
+xz -d mysql-8.0.15-linux-glibc2.12-x86_64.tar.xz
+# 解压tar文件
+tar xf mysql-8.0.15-linux-glibc2.12-x86_64.tar
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;移动&#34;&gt;移动&lt;/h2&gt;
+&lt;p&gt;移动到 &lt;code&gt;/usr/local/mysql&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mv mysql-8.0.15-linux-glibc2.12-x86_64 /usr/local/mysql
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;安全保障新建一个账户 &lt;code&gt;mysql&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# 名字自取，配置文件别忘记同步更新
+adduser mysql
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;配置&#34;&gt;配置&lt;/h2&gt;
+&lt;p&gt;更新配置文件信息&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vim /etc/my.cnf
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;配置内容如下&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[client]
+port            = 3306
+socket          = /usr/local/mysql/data/mysql.sock
+[mysqld]
+# Skip #
+skip_name_resolve              = 1
+skip_external_locking          = 1 
+skip_symbolic_links     = 1
+# GENERAL #
+user = mysql
+default_storage_engine = InnoDB
+character-set-server = utf8
+socket  = /usr/local/mysql/data/mysql.sock
+pid_file = /usr/local/mysql/data/mysqld.pid
+basedir = /usr/local/mysql
+port = 3306
+bind-address = 0.0.0.0
+explicit_defaults_for_timestamp = off
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+#read_only=on
+# MyISAM #
+key_buffer_size                = 32M
+#myisam_recover                 = FORCE,BACKUP
+
+# undo log #
+innodb_undo_directory = /usr/local/mysql/undo
+innodb_undo_tablespaces = 8
+
+# SAFETY #
+max_allowed_packet             = 100M
+max_connect_errors             = 1000000
+sysdate_is_now                 = 1
+#innodb = FORCE
+#innodb_strict_mode = 1
+secure-file-priv=&#39;/tmp&#39;
+default_authentication_plugin=&#39;mysql_native_password&#39;
+# Replice #
+ server-id = 1001
+ relay_log = mysqld-relay-bin
+ gtid_mode = on
+ enforce-gtid-consistency
+ log-slave-updates = on
+ master_info_repository =TABLE
+ relay_log_info_repository =TABLE
+
+
+# DATA STORAGE #
+ datadir = /usr/local/mysql/data/
+ tmpdir = /tmp
+ 
+# BINARY LOGGING #
+ log_bin = /usr/local/mysql/sql_log/mysql-bin
+ max_binlog_size = 1000M
+ binlog_format = row
+ binlog_expire_logs_seconds=86400
+# sync_binlog = 1
+
+ # CACHES AND LIMITS #
+ tmp_table_size                 = 32M
+ max_heap_table_size            = 32M
+ max_connections                = 4000
+ thread_cache_size              = 2048
+ open_files_limit               = 65535
+ table_definition_cache         = 4096
+ table_open_cache               = 4096
+ sort_buffer_size               = 2M
+ read_buffer_size               = 2M
+ read_rnd_buffer_size           = 2M
+# thread_concurrency             = 24
+ join_buffer_size = 1M
+# table_cache = 32768
+ thread_stack = 512k
+ max_length_for_sort_data = 16k
+
+
+ # INNODB #
+ innodb_flush_method            = O_DIRECT
+ innodb_log_buffer_size = 16M
+ innodb_flush_log_at_trx_commit = 2
+ innodb_file_per_table          = 1
+ innodb_buffer_pool_size        = 256M
+ #innodb_buffer_pool_instances = 8
+ innodb_stats_on_metadata = off
+ innodb_open_files = 8192
+ innodb_read_io_threads = 16
+ innodb_write_io_threads = 16
+ innodb_io_capacity = 20000
+ innodb_thread_concurrency = 0
+ innodb_lock_wait_timeout = 60
+ innodb_old_blocks_time=1000
+ innodb_use_native_aio = 1
+ innodb_purge_threads=1
+ innodb_change_buffering=all
+ innodb_log_file_size = 64M
+ innodb_log_files_in_group = 2
+ innodb_data_file_path  = ibdata1:256M:autoextend
+ 
+ innodb_rollback_on_timeout=on
+ # LOGGING #
+ log_error                      = /usr/local/mysql/sql_log/mysql-error.log
+ # log_queries_not_using_indexes  = 1
+ # slow_query_log                 = 1
+  slow_query_log_file            = /usr/local/mysql/sql_log/slowlog.log
+
+ # TimeOut #
+ #interactive_timeout = 30
+ #wait_timeout        = 30
+ #net_read_timeout = 60
+
+[mysqldump]
+quick
+max_allowed_packet = 100M
+
+[mysql]
+no-auto-rehash
+# Remove the next comment character if you are not familiar with SQL
+#safe-updates
+
+[myisamchk]
+key_buffer_size = 256M
+sort_buffer_size = 256M
+read_buffer = 2M
+write_buffer = 2M
+
+[mysqlhotcopy]
+interactive-timeout
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;建立各种文件存储文件同时赋予 &lt;code&gt;mysql&lt;/code&gt; 权限&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cd /usr/local/mysql/
+
+mkdir data undo sql_log
+
+# 赋予 mysql 属主
+chown mysql:mysql data/ undo/ sql_log/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;配置环境 &lt;code&gt;/ect/profile&lt;/code&gt; 变量方便 &lt;code&gt;mysql&lt;/code&gt; 启动&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# 末尾添加export PATH=$PATH:/usr/local/mysql/bin# 更新配置source /etc/profile
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;初始化&#34;&gt;初始化&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;把启动 &lt;code&gt;mysql.sever&lt;/code&gt; 移动到 &lt;code&gt;/etc/init.d&lt;/code&gt; 中&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cp support-files/mysql.server /etc/init.d/mysqld
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;启动&#34;&gt;启动&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;/etc/init.d/mysqld start# 查看进程状态ps -ef | grep mysql
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;登录&#34;&gt;登录&lt;/h2&gt;
+&lt;p&gt;登录 &lt;code&gt;mysql&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat sql_log/mysql-error.log | grep password# [Note] [MY-010454] [Server] A temporary password is generated for root@localhost: Py1Olku2-u8v# Py1Olku2-u8v 就为初始的临时密码# 连接 mysqlmysql -uroot -pPy1Olku2-u8v
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;重置密码&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-mysql&#34;&gt;alter user user() identified by &#39;123456&#39;;# 密码线上需要复杂些，这本地测试# 退出，重新登录mysql -uroot -p123456# 成功登录，结束
+&lt;/code&gt;&lt;/pre&gt;
+">MySQL 8.0 安装与配置</a>
       </div>
       
       <div class="item">

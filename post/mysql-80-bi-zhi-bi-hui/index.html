@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>Redis 概览 | 腰盐醋</title>
+<title>MySQL 8.0 安装与配置 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1620983260768">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="Redis 概览" />
-  <meta name="keywords" content="Redis" />
+  <meta name="description" content="MySQL 8.0 安装与配置" />
+  <meta name="keywords" content="MySQL" />
 </head>
 
 <body>
@@ -177,7 +177,8 @@
       <div class="sidebar-body pisces" id="sidebar_body">
         
           
-            
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -213,6 +214,201 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE">安装与配置</a>
+<ul>
+<li><a href="#%E4%B8%8B%E8%BD%BD">下载</a></li>
+<li><a href="#%E8%A7%A3%E5%8E%8B">解压</a></li>
+<li><a href="#%E7%A7%BB%E5%8A%A8">移动</a></li>
+<li><a href="#%E9%85%8D%E7%BD%AE">配置</a></li>
+<li><a href="#%E5%88%9D%E5%A7%8B%E5%8C%96">初始化</a></li>
+<li><a href="#%E5%90%AF%E5%8A%A8">启动</a></li>
+<li><a href="#%E7%99%BB%E5%BD%95">登录</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</div>
+
+<script>
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
+      }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0] && elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
+    });
+  }
+
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
           
         
       </div>
@@ -300,8 +496,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/redis-gai-lan/">
-      Redis 概览
+    <a class="post-title-link" href="http://weakcc.github.io/post/mysql-80-bi-zhi-bi-hui/">
+      MySQL 8.0 安装与配置
     </a>
   </h1>
   <div class="post-meta">
@@ -309,7 +505,7 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-08-27 08:55:29">2020-08-27</span>
+      <span class="publish-time" data-t="2021-05-14 09:17:17">2021-05-14</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
@@ -318,8 +514,8 @@
       <span class="pc-show language" data-lan="category-in">分类于</span>
       
       
-      <a href="http://weakcc.github.io/tag/tayIXOYIs/">
-        <span>Redis</span>
+      <a href="http://weakcc.github.io/tag/VwbG72yxK/">
+        <span>MySQL</span>
       </a>
       
       
@@ -328,18 +524,198 @@
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>0<span class="language" data-lan="minute">分钟</span></span>
+      <span>4<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>0<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>640<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598489746128.png" alt="" loading="lazy"></figure>
+              <h1 id="安装与配置">安装与配置</h1>
+<p>MySQL 8.0 下载地址</p>
+<pre><code>https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.15-linux-glibc2.12-x86_64.tar.xz
+</code></pre>
+<!-- more -->
+<h2 id="下载">下载</h2>
+<pre><code>wget https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.15-linux-glibc2.12-x86_64.tar.xz
+</code></pre>
+<h2 id="解压">解压</h2>
+<pre><code># 将文件改为tar格式
+xz -d mysql-8.0.15-linux-glibc2.12-x86_64.tar.xz
+# 解压tar文件
+tar xf mysql-8.0.15-linux-glibc2.12-x86_64.tar
+</code></pre>
+<h2 id="移动">移动</h2>
+<p>移动到 <code>/usr/local/mysql</code></p>
+<pre><code>mv mysql-8.0.15-linux-glibc2.12-x86_64 /usr/local/mysql
+</code></pre>
+<p>安全保障新建一个账户 <code>mysql</code></p>
+<pre><code># 名字自取，配置文件别忘记同步更新
+adduser mysql
+</code></pre>
+<h2 id="配置">配置</h2>
+<p>更新配置文件信息</p>
+<pre><code>vim /etc/my.cnf
+</code></pre>
+<p>配置内容如下</p>
+<pre><code>[client]
+port            = 3306
+socket          = /usr/local/mysql/data/mysql.sock
+[mysqld]
+# Skip #
+skip_name_resolve              = 1
+skip_external_locking          = 1 
+skip_symbolic_links     = 1
+# GENERAL #
+user = mysql
+default_storage_engine = InnoDB
+character-set-server = utf8
+socket  = /usr/local/mysql/data/mysql.sock
+pid_file = /usr/local/mysql/data/mysqld.pid
+basedir = /usr/local/mysql
+port = 3306
+bind-address = 0.0.0.0
+explicit_defaults_for_timestamp = off
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+#read_only=on
+# MyISAM #
+key_buffer_size                = 32M
+#myisam_recover                 = FORCE,BACKUP
+
+# undo log #
+innodb_undo_directory = /usr/local/mysql/undo
+innodb_undo_tablespaces = 8
+
+# SAFETY #
+max_allowed_packet             = 100M
+max_connect_errors             = 1000000
+sysdate_is_now                 = 1
+#innodb = FORCE
+#innodb_strict_mode = 1
+secure-file-priv='/tmp'
+default_authentication_plugin='mysql_native_password'
+# Replice #
+ server-id = 1001
+ relay_log = mysqld-relay-bin
+ gtid_mode = on
+ enforce-gtid-consistency
+ log-slave-updates = on
+ master_info_repository =TABLE
+ relay_log_info_repository =TABLE
+
+
+# DATA STORAGE #
+ datadir = /usr/local/mysql/data/
+ tmpdir = /tmp
+ 
+# BINARY LOGGING #
+ log_bin = /usr/local/mysql/sql_log/mysql-bin
+ max_binlog_size = 1000M
+ binlog_format = row
+ binlog_expire_logs_seconds=86400
+# sync_binlog = 1
+
+ # CACHES AND LIMITS #
+ tmp_table_size                 = 32M
+ max_heap_table_size            = 32M
+ max_connections                = 4000
+ thread_cache_size              = 2048
+ open_files_limit               = 65535
+ table_definition_cache         = 4096
+ table_open_cache               = 4096
+ sort_buffer_size               = 2M
+ read_buffer_size               = 2M
+ read_rnd_buffer_size           = 2M
+# thread_concurrency             = 24
+ join_buffer_size = 1M
+# table_cache = 32768
+ thread_stack = 512k
+ max_length_for_sort_data = 16k
+
+
+ # INNODB #
+ innodb_flush_method            = O_DIRECT
+ innodb_log_buffer_size = 16M
+ innodb_flush_log_at_trx_commit = 2
+ innodb_file_per_table          = 1
+ innodb_buffer_pool_size        = 256M
+ #innodb_buffer_pool_instances = 8
+ innodb_stats_on_metadata = off
+ innodb_open_files = 8192
+ innodb_read_io_threads = 16
+ innodb_write_io_threads = 16
+ innodb_io_capacity = 20000
+ innodb_thread_concurrency = 0
+ innodb_lock_wait_timeout = 60
+ innodb_old_blocks_time=1000
+ innodb_use_native_aio = 1
+ innodb_purge_threads=1
+ innodb_change_buffering=all
+ innodb_log_file_size = 64M
+ innodb_log_files_in_group = 2
+ innodb_data_file_path  = ibdata1:256M:autoextend
+ 
+ innodb_rollback_on_timeout=on
+ # LOGGING #
+ log_error                      = /usr/local/mysql/sql_log/mysql-error.log
+ # log_queries_not_using_indexes  = 1
+ # slow_query_log                 = 1
+  slow_query_log_file            = /usr/local/mysql/sql_log/slowlog.log
+
+ # TimeOut #
+ #interactive_timeout = 30
+ #wait_timeout        = 30
+ #net_read_timeout = 60
+
+[mysqldump]
+quick
+max_allowed_packet = 100M
+
+[mysql]
+no-auto-rehash
+# Remove the next comment character if you are not familiar with SQL
+#safe-updates
+
+[myisamchk]
+key_buffer_size = 256M
+sort_buffer_size = 256M
+read_buffer = 2M
+write_buffer = 2M
+
+[mysqlhotcopy]
+interactive-timeout
+</code></pre>
+<p>建立各种文件存储文件同时赋予 <code>mysql</code> 权限</p>
+<pre><code>cd /usr/local/mysql/
+
+mkdir data undo sql_log
+
+# 赋予 mysql 属主
+chown mysql:mysql data/ undo/ sql_log/
+</code></pre>
+<p>配置环境 <code>/ect/profile</code> 变量方便 <code>mysql</code> 启动</p>
+<pre><code># 末尾添加export PATH=$PATH:/usr/local/mysql/bin# 更新配置source /etc/profile
+</code></pre>
+<h2 id="初始化">初始化</h2>
+<pre><code>mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
+</code></pre>
+<p>把启动 <code>mysql.sever</code> 移动到 <code>/etc/init.d</code> 中</p>
+<pre><code>cp support-files/mysql.server /etc/init.d/mysqld
+</code></pre>
+<h2 id="启动">启动</h2>
+<pre><code>/etc/init.d/mysqld start# 查看进程状态ps -ef | grep mysql
+</code></pre>
+<h2 id="登录">登录</h2>
+<p>登录 <code>mysql</code></p>
+<pre><code>cat sql_log/mysql-error.log | grep password# [Note] [MY-010454] [Server] A temporary password is generated for root@localhost: Py1Olku2-u8v# Py1Olku2-u8v 就为初始的临时密码# 连接 mysqlmysql -uroot -pPy1Olku2-u8v
+</code></pre>
+<p>重置密码</p>
+<pre><code class="language-mysql">alter user user() identified by '123456';# 密码线上需要复杂些，这本地测试# 退出，重新登录mysql -uroot -p123456# 成功登录，结束
+</code></pre>
 
             </div>
             
@@ -356,7 +732,7 @@
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/redis-gai-lan/" title="Redis 概览">http://weakcc.github.io/post/redis-gai-lan/</a>
+      <a href="http://weakcc.github.io/post/mysql-80-bi-zhi-bi-hui/" title="MySQL 8.0 安装与配置">http://weakcc.github.io/post/mysql-80-bi-zhi-bi-hui/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -365,21 +741,21 @@
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/tayIXOYIs/"># Redis</a>
+      <a href="http://weakcc.github.io/tag/VwbG72yxK/"># MySQL</a>
     
   </div>
   <div class="nav">
     <div class="nav-prev">
       
         <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="宝塔搭建 ThinkPHP" href="http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/">宝塔搭建 ThinkPHP</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="宝塔搭建 ThinkPHP" href="http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/">上一篇</a>
+        <a class="nav-pc-next" title="jupyter 基本使用" href="http://weakcc.github.io/post/jupyter-ji-ben-shi-yong/">jupyter 基本使用</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="jupyter 基本使用" href="http://weakcc.github.io/post/jupyter-ji-ben-shi-yong/">上一篇</a>
       
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="MySQL 优化" href="http://weakcc.github.io/post/mysql-you-hua/">MySQL 优化</a>
-        <a class="nav-mobile-next" title="MySQL 优化" href="http://weakcc.github.io/post/mysql-you-hua/">下一篇</a>
+        <a class="nav-pc-next" title="消息队列" href="http://weakcc.github.io/post/xiao-xi-dui-lie/">消息队列</a>
+        <a class="nav-mobile-next" title="消息队列" href="http://weakcc.github.io/post/xiao-xi-dui-lie/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
