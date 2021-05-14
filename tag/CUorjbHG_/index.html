@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1620983511891">
+<link rel="shortcut icon" href="/favicon.ico?v=1620985195863">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -584,8 +584,7 @@
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/jupyter-ji-ben-shi-yong/"" data-c="
-          &lt;!-- more --&gt;
-&lt;h3 id=&#34;服务启动与停止-cmd&#34;&gt;服务启动与停止（ CMD ）&lt;/h3&gt;
+          &lt;h3 id=&#34;服务启动与停止-cmd&#34;&gt;服务启动与停止（ CMD ）&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;- 启动 jupyter notebook
 - 停止 Control + C
 &lt;/code&gt;&lt;/pre&gt;
@@ -778,7 +777,9 @@ mkdir data undo sql_log
 chown mysql:mysql data/ undo/ sql_log/
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;配置环境 &lt;code&gt;/ect/profile&lt;/code&gt; 变量方便 &lt;code&gt;mysql&lt;/code&gt; 启动&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# 末尾添加export PATH=$PATH:/usr/local/mysql/bin# 更新配置source /etc/profile
+&lt;pre&gt;&lt;code&gt;# 末尾添加
+export PATH=$PATH:/usr/local/mysql/bin
+# 更新配置source /etc/profile
 &lt;/code&gt;&lt;/pre&gt;
 &lt;h2 id=&#34;初始化&#34;&gt;初始化&lt;/h2&gt;
 &lt;pre&gt;&lt;code&gt;mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
@@ -787,14 +788,21 @@ chown mysql:mysql data/ undo/ sql_log/
 &lt;pre&gt;&lt;code&gt;cp support-files/mysql.server /etc/init.d/mysqld
 &lt;/code&gt;&lt;/pre&gt;
 &lt;h2 id=&#34;启动&#34;&gt;启动&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;/etc/init.d/mysqld start# 查看进程状态ps -ef | grep mysql
+&lt;pre&gt;&lt;code&gt;/etc/init.d/mysqld start
+# 查看进程状态
+ps -ef | grep mysql
 &lt;/code&gt;&lt;/pre&gt;
 &lt;h2 id=&#34;登录&#34;&gt;登录&lt;/h2&gt;
 &lt;p&gt;登录 &lt;code&gt;mysql&lt;/code&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cat sql_log/mysql-error.log | grep password# [Note] [MY-010454] [Server] A temporary password is generated for root@localhost: Py1Olku2-u8v# Py1Olku2-u8v 就为初始的临时密码# 连接 mysqlmysql -uroot -pPy1Olku2-u8v
+&lt;pre&gt;&lt;code&gt;cat sql_log/mysql-error.log | grep password# [Note] [MY-010454] [Server] A temporary password is generated for root@localhost: Py1Olku2-u8v
+# Py1Olku2-u8v 就为初始的临时密码# 连接 mysqlmysql -uroot -pPy1Olku2-u8v
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;重置密码&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-mysql&#34;&gt;alter user user() identified by &#39;123456&#39;;# 密码线上需要复杂些，这本地测试# 退出，重新登录mysql -uroot -p123456# 成功登录，结束
+&lt;pre&gt;&lt;code&gt;alter user user() identified by &#39;123456&#39;;
+# 密码线上需要复杂些，这本地测试
+# 退出，重新登录
+mysql -uroot -p123456
+# 成功登录，结束
 &lt;/code&gt;&lt;/pre&gt;
 ">MySQL 8.0 安装与配置</a>
       </div>
