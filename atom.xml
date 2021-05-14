@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-04-28T09:43:00.923Z</updated>
+    <updated>2021-05-14T09:02:21.071Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,38 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[jupyter 基本使用]]></title>
+        <id>http://weakcc.github.io/post/jupyter-ji-ben-shi-yong/</id>
+        <link href="http://weakcc.github.io/post/jupyter-ji-ben-shi-yong/">
+        </link>
+        <updated>2021-05-14T08:58:12.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="服务启动与停止-cmd">服务启动与停止（ CMD ）</h3>
+<pre><code>- 启动 jupyter notebook
+- 停止 Control + C
+</code></pre>
+<h3 id="cell-两种模式">cell 两种模式</h3>
+<pre><code>- code     : 编写代码 ( y 修改为 code 模式 )
+- markdown : 编写笔记 ( m 修改为 markdown 模式 )
+</code></pre>
+<h3 id="模式切换">模式切换</h3>
+<pre><code>- 当前 cell 侧边为蓝色时，表示此时为命令模式，按 Enter 切换为编辑模式
+- 当前 cell 侧边为绿色时，表示此时为编辑模式，按 Esc 切换为命令模式
+</code></pre>
+<h3 id="快捷键">快捷键</h3>
+<pre><code>- a 在上方新建 cell
+- b 在下方新建 cell
+- x 删除
+- y 修改为 code 模式
+- m 修改为 markdown 模式
+- shift + enter 运行当前 cell 并跳转到下一个 cell
+- command + enter 运行当前 cell 
+- tab 自动补全
+- shift + tab 打开帮助文档
+- dd 删除当前 cell
+- z 撤销删除</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[消息队列]]></title>
         <id>http://weakcc.github.io/post/xiao-xi-dui-lie/</id>
@@ -216,64 +248,5 @@ update t_goods set status=2,version=version+1 where id=#{id} and version=#{versi
     <li>冲突频率：如果冲突频率非常高，建议采用悲观锁，保证成功率，如果冲突频率大，乐观锁会需要多次重试才能成功，代价比较大</li>
     <li>重试代价：如果重试代价大，建议采用悲观锁</li>
 </ul>]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[PHP 在操作断点续传时文件如何分割合并]]></title>
-        <id>http://weakcc.github.io/post/php-zai-cao-zuo-duan-dian-xu-chuan-shi-wen-jian-ru-he-fen-ge-he-bing/</id>
-        <link href="http://weakcc.github.io/post/php-zai-cao-zuo-duan-dian-xu-chuan-shi-wen-jian-ru-he-fen-ge-he-bing/">
-        </link>
-        <updated>2021-03-02T02:17:45.000Z</updated>
-        <summary type="html"><![CDATA[<p>php 实现断点续传，就需要把大文件分割成多个小文件，然后单个上传。传完后在合并。</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>php 实现断点续传，就需要把大文件分割成多个小文件，然后单个上传。传完后在合并。</p>
-<!-- more -->
-<pre><code class="language-php">&lt;?php
-
-/**
- * 分隔文件
- */
-function file_split($filePath, $tmpDir = &quot;tmp&quot;, $fileSize = 1024)
-{
-    $fp = fopen($filePath, 'rb');
-    $i = 0;
-    $no = 1;
-    while (!feof($fp)) {
-        $file = fread($fp, $fileSize);
-        $fileName = pathinfo($filePath, PATHINFO_FILENAME);
-        $tmpFp = fopen('./' . $tmpDir . '/' . $fileName . sprintf('%04d', $no) . '.' . $i . '-' . ($i + $fileSize) . '.tmp', 'wb');
-        fwrite($tmpFp, $file, $fileSize);
-        fclose($tmpFp);
-        $i += $fileSize + 1;
-        $no++;
-    }
-    fclose($fp);
-}
-
-/**
- * 合并文件
- */
-function file_merge($tmpDir, $mergeFileName = 'merge.zip', $fileSize = 1024)
-{
-    $tmpFilePaths = glob($tmpDir . '/*.tmp');
-    @unlink($mergeFileName);
-    $fp = fopen($mergeFileName, 'w+');
-    foreach ($tmpFilePaths as $v) {
-        $tmpFp = fopen($v, 'rb');
-        $content = fread($tmpFp, $fileSize);
-        fwrite($fp, $content, $fileSize);
-        unset($content);
-        unlink($v);
-        fclose($tmpFp);
-    }
-    fclose($fp);
-}
-
-$dir = 'tmp';
-// 切割文件
-file_split('./1.zip', $dir);
-// 合并文件
-file_merge($dir);
-</code></pre>
-]]></content>
     </entry>
 </feed>
