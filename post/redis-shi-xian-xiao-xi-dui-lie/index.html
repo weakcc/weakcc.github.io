@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>Docker 安装并配置 Redis | 腰盐醋</title>
+<title>Redis 实现消息队列 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1623997995775">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="Docker 安装并配置 Redis" />
-  <meta name="keywords" content="Docker,Redis" />
+  <meta name="description" content="Redis 实现消息队列" />
+  <meta name="keywords" content="MQ,Redis" />
 </head>
 
 <body>
@@ -220,12 +220,14 @@
   <div class="toc-wrapper auto-number auto"
     id="toc_wrapper">
     <ul class="markdownIt-TOC">
-<li><a href="#%E9%80%89%E6%8B%A9%E4%B8%80%E4%B8%AA%E5%90%88%E9%80%82%E7%9A%84-docker-%E7%89%88%E6%9C%AC">选择一个合适的 docker 版本</a></li>
-<li><a href="#%E4%BD%BF%E7%94%A8-docker-%E5%AE%89%E8%A3%85-redis">使用 docker 安装 redis</a></li>
-<li><a href="#%E5%87%86%E5%A4%87-redis-%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">准备 redis 的配置文件</a></li>
-<li><a href="#%E4%BF%AE%E6%94%B9-redisconf-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">修改 redis.conf 配置文件</a></li>
-<li><a href="#%E5%90%AF%E5%8A%A8-docker">启动 docker</a></li>
-<li><a href="#%E6%9F%A5%E7%9C%8B%E6%98%AF%E5%90%A6%E5%90%AF%E5%8A%A8%E6%88%90%E5%8A%9F">查看是否启动成功</a></li>
+<li>
+<ul>
+<li><a href="#%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E6%98%AF%E4%BB%80%E4%B9%88">消息队列是什么</a></li>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97">为什么要使用消息队列</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8E-list-%E7%9A%84-lpush-rpop-%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%94%9F%E4%BA%A7%E6%B6%88%E8%B4%B9%E6%A8%A1%E5%BC%8F">基于 list 的 lpush + rpop 实现的生产/消费模式</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8E-pubsub-%E7%9A%84%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F">基于 pub/sub 的发布/订阅模式</a></li>
+</ul>
+</li>
 </ul>
 
   </div>
@@ -491,8 +493,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/">
-      Docker 安装并配置 Redis
+    <a class="post-title-link" href="http://weakcc.github.io/post/redis-shi-xian-xiao-xi-dui-lie/">
+      Redis 实现消息队列
     </a>
   </h1>
   <div class="post-meta">
@@ -500,7 +502,7 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2021-03-15 12:35:01">2021-03-15</span>
+      <span class="publish-time" data-t="2021-06-18 11:44:12">2021-06-18</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
@@ -509,8 +511,8 @@
       <span class="pc-show language" data-lan="category-in">分类于</span>
       
       
-      <a href="http://weakcc.github.io/tag/-1C81uOvV/">
-        <span>Docker</span>
+      <a href="http://weakcc.github.io/tag/kApwmp63t/">
+        <span>MQ</span>
       </a>、
       
       
@@ -525,65 +527,66 @@
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>2<span class="language" data-lan="minute">分钟</span></span>
+      <span>3<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>365<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>729<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <!-- more -->
-<h1 id="选择一个合适的-docker-版本">选择一个合适的 docker 版本</h1>
-<p><a href="https://hub.docker.com/_/redis?tab=tags&amp;page=1&amp;ordering=last_updated">https://hub.docker.com/_/redis?tab=tags&amp;page=1&amp;ordering=last_updated</a></p>
+              <h2 id="消息队列是什么">消息队列是什么</h2>
+<p><code>消息队列</code>：把要传输的数据放在队列中。消息是两个服务之间沟通的媒介，队列就是两个服务之间进行沟通消息的载体或容器。（把数据放到消息队列叫做<b>生产者</b>，从消息队列里面取数据叫做<b>消费者</b>）</p>
 <!-- more -->
-<h1 id="使用-docker-安装-redis">使用 docker 安装 redis</h1>
-<pre><code class="language-shell">sudo docker pull redis
-</code></pre>
-<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1615783536958.png" alt="" loading="lazy"></figure>
-<h1 id="准备-redis-的配置文件">准备 redis 的配置文件</h1>
-<p>redis 中文官方网站：<a href="http://www.redis.cn/download.html">http://www.redis.cn/download.html</a><br>
-<img src="http://weakcc.github.io/post-images/1615783307536.png" alt="" loading="lazy"><br>
-解压<br>
-<img src="http://weakcc.github.io/post-images/1615783445135.png" alt="" loading="lazy"></p>
-<h1 id="修改-redisconf-配置文件">修改 redis.conf 配置文件</h1>
+<h2 id="为什么要使用消息队列">为什么要使用消息队列</h2>
+<p>常用于解决并发系统中资源的一致性问题（超卖），提升峰值的处理能力，同时保证消息的顺序性、可恢复性、必送达性。<br>
+核心作用：<code>异步</code>，<code>解耦</code>，<code>削峰</code>。<br>
+优点：</p>
 <ul>
-<li>bind 127.0.0.1 # 注释掉，使 redis 可以外部访问</li>
-<li>daemonize no # 用守护线程的方式启动</li>
-<li>requirepass 你的密码 # 给 redis 设置密码</li>
-<li>appendonly yes # redis 持久化开启</li>
+    <li>异步处理（短信通知，终端状态推送，APP推送，用户注册）</li>
+    <li>数据同步（业务数据推送同步）</li>
+    <li>重试补偿（记账失败重试）</li>
+    <li>系统解耦（通讯上下行，终端异常监控，分布式事件中心，订单仓储物流）</li>
+    <li>流量削峰（秒杀场景下的下单处理）</li>
+    <li>发布订阅（服务状态的变化通知，分布式事件中心）</li>
+    <li>高并发缓冲（日志服务，监控上报）</li>
 </ul>
-# 创建本地与 docker 映射的目录
-```shell
-sudo mkdir /data/redis
-sudo mkdir /data/redis/data
-```
-<p>把配置文件<code>redis.conf</code>拷贝到刚才创建好的<code>/data/redis</code>目录下</p>
-<h1 id="启动-docker">启动 docker</h1>
-<pre><code class="language-shell">sudo docker run -p 6379:6379 --name redis -v /data/redis/redis.conf:/etc/redis/redis.conf  -v /data/redis/data:/data -d redis redis-server /etc/redis/redis.conf --appendonly yes
-</code></pre>
-<p>参数解释：</p>
-<blockquote>
-<p>-p 6379:6379:把容器内的6379端口映射到宿主机6379端口<br>
--v /data/redis/redis.conf:/etc/redis/redis.conf：把宿主机配置好的 redis.conf 放到容器内的这个位置中<br>
--v /data/redis/data:/data：把 redis 持久化的数据在宿主机内显示，做数据备份<br>
-redis-server /etc/redis/redis.conf：这个是关键配置，让 redis 不是无配置启动，而是按照这个 redis.conf 的配置启动<br>
--appendonly yes：redis 启动后数据持久化</p>
-</blockquote>
-<h1 id="查看是否启动成功">查看是否启动成功</h1>
-<p>是否启动成功</p>
-<pre><code class="language-shell">sudo docker ps
-</code></pre>
-<p>查看一下日志（没有启动成功也可以通过日志查看原因）</p>
-<pre><code>sudo docker logs redis
-</code></pre>
-<figure data-type="image" tabindex="2"><img src="http://weakcc.github.io/post-images/1615784431566.png" alt="" loading="lazy"></figure>
-<blockquote>
-<p>https://blog.csdn.net/qq_17623363/article/details/106418353</p>
-</blockquote>
+缺点：
+<ul>
+    <li>系统可用性降低，系统引入的外部依赖越多</li>
+    <li>系统复杂度提高</li>
+    <li>一致性问题</li>
+</ul>
+<h2 id="基于-list-的-lpush-rpop-实现的生产消费模式">基于 list 的 lpush + rpop 实现的生产/消费模式</h2>
+<p>优点：</p>
+<ul>
+    <li>低延迟（消息几乎无延迟）</li>
+</ul>
+缺点：
+<ul>
+    <li>做消费者确认 ACK 麻烦，不能保证消费者消费信息后是否成功处理的问题（宕机或处理异常等），通常需要维护一个 Pending（等待）列表，保证消息处理确认</li>
+    <li>不支持分组消费</li>
+    <li>不能重复消费，一旦消费就会删除</li>
+    <li>不能做广播模式，如 pub/sub，消息发布/订阅模型</li>
+</ul>
+<h2 id="基于-pubsub-的发布订阅模式">基于 pub/sub 的发布/订阅模式</h2>
+<p>此模式允许生产者只生产一次消息，由中间件负责将消息复制到多个消息队列，每个消息队列由对应的消费者组成消费。<br>
+<code>pub/sub</code> 模式不适合做消息存储，消息积压类的业务，而是擅长处理广播，即时通讯，即时反馈的业务。<br>
+优点：</p>
+<ul>
+    <li>典型的广播模式，一个消息可以发布到多个消费者</li>
+    <li>多信道订阅，消费者可以同时订阅多个信道，从而接收多类消息</li>
+    <li>消息即时发送，消息不用等待消费者读取，消费者会自动接收到信道发布的消息</li>
+</ul>
+缺点：
+<ul>
+    <li>消息一旦发布，不能接收。换句话说就是发布时若客户端不在线，则消息丢失，不能寻回</li>
+    <li>若消费者客户端出现消息积压，到一定程度，会被强制断开，导致消息意外丢失。通常发生在消息的生产远大于消费速度时</li>
+</ul>
+<p>基于 <code>list</code> 实现的生产 / 消费模式队列，在应用中使用场景最为广泛。</p>
 
             </div>
             
@@ -600,7 +603,7 @@ redis-server /etc/redis/redis.conf：这个是关键配置，让 redis 不是无
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/" title="Docker 安装并配置 Redis">http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/</a>
+      <a href="http://weakcc.github.io/post/redis-shi-xian-xiao-xi-dui-lie/" title="Redis 实现消息队列">http://weakcc.github.io/post/redis-shi-xian-xiao-xi-dui-lie/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -609,7 +612,7 @@ redis-server /etc/redis/redis.conf：这个是关键配置，让 redis 不是无
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/-1C81uOvV/"># Docker</a>
+      <a href="http://weakcc.github.io/tag/kApwmp63t/"># MQ</a>
     
       <a href="http://weakcc.github.io/tag/tayIXOYIs/"># Redis</a>
     
@@ -617,15 +620,11 @@ redis-server /etc/redis/redis.conf：这个是关键配置，让 redis 不是无
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="使用 Laradock 搭建基于 Docker 的 PHP 开发环境" href="http://weakcc.github.io/post/shi-yong-laradock-da-jian-ji-yu-docker-de-php-kai-fa-huan-jing/">使用 Laradock 搭建基于 Docker 的 PHP 开发环境</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="使用 Laradock 搭建基于 Docker 的 PHP 开发环境" href="http://weakcc.github.io/post/shi-yong-laradock-da-jian-ji-yu-docker-de-php-kai-fa-huan-jing/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="悲观锁和乐观锁" href="http://weakcc.github.io/post/bei-guan-suo-he-le-guan-suo/">悲观锁和乐观锁</a>
-        <a class="nav-mobile-next" title="悲观锁和乐观锁" href="http://weakcc.github.io/post/bei-guan-suo-he-le-guan-suo/">下一篇</a>
+        <a class="nav-pc-next" title="jupyter 基本使用" href="http://weakcc.github.io/post/jupyter-ji-ben-shi-yong/">jupyter 基本使用</a>
+        <a class="nav-mobile-next" title="jupyter 基本使用" href="http://weakcc.github.io/post/jupyter-ji-ben-shi-yong/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
