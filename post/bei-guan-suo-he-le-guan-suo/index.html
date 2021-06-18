@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>悲观锁和乐观锁 | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1624000636257">
+<link rel="shortcut icon" href="/favicon.ico?v=1624011854175">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -1085,7 +1085,13 @@ update t_goods set status=2,version=version+1 where id=#{id} and version=#{versi
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/redis-shi-xian-xiao-xi-dui-lie/"" data-c="
           &lt;h2 id=&#34;消息队列是什么&#34;&gt;消息队列是什么&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;消息队列&lt;/code&gt;：把要传输的数据放在队列中。消息是两个服务之间沟通的媒介，队列就是两个服务之间进行沟通消息的载体或容器。（把数据放到消息队列叫做&lt;b&gt;生产者&lt;/b&gt;，从消息队列里面取数据叫做&lt;b&gt;消费者&lt;/b&gt;）&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;消息队列&lt;/code&gt;：把要传输的数据放在队列中。消息是两个服务之间沟通的媒介，队列就是两个服务之间进行沟通消息的载体或容器。（把数据放到消息队列叫做&lt;b&gt;生产者&lt;/b&gt;，从消息队列里面取数据叫做&lt;b&gt;消费者&lt;/b&gt;）&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1624000927881.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+    &lt;li&gt;生产者（producer）：用于组装消息，并将组装的消息通过 lpush（左进）的方式压入队列，供消费者消费此消息&lt;/li&gt;
+    &lt;li&gt;消费者（consumer）：用于将队列里面的消息按照&lt;b&gt;先进先出&lt;/b&gt; rpop（右进） 的原则弹出队列容器中&lt;/li&gt;
+    &lt;li&gt;队列（queue）：用于承载消息的载体，在队列里面，被生产者压入的消息按照一定顺序进行存放，保证有序性&lt;/li&gt;
+&lt;/ul&gt;
 &lt;!-- more --&gt;
 &lt;h2 id=&#34;为什么要使用消息队列&#34;&gt;为什么要使用消息队列&lt;/h2&gt;
 &lt;p&gt;常用于解决并发系统中资源的一致性问题（超卖），提升峰值的处理能力，同时保证消息的顺序性、可恢复性、必送达性。&lt;br&gt;
@@ -1133,7 +1139,148 @@ update t_goods set status=2,version=version+1 where id=#{id} and version=#{versi
     &lt;li&gt;若消费者客户端出现消息积压，到一定程度，会被强制断开，导致消息意外丢失。通常发生在消息的生产远大于消费速度时&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;基于 &lt;code&gt;list&lt;/code&gt; 实现的生产 / 消费模式队列，在应用中使用场景最为广泛。&lt;/p&gt;
-">Redis 实现消息队列</a>
+&lt;h2 id=&#34;实现&#34;&gt;实现&lt;/h2&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;class Queue
+    /**
+     * 准备处理消息key
+     */
+    public static $todoKey = &#39;TO_SEND_MSG&#39;;
+
+    /**
+     * 处理中消息key
+     */
+    public static $doingKey = &#39;SENDING_MSG&#39;;
+
+    /**
+     * 无限制阻塞
+     */
+    public static $timeout = 0;
+
+    ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;生产者实现&#34;&gt;生产者实现&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt; /**
+     * 生产者
+     */
+    public function producer()
+    {
+        $userArr = [
+          &#39;user1@mail.com&#39;,
+          &#39;user2@mail.com&#39;,
+          &#39;user3@mail.com&#39;,
+          &#39;user4@mail.com&#39;,
+          &#39;user5@mail.com&#39;,
+        ];
+
+        Redis::lpush(self::$todoKey, ...$userArr);
+        dd(&#39;生产者生产结束！&#39;);
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;如何消费&#34;&gt;如何消费&lt;/h3&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;消费触发方式&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;特点&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;死循环方式读取&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;易实现，故障时无法及时恢复（比较适合做秒杀，比较集中，运维集中维护）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;定时任务&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;压力均分，有处理上限；（需要合理设置时间间隔，不要等上一个任务没有完成下一个任务又开始了）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;守护进程&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;类似于 php-fpm 和 php-cg, 需要 shell 基础，实现成本较高&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;消费者1&#34;&gt;消费者1&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;    public function consumer1()
+    {
+        /**
+         * 循环执行消费
+         */
+        while (true) {
+            $msg = Redis::rpop(self::$todoKey);
+            if ($msg) {
+                // TODO 发送消息业务
+            }
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;存在的问题：当 &lt;code&gt;self::$todoKey&lt;/code&gt; 为空的情况下，消费服务将会密集的向 &lt;code&gt;redis&lt;/code&gt; 服务重复执行 &lt;code&gt;rpop&lt;/code&gt; 命令，造成资源的浪费，对系统性能有严重折损，可以适当 &lt;code&gt;sleep&lt;/code&gt; 一段时间&lt;/p&gt;
+&lt;h3 id=&#34;消费者2&#34;&gt;消费者2&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;    public function consumer2()
+    {
+        /**
+         * 循环执行消费
+         */
+        while (true) {
+            $msg = Redis::rpop(self::$todoKey);
+            if ($msg) {
+                // TODO 发送消息业务
+            } else {
+                // 等待10s
+                sleep(10);
+            }
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;存在的问题：如果有消息在入队的情况下，程序还处于阻塞状态 &lt;code&gt;sleep&lt;/code&gt;，程序将会无法及时响应消息，消息及时性会大打折扣（排除业务允许延迟的情况）&lt;/p&gt;
+&lt;h3 id=&#34;消费者3&#34;&gt;消费者3&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;    public function consumer3()
+    {
+        /**
+         * 循环执行消费
+         */
+        while (true) {
+            // timeout=0 无限制阻塞式消费
+            // 移出并获取列表的最后一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止
+            $msg = Redis::brpop(self::$todoKey, self::$timeout);
+            if ($msg) {
+                // TODO 发送消息业务
+            }
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;存在的问题：如果消费服务端出现异常，由于服务端没有进行备份，那么将会出现消息丢失&lt;/p&gt;
+&lt;h3 id=&#34;消费者4&#34;&gt;消费者4&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;public function consumer4()
+    {
+        while (true) {
+            do {
+                // 循环阻阻塞执行，消费端取到消息的同时，原子性的把该消息放入一个正在处理中的$doingKey列表（进行备份）
+                // 从列表中弹出一个值，将弹出的元素插入到另外一个列表中并返回它； 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止
+                $msg = Redis::brpoplpush(self::$todoKey, self::$doingKey, self::$timeout);
+                try {
+                    // TODO 发送消息业务
+                    // 业务未出现异常，处理完业务后，则从正在处理的list中删除当前处理的消息,直到处理中 list 消息为空
+                    Redis::lrem(self::$doingKey, 1, $msg);
+                } catch (\Exception $e) {
+                    // TODO 异常
+                    /**
+                     * 业务出现异常，处理异常
+                     * 通常处理异常有两种方法
+                     * 1.将异常消息重新放到待消费$todoKey的 list 中
+                     * 2.单独处理异常消息（如发送邮件通知，人工处理）
+                     * 3.单独起一个脚本程序，处理长时间存在于$doingKey list中的消息
+                     */
+                }
+            } while (Redis::llen(self::$todoKey) || Redis::llen(self::$doingKey));
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;到此时，队列已经满足了安全和性能（高可用）的需求&lt;br&gt;
+上面代码中利用 &lt;code&gt;brpoplpush&lt;/code&gt; 在消费端取到消息的同时原子性的把该消息放入一个正在处理中的 $doingKey 列表中（进行备份）：&lt;/p&gt;
+&lt;ul&gt;
+    &lt;li&gt;如果处理业务没有出现异常，那么业务处理完成后从正在处理中的 $doingKey 列表 lrem 删除当前已经处理 ok 的消息&lt;/li&gt;
+    &lt;li&gt;如果处理业务出现异常，我们已经在处理中的 $doingKey 列表中备份了异常消息，对于异常的消息，根据具体的业务需求实现&lt;/li&gt;
+&lt;/ul&gt;">Redis 实现消息队列</a>
       </div>
       
       <div class="item">
