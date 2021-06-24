@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>腰盐醋</title>
+<title>连接池 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1624529293348">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,6 +38,8 @@
 
 
 
+  <meta name="description" content="连接池" />
+  <meta name="keywords" content="" />
 </head>
 
 <body>
@@ -157,10 +159,26 @@
   <div class="main-continer">
     
     <div
-      class="section-layout  pisces">
+      class="section-layout pisces ">
       <div class="section-layout-wrapper">
-        <div id="sidebarMeta" class="sidebar">
-    
+        
+
+<div class="sidebar">
+  
+    <div class="sidebar-box box-shadow-wrapper bg-color right-motion" id="sidebar">
+      
+        <div class="post-list-sidebar">
+          <div class="sidebar-title">
+            <span id="tocSideBar" class="sidebar-title-item sidebar-title-active language" data-lan="index">文章目录</span>
+            <span id="metaSideBar" class="sidebar-title-item language" data-lan="preview">站点概览</span>
+          </div>
+        </div>
+      
+      <div class="sidebar-body pisces" id="sidebar_body">
+        
+          
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -196,152 +214,565 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%BF%9E%E6%8E%A5%E6%B1%A0">什么是连接池</a></li>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E8%BF%9E%E6%8E%A5%E6%B1%A0">为什么需要连接池</a>
+<ul>
+<li><a href="#%E5%AE%9A%E4%B9%89">定义：</a></li>
+<li><a href="#%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6">运行机制：</a></li>
+<li><a href="#%E4%BC%AA%E4%BB%A3%E7%A0%81">伪代码</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0">数据库连接池</a>
+<ul>
+<li><a href="#%E5%AE%9A%E4%B9%89-2">定义</a></li>
+<li><a href="#%E4%BC%98%E7%82%B9">优点</a></li>
+<li><a href="#%E6%95%B0%E9%87%8F%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AE">数量如何设置</a></li>
+<li><a href="#%E4%B8%BA%E4%BD%95%E8%A6%81%E4%BD%BF%E7%94%A8">为何要使用</a></li>
+<li><a href="#%E5%B9%B6%E5%8F%91%E9%97%AE%E9%A2%98">并发问题</a></li>
+<li><a href="#%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86">事务处理</a></li>
+<li><a href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86">工作原理</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8-swoole-%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84-redis%E8%BF%9E%E6%8E%A5%E6%B1%A0">使用 Swoole 实现简单的 Redis连接池</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
 </div>
+
 <script>
-  let sidebarMeta = document.querySelector('#sidebarMeta');
-  let scheme = 'pisces';
-  let sidebarWrapper = document.querySelector('.sidebar-wrapper');
-  if (sidebarMeta && (scheme === 'pisces' || scheme === 'gemini')) {
-    document.addEventListener('scroll', function(e) {
-      if (document.scrollingElement.scrollTop > parseInt(sidebarMeta.style.marginTop) + 10) {
-        sidebarWrapper.classList.add('home-sidebar-fixed')
-      } else {
-        sidebarWrapper.classList.remove('home-sidebar-fixed')
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
       }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0] && elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
     });
   }
-  </script>
-        <div class="section-box tag-line box-shadow-wrapper">
-          <section class="section tags-section posts-expand bg-color">
-            <div class="padding-wrapper">
-  <div class="tag-timeline-box">
-    <div class="tag-timeline-wrapper">
-      <div class="tag-timeline-title">
-        <h2>
-          ThinkPHP
-          <small class="language" data-lan="tag">标签</small>
-        </h2>
+
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
+          
+        
       </div>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      <a href="http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/">
-        <div class="motion-warpper">
-          <div class="tag-post-node">
-            <h1>
-              08-29
-              <small>宝塔搭建 ThinkPHP</small>
-            </h1>
-          </div>
-        </div>
-      </a>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
+    </div>
+  
+</div>
+<script>
+  const SIDEBAR_TITLE_ACTIVE = 'sidebar-title-active';
+  const SIDEBAR_BODY_ACTIVE = 'sidebar-body-active';
+  const SLIDE_UP_IN = 'slide-up-in';
+
+  let sidebar = document.querySelector('#sidebar'),
+  tocSideBar = document.querySelector('#tocSideBar'),
+  metaSideBar = document.querySelector('#metaSideBar'),
+  postToc = document.querySelector('#post_toc'),
+  postSiteMeta = document.querySelector('#post_side_meta'),
+  sidebarTitle = document.querySelector('.sidebar-title'),
+  sidebarBody = document.querySelector('#sidebar_body');
+
+  tocSideBar && tocSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  metaSideBar && metaSideBar.addEventListener('click', (e) => {
+    toggleSidebar(e);
+  });
+
+  function toggleSidebar(e) {
+    let currentTitle = document.querySelector("."+SIDEBAR_TITLE_ACTIVE);
+    if (currentTitle == e.srcElement) {
+      return ;
+    }
+    let current, showElement, hideElement;
+    if (e.srcElement == metaSideBar) {
+      showElement = postSiteMeta;
+      hideElement = postToc;
+    } else if (e.srcElement == tocSideBar){
+      showElement = postToc;
+      hideElement = postSiteMeta;
+    }
+    currentTitle.classList.remove(SIDEBAR_TITLE_ACTIVE);
+    e.srcElement.classList.add(SIDEBAR_TITLE_ACTIVE);
+
+    window.Velocity(hideElement, 'stop');
+    window.Velocity(hideElement, 'transition.slideUpOut', {
+      display: 'none',
+      duration: 200,
+      complete: function () {
+        window.Velocity(showElement, 'transition.slideDownIn', {
+          duration: 200
+        });
+      }
+    })
+    hideElement.classList.remove(SIDEBAR_BODY_ACTIVE);
+    showElement.classList.add(SIDEBAR_BODY_ACTIVE);
+  }
+
+  postToc && postToc.addEventListener('transitionend', function() {
+    this.classList.remove(SLIDE_UP_IN);
+  });
+
+  if (sidebarBody) {
+    if (sidebarBody.classList.contains('pisces') || sidebarBody.classList.contains('gemini')) {
+      let hasFix = false;
+      let scrollEl = document.querySelector('.main-continer');
+      let limitTop = document.querySelector('#nav_ul').children.length * 42 + 162;
+      window.addEventListener('scroll', function(e) {
+        if (document.scrollingElement.scrollTop >= limitTop) {
+          if (!hasFix) {
+            sidebar.classList.add('sidebar-fixed');
+            hasFix = true;
+          }
+        } else {
+          if (hasFix) {
+            sidebar.classList.remove('sidebar-fixed');
+            hasFix = false;
+          }
+        }
+      });
+    }
+  }
+  
+</script>
+        <div class="section-box box-shadow-wrapper">
+          <div class="section bg-color post post-page">
+            <section class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="http://weakcc.github.io/post/lian-jie-chi/">
+      连接池
+    </a>
+  </h1>
+  <div class="post-meta">
+    
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span class="language" data-lan="publish">发布于</span>
+      <span class="publish-time" data-t="2021-06-24 14:10:52">2021-06-24</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
+    
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>12<span class="language" data-lan="minute">分钟</span></span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>3044<span class="pc-show language" data-lan="words">字数</span></span>
+    </span>
+    
+  </div>
+</section>
+            <div class="post-body next-md-body" id="post_body">
+              <h1 id="什么是连接池">什么是连接池</h1>
+<p>在实际应用开发中，一般会有很多访问下游的需求（下游包括但不限于<b>服务</b>/<b>数据库</b>/<b>缓存</b>），在并发量很低的时候，通常不会有任何问题的，但当服务器单机<b>QPS</b>（每秒查询率）达到几百，几千，甚至上万的时候，如果每一次访问都是必须经历建立连接=》收发请求=》关闭连接=》释放资源等步骤，系统的性能必然急剧下降，严重导致系统崩溃。</p>
+<p>上面简化为：</p>
+<ul>
+    <li>与下游建立一个连接</li>
+    <li>通过这个连接，收发请求</li>
+    <li>交互结束，关闭连接，释放资源</li>
+</ul>
+<!-- more -->
+<blockquote>
+<p>QPS是每秒查询率 ,是一台服务器每秒能够相应的查询次数，是对一个特定的查询服务器在规定时间内所处理流量多少的衡量标准, 即每秒的响应请求数，也即是最大吞吐能力</p>
+</blockquote>
+<p>以 PHP 连接 MySQL 为例：</p>
+<pre><code class="language-php">&lt;?php
+$host = '127.0.0.1';
+$username = 'root';
+$password = '123456';
+$dbname = 'demo';
+// 打开一个到 MySQL 服务器的新的连接
+$link = @mysqli_connect($host, $username, $password, $dbname); 
+if ($link) {
+    // SQL 语句
+    $sql = 'select version()'; 
+    // 执行 SQL 语句，并返回结果
+    $result = mysqli_query($link, $sql); 
+    // 从结果集中获取所有数据
+    $data = mysqli_fetch_all($result); 
+    print_r($data);
+    // 关闭连接
+    mysqli_close($link);
+} else {
+    echo '数据库连接失败！';
+}
+</code></pre>
+<h1 id="为什么需要连接池">为什么需要连接池</h1>
+<p>当服务单机 QPS 达到几百、几千的时候，<b>建立连接</b>和<b>销毁连接</b>就会成为瓶颈，此时该如何优化？<br>
+很简单，服务启动的时候，<b>先建立好若干连接</b>形成一个<code>池子</code>，当有请求过来的时候，从建立好的<code>池子</code>中取出一个连接，执行下游操作，执行完毕再放回到<code>池子</code>中，以此提升性能。</p>
+<h2 id="定义">定义：</h2>
+<p><code>连接池</code>：创建和管理一个连接的缓冲池的技术，这些连接准备好被任何需要它们的线程使用。</p>
+<h2 id="运行机制">运行机制：</h2>
+<ol>
+    <li><b>init</b> 程序初始化时创建连接池：初始化的时候创建，在服务启动的时候只调用一次</li>
+    <li><b>get</b> 使用时向连接池申请可用连接：每次请求通过连接池的接口拿取数据</li>
+    <li><b>push</b> 使用完毕，将连接返还给连接池：访问结束，并不是关闭这个连接，而是把这个连接放回到连接池中</li>
+    <li>程序退出时，断开所有连接，并释放资源</li>
+</ol>
+<h2 id="伪代码">伪代码</h2>
+<pre><code class="language-php">&lt;?php
+
+class Pool
+{
+    public static function getIn()
+    {
+        // 单例模式
+    }
+
+    public function init()
+    {
+        // pool 准备好就填充指定的资源 比如10个连接
+        $this-&gt;pool = $array;
+    }
+
+    public function get()
+    {
+        return array_pop($this-&gt;pool);
+    }
+
+    public function push($obj)
+    {
+        $this-&gt;pool[] = $obj;
+    }
+}
+
+// 实例化池子
+$dbPool = Pool::getIn();
+
+// 获取连接
+$db = $db-&gt;get();
+
+// 执行语句
+$res = $db-&gt;query('SQL 语句');
+
+// 归还连接
+$dbPool-&gt;push($db);
+</code></pre>
+<h2 id="数据库连接池">数据库连接池</h2>
+<h3 id="定义-2">定义</h3>
+<p><code>数据库连接池</code>：程序启动时建立足够的数据库连接，并将这些连接组成一个连接池，由程序动态地对池中的连接申请，使用，释放。</p>
+<h3 id="优点">优点</h3>
+<p>减少 <code>I/O</code> 操作，提高资源利用率<br>
+如果在短时间内进行一万次mysql的连接，就需要在这个往返过程循环，在路上浪费了很多时间、性能消耗。<br>
+如果我们先把连接连接好，并且放在连接池中，程序中需要使用就从池中获取，执行操作。</p>
+<ol>
+    <li>减少连接创建时间。连接池中的连接是已准备好的、可重复使用的，获取后可以直接访问数据库，因此减少了连接创建的次数和时间</li>
+    <li>简化的编程模式。当使用连接池时，每一个单独的线程能够像创建一个自己的 JDBC 连接一样操作，允许用户直接使用 JDBC 编程技术</li>
+    <li>控制资源的使用。如果不使用连接池，每次访问数据库都需要创建一个连接，这样系统的稳定性受系统连接需求影响很大，很容易产生资源浪费和高负载异常。连接池能够使性能最大化，将资源利用控制在一定的水平之下。连接池能控制池中的连接数量，增强了系统在大量用户应用时的稳定性</li>
+</ol>
+<blockquote>
+<p>Java数据库连接，（Java Database Connectivity，简称JDBC）是Java语言中用来规范客户端程序如何来访问数据库的应用程序接口，提供了诸如查询和更新数据库中数据的方法。JDBC也是Sun Microsystems的商标。我们通常说的JDBC是面向关系型数据库的。</p>
+</blockquote>
+<h3 id="数量如何设置">数量如何设置</h3>
+<p>连接数量需要根据并发数，以及数据库的处理情况来决定的，并不是越多越好，比如你的数据库最大只能处理500个连接，那你设置700个，数据库照样处理不过来，设置过多并没有什么用处,反而可能会让数据库宕机。</p>
+<blockquote>
+<p>连接池数量，也就是总数，需要根据进程来看，每个进程 * 连接池配置数量 = 总数量 如 swoole 中 worker 进程为8，那你设置20个，则总数就是 8 * 20 = 160</p>
+</blockquote>
+<p>连接池中到底应该放置多少连接，才能使系统的性能最佳？系统可采取设置最小连接数（minConnection）和最大连接数（maxConnection）等参数来控制连接池中的连接。比方说，最小连接数是系统启动时连接池所创建的连接数。如果创建过多，则系统启动就慢，但创建后系统的响应速度会很快；如果创建过少，则系统启动的很快，响应起来却慢。这样，可以在开发时，设置较小的最小连接数，开发起来会快，而在系统实际使用时设置较大的，因为这样对访问客户来说速度会快些。最大连接数是连接池中允许连接的最大数目，具体设置多少，要看系统的访问量，可通过软件需求上得到。</p>
+<p>如何确保连接池中的最小连接数呢？有动态和静态两种策略。动态即每隔一定时间就对连接池进行检测，如果发现连接数量小于最小连接数，则补充相应数量的新连接，以保证连接池的正常运转。静态是发现空闲连接不够时再去检查。</p>
+<h3 id="为何要使用">为何要使用</h3>
+<ul>
+    <li>假设网站一天有很大的访问量，数据库服务器就需要为每次连接创建一次数据库连接，极大的浪费数据库的资源，并且极易造成数据库服务器内存溢出、宕机</li>
+    <li>数据库连接是一种关键的有限的昂贵的资源，这一点在多用户的网页应用程序中体现的尤为突出。对数据库连接的管理能显著影响到整个应用程序的伸缩性和健壮性，影响到程序的性能指标。数据库连接池正式针对这个问题提出来的。数据库连接池负责分配，管理和释放数据库连接，它允许应用程序重复使用一个现有的数据库连接，而不是重新建立一个</li>
+    <li>数据库连接池在初始化时将创建一定数量的数据库连接放到连接池中，这些数据库连接的数量是由最小数据库连接数来设定的。无论这些数据库连接是否被使用，连接池都将一直保证至少拥有这么多的连接数量。连接池的最大数据库连接数量限定了这个连接池能占有的最大连接数，当应用程序向连接池请求的连接数超过最大连接数量时，这些请求将被加入到等待队列中</li>
+</ul>
+<h3 id="并发问题">并发问题</h3>
+<p>为了使连接管理服务具有最大的通用性，必须考虑多线程环境，即并发问题。这个问题相对比较好解决，因为各个语言自身提供了对并发管理的支持像 java,c# 等等，使用 synchronized (java) lock (C#) 关键字即可确保线程是同步的。</p>
+<h3 id="事务处理">事务处理</h3>
+<ul>
+    <li>DB 连接池必须要确保某一时间内一个 conn 只能分配给一个线程。不同 conn 的事务是相互独立的</li>
+    <li>事务具有原子性，此时要求对数据库的操作符合 “ALL-ALL-NOTHING” 原则，即对于一组 SQL 语句要么全做，要么全不做</li>
+    <li>我们知道当２个线程共用一个连接 Connection 对象，而且各自都有自己的事务要处理时候，对于连接池是一个很头疼的问题，因为即使 Connection 类提供了相应的事务支持，可是我们仍然不能确定那个数据库操作是对应那个事务的，这是由于我们有２个线程都在进行事务操作而引起的。为此我们可以使用每一个事务独占一个连接来实现，虽然这种方法有点浪费连接池资源但是可以大大降低事务管理的复杂性</li>
+</ul>
+<h3 id="工作原理">工作原理</h3>
+<p>连接池的工作原理主要由三部分组成，分别为连接池的建立、连接池中连接的使用管理、连接池的关闭。</p>
+<ul>
+    <li>第一、连接池的建立。一般在系统初始化时，连接池会根据系统配置建立，并在池中创建了几个连接对象，以便使用时能从连接池中获取。连接池中的连接不能随意创建和关闭，这样避免了连接随意建立和关闭造成的系统开销。Java 中提供了很多容器类可以方便的构建连接池，例如 Vector、Stack 等</li>
+    <li>第二、连接池的管理。连接池管理策略是连接池机制的核心，连接池内连接的分配和释放对系统的性能有很大的影响。其管理策略是：
+     <ul>
+        <li>当客户请求数据库连接时，首先查看连接池中是否有空闲连接，如果存在空闲连接，则将连接分配给客户使用；如果没有空闲连接，则查看当前所开的连接数是否已经达到最大连接数，如果没达到就重新创建一个连接给请求的客户；如果达到就按设定的最大等待时间进行等待，如果超出最大等待时间，则抛出异常给客户</li>
+        <li>当客户释放数据库连接时，先判断该连接的引用次数是否超过了规定值，如果超过就从连接池中删除该连接，否则保留为其他客户服务</li>
+        <li>该策略保证了数据库连接的有效复用，避免频繁的建立、释放连接所带来的系统资源开销</li>
+    </ul>
+    </li>
+    <li>第三、连接池的关闭。当应用程序退出时，关闭连接池中所有的连接，释放连接池相关的资源，该过程正好与创建相反</li>
+</ul>
+<h3 id="使用-swoole-实现简单的-redis连接池">使用 Swoole 实现简单的 Redis连接池</h3>
+<pre><code class="language-php">&lt;?php
+use http\Exception\RuntimeException;
+class Pool
+{
+    protected static $instance;
+
+    public static function i() :self
+    {
+        return static::$instance ?? (static::$instance = new static);
+    }
+
+    protected $channel;
+
+    public function __construct(int $size = 10)
+    {
+        $this-&gt;channel = new Swoole\Coroutine\Channel($size);
+
+        while ($size--) {
+            // 协程 Redis 客户端
+            $redis = new Swoole\Coroutine\Redis;
+            $res = $redis-&gt;connect('127.0.0.1', 6379);
+            if ($res) {
+                // pull
+                $this-&gt;put($redis);
+            } else {
+                // 抛入异常或者做错误处理或者重试
+                throw new RuntimeException($res-&gt;errMsg, $res-&gt;errCode);
+            }
+        }
+    }
+
+    // 入列
+    public function put(Swoole\Coroutine\Redis $redis): void
+    {
+        $this-&gt;channel-&gt;push($redis);
+    }
+
+    // 出列
+    public function get($timeout = -1): ?Swoole\Coroutine\Redis
+    {
+        return $this-&gt;channel-&gt;pop($timeout) ?: null;
+    }
+
+    // 关闭
+    public function close(): void
+    {
+        $this-&gt;channel-&gt;close();
+    }
+}
+
+// 使用了 Co\run() 来创建一个协程容器
+Co\run(function() {
+    $pool = Pool::i();
+    $redis = $pool-&gt;get();
+//    $redis-&gt;set('foo', '小熊');
+    $value = $redis-&gt;get('foo');
+    if ($value === false) {
+        throw new RuntimeException($redis-&gt;errMsg, $redis-&gt;errCode);
+    }
+    echo $value;
+    $pool-&gt;put($redis);
+});
+</code></pre>
+
+            </div>
+            
+              <div class="reward-btn">
+                <div class="reward-btn-text">赞赏</div>
+              </div>
+            
+            
+              <div class="post-footer">
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong class="language" data-lan="author">本文作者：</strong>
+      腰盐醋
+    </li>
+    <li class="post-copyright-link">
+      <strong class="language" data-lan="link">本文链接：</strong>
+      <a href="http://weakcc.github.io/post/lian-jie-chi/" title="连接池">http://weakcc.github.io/post/lian-jie-chi/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong class="language" data-lan="copyright">版权声明： </strong>
+      本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i> BY-NC-SA</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+  <div class="tags">
+    
+  </div>
+  <div class="nav">
+    <div class="nav-prev">
+      
+    </div>
+    <div class="nav-next">
+      
+        <a class="nav-pc-next" title="Redis 实现消息队列" href="http://weakcc.github.io/post/redis-shi-xian-xiao-xi-dui-lie/">Redis 实现消息队列</a>
+        <a class="nav-mobile-next" title="Redis 实现消息队列" href="http://weakcc.github.io/post/redis-shi-xian-xiao-xi-dui-lie/">下一篇</a>
+        <i class="fa fa-chevron-right"></i>
       
     </div>
   </div>
 </div>
-          </section>
+            
+            
+  
+
+          </div>
         </div>
       </div>
     </div>
@@ -528,6 +959,265 @@
   }
 
 </script>
+    <div class="light-box" id="light_box"></div>
+<script>
+  let imgs = document.querySelectorAll('.post-body img');
+  let lightBox = document.querySelector('#light_box');
+  lightBox.addEventListener('mousedown', (e) => {
+    e.preventDefault()
+  })
+  lightBox.addEventListener('mousewheel', (e) => {
+    e.preventDefault()
+  })
+  let width = window.innerWidth * 0.8;
+  lightBox.onclick = () => {
+    let img = lightBox.querySelector('img');
+    lightBox.style = '';
+    img && img.remove();
+  }
+  imgs.forEach(item => {
+    item.onclick = function (e) {
+      let lightImg = document.createElement('img');
+      lightImg.src = this.src;
+      lightBox.style = `height: 100%; opacity: 1; background-color: rgba(0, 0, 0, 0.5);cursor: zoom-out;`;
+      lightImg.style = `width: ${width}px;border-radius: 2px;`;
+      lightImg.onclick = function () {
+        lightBox.style = '';
+        this.remove();
+      }
+      lightBox.append(lightImg);
+    }
+  })
+</script>
+    <div class="reward-mask" style="display: none;">
+  <div class="reward-relative">
+    <span class="close" aria-hidden="true">x</span>
+    <div class="reward-body">
+      <h2>感谢您的支持，我会继续努力的!</h2>
+      <div class="reward-img-box">
+        <div style="position: relative; width: 140px; height: 140px;">
+          
+          
+            <img id="zfb" class="reward-img" src="/media/images/custom-zfbImg.png" alt="赞赏码">
+          
+          
+            <img id="wx" class="reward-img" src="/media/images/custom-wxImg.png" alt="赞赏码">
+          
+        </div>
+      </div>
+      <p class="reward-word">扫码打赏，你说多少就多少</p>
+      <p class="reward-tip">打开微信扫一扫，即可进行扫码打赏哦</p>
+    </div>
+    <div class="bottom">
+      
+      <div id="zfbBtn" class="pay-text">
+        支付宝
+      </div>
+      
+      
+      <div id="wxBtn" class="pay-text">
+        微信支付
+      </div>
+      
+    </div>
+  </div>
+</div>
+<style>
+  .reward-mask {
+    position: fixed;
+    z-index: 99999;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #00000054;
+  }
+
+  .reward-relative {
+    position: relative;
+    width: 480px;
+    text-align: center;
+    margin: 0 auto;
+    border-radius: 5px;
+    background-color: #fff;
+    top: 50%;
+    margin-top: -205px;
+  }
+
+  .reward-relative .close {
+    position: absolute;
+    right: 10px;
+    font-weight: normal;
+    font-size: 16px;
+    color: #929292;
+  }
+
+  .reward-body {
+    padding: 40px 20px 20px;
+  }
+
+  .bottom {
+    display: flex;
+  }
+
+  .reward-btn {
+    text-align: center;
+  }
+
+  .reward-btn-text {
+    display: inline-block;
+    cursor: pointer;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 50%;
+    background-color: #ff9734;
+    color: #FFF;
+    margin-top: 20px;
+  }
+
+  .pay-text {
+    margin-top: 10px;
+    padding: 10px;
+    flex: 1;
+    transition: all .2s linear;
+  }
+
+  .pay-text:hover {
+    background-color: #a5a5a536;
+  }
+
+  .reward-body h2 {
+    padding-top: 10px;
+    text-align: center;
+    color: #a3a3a3;
+    font-size: 16px;
+    font-weight: normal;
+    margin: 0 0 20px;
+  }
+
+  .reward-body h2:after,
+  .reward-body h2:before {
+    font-family: Arial, Helvetica, sans-serif;
+    background: 0 0;
+    width: 0;
+    height: 0;
+    font-style: normal;
+    color: #eee;
+    font-size: 80px;
+    position: absolute;
+    top: 20px;
+  }
+
+  .reward-body h2:before {
+    content: '\201c';
+    left: 50px;
+  }
+
+  .reward-body h2:after {
+    content: '\201d';
+    right: 80px;
+  }
+
+  .reward-img-box {
+    display: inline-block;
+    padding: 10px;
+    border: 6px solid #ea5f00;
+    margin: 0 auto;
+    border-radius: 3px;
+    position: relative;
+  }
+
+  .reward-img {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (max-width: 767px) {
+    .reward-relative {
+      height: 100%;
+      top: 0px;
+      margin-top: 0;
+      width: auto;
+    }
+
+    .reward-relative .bottom {
+      flex-direction: column;
+    }
+
+    .reward-relative .pay-text {
+      width: 80%;
+      margin: 5px auto;
+      border: 1px solid silver;
+      padding: 6px;
+      border-radius: 4px;
+    }
+
+    .reward-body h2:after {
+      right: 40px;
+    }
+
+    .reward-body h2:after,
+    .reward-body h2:before {
+      font-size: 60px;
+    }
+
+    .reward-body h2:before {
+      left: 20px;
+    }
+  }
+</style>
+<script>
+  !function () {
+    var mask = document.querySelector('.reward-mask');
+    let close = document.querySelector('.reward-relative .close');
+    let rewardBtn = document.querySelector('.reward-btn');
+
+    let zfb = document.querySelector('#zfb'),
+      wx = document.querySelector('#wx'),
+      zfbBtn = document.querySelector('#zfbBtn'),
+      wxBtn = document.querySelector('#wxBtn');
+
+    if (zfbBtn && wxBtn) {
+      zfbBtn.addEventListener('click', () => {
+        window.Velocity(zfb, 'transition.slideLeftIn', {
+          duration: 400
+        });
+        window.Velocity(wx, 'transition.slideRightOut', {
+          display: 'none',
+          duration: 400
+        });
+      });
+
+      wxBtn.addEventListener('click', () => {
+        window.Velocity(wx, 'transition.slideRightIn', {
+          duration: 400
+        });
+        window.Velocity(zfb, 'transition.slideLeftOut', {
+          display: 'none',
+          duration: 400
+        });
+      });
+    }
+
+    rewardBtn.addEventListener('click', (e) => {
+      window.Velocity(mask, 'transition.slideDownIn', {
+        duration: 400
+      })
+    });
+
+    close.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.Velocity(mask, 'transition.slideUpOut', {
+        duration: 400
+      })
+    })
+  }()
+</script>
+
   </div>
 </body>
 
@@ -2601,6 +3291,5 @@ OK
 
   <div class="snow-container"></div>
   <script src="/media/js/bg/snow.js"></script>
-
 
 </html>
