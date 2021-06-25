@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>Redis 实现消息队列 | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1624529293348">
+<link rel="shortcut icon" href="/favicon.ico?v=1624612528791">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -234,6 +234,21 @@
 <li><a href="#%E6%B6%88%E8%B4%B9%E8%80%852">消费者2</a></li>
 <li><a href="#%E6%B6%88%E8%B4%B9%E8%80%853">消费者3</a></li>
 <li><a href="#%E6%B6%88%E8%B4%B9%E8%80%854">消费者4</a></li>
+</ul>
+</li>
+<li><a href="#%E5%BB%B6%E8%BF%9F%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97">延迟消息队列</a>
+<ul>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E9%9C%80%E8%A6%81">什么时候需要</a></li>
+<li><a href="#%E5%9C%BA%E6%99%AF">场景</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8E-key-%E7%9A%84%E8%BF%87%E6%9C%9F%E7%9B%91%E5%90%AC">基于 key 的过期监听</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8E-zset-%E9%9B%86%E5%90%88">基于 zset 集合</a>
+<ul>
+<li><a href="#%E7%94%9F%E6%88%90%E8%80%85">生成者</a></li>
+<li><a href="#%E6%B6%88%E8%B4%B9%E8%80%851-2">消费者1</a></li>
+<li><a href="#%E6%B6%88%E8%B4%B9%E8%80%852-2">消费者2</a></li>
+<li><a href="#%E6%B6%88%E8%B4%B9%E8%80%853-2">消费者3</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -537,12 +552,12 @@
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>7<span class="language" data-lan="minute">分钟</span></span>
+      <span>13<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>1764<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>3312<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
@@ -745,6 +760,234 @@
     <li>如果处理业务没有出现异常，那么业务处理完成后从正在处理中的 $doingKey 列表 lrem 删除当前已经处理 ok 的消息</li>
     <li>如果处理业务出现异常，我们已经在处理中的 $doingKey 列表中备份了异常消息，对于异常的消息，根据具体的业务需求实现</li>
 </ul>
+<h2 id="延迟消息队列">延迟消息队列</h2>
+<p>生产者把消息发送到消息队列中以后，并不期望被立即消费，而是等待指定时间后才可以被消费者消费，这类消息通常被称为<b>延迟消息</b></p>
+<h3 id="什么时候需要">什么时候需要</h3>
+<p>数据量大，对实时性要求并不高</p>
+<h3 id="场景">场景</h3>
+<ul>
+    <li>有效期：限时活动，拼团</li>
+    <li>超时处理：取消超时未支付订单，超时自动确认收货</li>
+    <li>延迟处理：机器人点赞 / 观看数 / 评论 / 关注，等待依赖条件</li>
+    <li>重试：网络异常重试，打车派单，依赖条件为满足重试</li>
+    <li>定时任务：智能设备定时启动</li>
+</ul>
+<h3 id="基于-key-的过期监听">基于 key 的过期监听</h3>
+<p>实现原理：在Redis2.8之后的版本中，当我们将&lt;key, value&gt;对使用Redis缓存起来并设置缓存失效时间的时候，会触发Redis的键事件通知，客户端订阅这个通知事件，服务端会将对应的通知事件发送给每个订阅的客户端，然后客户端根据收到的通知，做相应的后续处理(例如：键过期时间通知对应的topic为:“keyevent@0:expired”)</p>
+<p>在 redis.conf 设置</p>
+<pre><code>notify-keyspace-events Ex
+ 
+# x代表过期
+</code></pre>
+<p>实现思路：</p>
+<ol>
+    <li>起一个线程，开启对任务 key (如：未支付订单单号) 的 watch（监视）</li>
+    <li>一旦 key 过期（订单未支付超时时间），触发 event（事件） 进行业务逻辑处理（取消订单）</li>
+</ol>
+<blockquote>
+<p>这种方法处理起来简单，但是在数据量较大的情况下，这种方案对性能影响较大</p>
+</blockquote>
+<p>redis实例化类</p>
+<pre><code class="language-php">//遇到类别重复的报错，所有叫Redis2
+class Redis2   
+{
+    private $redis;
+ 
+    public function __construct($host = '127.0.0.1', $port = 6379)
+    {
+        $this-&gt;redis = new Redis();
+        $this-&gt;redis-&gt;connect($host, $port);
+    }
+ 
+    public function setex($key, $time, $val)
+    {
+        return $this-&gt;redis-&gt;setex($key, $time, $val);
+    }
+ 
+    public function set($key, $val)
+    {
+        return $this-&gt;redis-&gt;set($key, $val);
+    }
+ 
+    public function get($key)
+    {
+        return $this-&gt;redis-&gt;get($key);
+    }
+ 
+    public function expire($key = null, $time = 0)
+    {
+        return $this-&gt;redis-&gt;expire($key, $time);
+    }
+ 
+    public function psubscribe($patterns = array(), $callback)
+    {
+        $this-&gt;redis-&gt;psubscribe($patterns, $callback);
+    }
+ 
+    public function setOption()
+    {
+        $this-&gt;redis-&gt;setOption(\Redis::OPT_READ_TIMEOUT, -1);
+    }
+
+}
+</code></pre>
+<p>过期事件的订阅：psubscribe.php</p>
+<pre><code class="language-php">require_once './Redis.class.php';
+$redis = new \Redis2();
+// 解决Redis客户端订阅时候超时情况
+$redis-&gt;setOption();
+$redis-&gt;psubscribe(array('__keyevent@0__:expired'), 'keyCallback');
+// 回调函数,这里写处理逻辑
+function keyCallback($redis, $pattern, $chan, $msg)
+{
+    echo &quot;Pattern: $pattern\n&quot;;
+    echo &quot;Channel: $chan\n&quot;;
+    echo &quot;Payload: $msg\n\n&quot;;
+    //keyCallback为订阅事件后的回调函数，这里写业务处理逻辑，
+    //比如前面提到的商品不支付自动撤单，这里就可以根据订单id,来实现自动撤单 
+}
+</code></pre>
+<p>设置过期事件：index.php</p>
+<pre><code class="language-php">require_once './Redis.class.php';
+$redis = new \Redis2();
+$order_id = 123;
+$redis-&gt;setex('order_id',10,$order_id);
+</code></pre>
+<p>先用命令行模式执行 psubscribe.php<br>
+在浏览器访问 index.php</p>
+<h3 id="基于-zset-集合">基于 zset 集合</h3>
+<p>实现思路：</p>
+<ol>
+    <li>利用 zadd 向集合中插入元素，以元素（订单）的时间戳（超时时间）作为 score</li>
+    <li>利用 zrangebyscore 以【0 - 当前时间戳】进行获取需要处理的元素（即为超时待处理订单</li>
+</ol>
+<blockquote>
+<p>zrangebyscore 返回有序集合中指定分数区间的成员列表。有序集成员按分数值递增(从小到大)次序排列<br>
+这种方法相较于上面方法，实现较为复杂，但是对性能保证较好，因此是应用最广泛的延迟队列实现方案</p>
+</blockquote>
+<h4 id="生成者">生成者</h4>
+<pre><code class="language-php">    /**
+     * 生产
+     */
+    public function producer()
+    {
+        $orderMap = [
+            'orderNo.1' =&gt; time() + 10,//订单1需要10s之后进行消费处理
+            'orderNo.2' =&gt; time() + 100,//订单2需要100s之后进行消费处理
+            'orderNo.3' =&gt; time() + 1000,//订单3需要1000s之后进行消费处理
+        ];
+        Redis::connection()-&gt;zadd(self::$delayKey, $orderMap);
+    }
+</code></pre>
+<p>利用 <code>zadd</code>，以延迟时间戳作为 <code>score</code>，元素唯一标志（订单号不重复）作为 <code>value</code>，向需要处理的 <code>key</code> 中插入元素</p>
+<blockquote>
+<p>因为是集合，因此需要保证集合元素的唯一性（score 可以相同）</p>
+</blockquote>
+<h4 id="消费者1-2">消费者1</h4>
+<pre><code class="language-php">    /**
+     * 消费
+     */
+    public function consumer1()
+    {
+        /**
+         * 循环执行消费
+         */
+        while (true) {
+            $msg = Redis::connection()-&gt;zrangebyscore(self::$delayKey, 0, time(), ['limit' =&gt; ['offset' =&gt; 0, 'count' =&gt; 1]]);
+            if ($msg) {
+                // 删除当前处理消息
+                if (Redis::connection()-&gt;zrem(self::$delayKey, $msg)) {
+                    // TODO 业务处理并返回处理结果
+                }
+            }
+        }
+    }
+</code></pre>
+<ol>
+<li>利用 zrangebyscore 按照 score (此处为元素对应超时时间戳) 进行获取满足条件的集合元素（超时待取消订单）</li>
+<li>当有满足的条件的元素（超时待取消订单）, 先删除该元素（保证不被其他进程取到），再进行业务逻辑处理</li>
+<li>此处为了考虑性能，建议每次只处理 1（count=1）条消息数据，offset=0</li>
+</ol>
+<p>存在问题：延迟队列满足条件的元素为空（或者集合为空）时候，进程还会频繁不断向 redis 服务获取满足条件的元素，造成 redis 服务资源占用和浪费<br>
+解决办法：可以在没有取到满足条件的时候让程序阻塞一段时间 unsleep(10000)</p>
+<h4 id="消费者2-2">消费者2</h4>
+<pre><code class="language-php">    /**
+     * 消费
+     */
+    public function consumer2()
+    {
+        /**
+         * 循环执行消费
+         */
+        while (true) {
+            $msg = Redis::connection()-&gt;zrangebyscore(self::$delayKey, 0, time(), ['limit' =&gt; ['offset' =&gt; 0, 'count' =&gt; 1]]);
+            if ($msg) {
+                // 删除当前处理消息
+                if (Redis::connection()-&gt;zrem(self::$delayKey, $msg)) {
+                    // TODO 业务处理并返回处理结果
+                }
+            } else {
+                /**
+                 * 阻塞1s,减少redis服务资源浪费
+                 */
+                unsleep(1000000);
+            }
+        }
+    }
+</code></pre>
+<p>存在问题：单机部署基本没有任何问题了，但是在分布式架构中，有可能出现 zrangebyscore 和 zrem 非同一个客户端的问题，即原子性问题<br>
+解决办法：<code>Lua</code> 解决办法</p>
+<h4 id="消费者3-2">消费者3</h4>
+<pre><code class="language-php">
+    /**
+     * 消费
+     * 没有备份机制的lua脚本
+     */
+    public function consumer3()
+    {
+        $luaScript = &lt;&lt;&lt;EOF
+local delayKey = KEYS[1]
+local start = ARGV[1]
+local endTime = ARGV[2]
+local limitNum = ARGV[3]
+local result = redis.call('zrangebyscore',delayKey,start,endTime,'limit',0, limitNum)
+
+if next(result) ~= nil  
+then 
+    local res = redis.call('zrem',delayKey,unpack(result))
+    if res &gt; 0
+    then
+        return result
+    end 
+else
+    return {}
+end
+EOF;
+        /**
+         * 循环执行消费
+         */
+        while (true) {
+            $startTime = 0;
+            $endTime   = time();
+            $limit     = 1;
+            /**
+             * 为了防止并发，保证原子性操作
+             * 利用lua脚本获取满足条件的消息，并删除满足条件消息
+             * 返回满足条件的消息
+             */
+            $msg = Redis::connection()-&gt;eval($luaScript, 1, self::$delayKey, $startTime, $endTime, $limit);
+            if ($msg) {
+                // TODO 业务处理并返回处理结果
+            } else {
+                /**
+                 * 阻塞1s,减少redis服务资源浪费
+                 */
+                unsleep(100000);
+            }
+        }
+    }
+</code></pre>
+
             </div>
             
               <div class="reward-btn">
@@ -1660,7 +1903,235 @@ Co\run(function() {
 &lt;ul&gt;
     &lt;li&gt;如果处理业务没有出现异常，那么业务处理完成后从正在处理中的 $doingKey 列表 lrem 删除当前已经处理 ok 的消息&lt;/li&gt;
     &lt;li&gt;如果处理业务出现异常，我们已经在处理中的 $doingKey 列表中备份了异常消息，对于异常的消息，根据具体的业务需求实现&lt;/li&gt;
-&lt;/ul&gt;">Redis 实现消息队列</a>
+&lt;/ul&gt;
+&lt;h2 id=&#34;延迟消息队列&#34;&gt;延迟消息队列&lt;/h2&gt;
+&lt;p&gt;生产者把消息发送到消息队列中以后，并不期望被立即消费，而是等待指定时间后才可以被消费者消费，这类消息通常被称为&lt;b&gt;延迟消息&lt;/b&gt;&lt;/p&gt;
+&lt;h3 id=&#34;什么时候需要&#34;&gt;什么时候需要&lt;/h3&gt;
+&lt;p&gt;数据量大，对实时性要求并不高&lt;/p&gt;
+&lt;h3 id=&#34;场景&#34;&gt;场景&lt;/h3&gt;
+&lt;ul&gt;
+    &lt;li&gt;有效期：限时活动，拼团&lt;/li&gt;
+    &lt;li&gt;超时处理：取消超时未支付订单，超时自动确认收货&lt;/li&gt;
+    &lt;li&gt;延迟处理：机器人点赞 / 观看数 / 评论 / 关注，等待依赖条件&lt;/li&gt;
+    &lt;li&gt;重试：网络异常重试，打车派单，依赖条件为满足重试&lt;/li&gt;
+    &lt;li&gt;定时任务：智能设备定时启动&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;基于-key-的过期监听&#34;&gt;基于 key 的过期监听&lt;/h3&gt;
+&lt;p&gt;实现原理：在Redis2.8之后的版本中，当我们将&amp;lt;key, value&amp;gt;对使用Redis缓存起来并设置缓存失效时间的时候，会触发Redis的键事件通知，客户端订阅这个通知事件，服务端会将对应的通知事件发送给每个订阅的客户端，然后客户端根据收到的通知，做相应的后续处理(例如：键过期时间通知对应的topic为:“keyevent@0:expired”)&lt;/p&gt;
+&lt;p&gt;在 redis.conf 设置&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;notify-keyspace-events Ex
+ 
+# x代表过期
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;实现思路：&lt;/p&gt;
+&lt;ol&gt;
+    &lt;li&gt;起一个线程，开启对任务 key (如：未支付订单单号) 的 watch（监视）&lt;/li&gt;
+    &lt;li&gt;一旦 key 过期（订单未支付超时时间），触发 event（事件） 进行业务逻辑处理（取消订单）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这种方法处理起来简单，但是在数据量较大的情况下，这种方案对性能影响较大&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;redis实例化类&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;//遇到类别重复的报错，所有叫Redis2
+class Redis2   
+{
+    private $redis;
+ 
+    public function __construct($host = &#39;127.0.0.1&#39;, $port = 6379)
+    {
+        $this-&amp;gt;redis = new Redis();
+        $this-&amp;gt;redis-&amp;gt;connect($host, $port);
+    }
+ 
+    public function setex($key, $time, $val)
+    {
+        return $this-&amp;gt;redis-&amp;gt;setex($key, $time, $val);
+    }
+ 
+    public function set($key, $val)
+    {
+        return $this-&amp;gt;redis-&amp;gt;set($key, $val);
+    }
+ 
+    public function get($key)
+    {
+        return $this-&amp;gt;redis-&amp;gt;get($key);
+    }
+ 
+    public function expire($key = null, $time = 0)
+    {
+        return $this-&amp;gt;redis-&amp;gt;expire($key, $time);
+    }
+ 
+    public function psubscribe($patterns = array(), $callback)
+    {
+        $this-&amp;gt;redis-&amp;gt;psubscribe($patterns, $callback);
+    }
+ 
+    public function setOption()
+    {
+        $this-&amp;gt;redis-&amp;gt;setOption(\Redis::OPT_READ_TIMEOUT, -1);
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;过期事件的订阅：psubscribe.php&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;require_once &#39;./Redis.class.php&#39;;
+$redis = new \Redis2();
+// 解决Redis客户端订阅时候超时情况
+$redis-&amp;gt;setOption();
+$redis-&amp;gt;psubscribe(array(&#39;__keyevent@0__:expired&#39;), &#39;keyCallback&#39;);
+// 回调函数,这里写处理逻辑
+function keyCallback($redis, $pattern, $chan, $msg)
+{
+    echo &amp;quot;Pattern: $pattern\n&amp;quot;;
+    echo &amp;quot;Channel: $chan\n&amp;quot;;
+    echo &amp;quot;Payload: $msg\n\n&amp;quot;;
+    //keyCallback为订阅事件后的回调函数，这里写业务处理逻辑，
+    //比如前面提到的商品不支付自动撤单，这里就可以根据订单id,来实现自动撤单 
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;设置过期事件：index.php&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;require_once &#39;./Redis.class.php&#39;;
+$redis = new \Redis2();
+$order_id = 123;
+$redis-&amp;gt;setex(&#39;order_id&#39;,10,$order_id);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;先用命令行模式执行 psubscribe.php&lt;br&gt;
+在浏览器访问 index.php&lt;/p&gt;
+&lt;h3 id=&#34;基于-zset-集合&#34;&gt;基于 zset 集合&lt;/h3&gt;
+&lt;p&gt;实现思路：&lt;/p&gt;
+&lt;ol&gt;
+    &lt;li&gt;利用 zadd 向集合中插入元素，以元素（订单）的时间戳（超时时间）作为 score&lt;/li&gt;
+    &lt;li&gt;利用 zrangebyscore 以【0 - 当前时间戳】进行获取需要处理的元素（即为超时待处理订单&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;zrangebyscore 返回有序集合中指定分数区间的成员列表。有序集成员按分数值递增(从小到大)次序排列&lt;br&gt;
+这种方法相较于上面方法，实现较为复杂，但是对性能保证较好，因此是应用最广泛的延迟队列实现方案&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id=&#34;生成者&#34;&gt;生成者&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;    /**
+     * 生产
+     */
+    public function producer()
+    {
+        $orderMap = [
+            &#39;orderNo.1&#39; =&amp;gt; time() + 10,//订单1需要10s之后进行消费处理
+            &#39;orderNo.2&#39; =&amp;gt; time() + 100,//订单2需要100s之后进行消费处理
+            &#39;orderNo.3&#39; =&amp;gt; time() + 1000,//订单3需要1000s之后进行消费处理
+        ];
+        Redis::connection()-&amp;gt;zadd(self::$delayKey, $orderMap);
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;利用 &lt;code&gt;zadd&lt;/code&gt;，以延迟时间戳作为 &lt;code&gt;score&lt;/code&gt;，元素唯一标志（订单号不重复）作为 &lt;code&gt;value&lt;/code&gt;，向需要处理的 &lt;code&gt;key&lt;/code&gt; 中插入元素&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;因为是集合，因此需要保证集合元素的唯一性（score 可以相同）&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id=&#34;消费者1-2&#34;&gt;消费者1&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;    /**
+     * 消费
+     */
+    public function consumer1()
+    {
+        /**
+         * 循环执行消费
+         */
+        while (true) {
+            $msg = Redis::connection()-&amp;gt;zrangebyscore(self::$delayKey, 0, time(), [&#39;limit&#39; =&amp;gt; [&#39;offset&#39; =&amp;gt; 0, &#39;count&#39; =&amp;gt; 1]]);
+            if ($msg) {
+                // 删除当前处理消息
+                if (Redis::connection()-&amp;gt;zrem(self::$delayKey, $msg)) {
+                    // TODO 业务处理并返回处理结果
+                }
+            }
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;利用 zrangebyscore 按照 score (此处为元素对应超时时间戳) 进行获取满足条件的集合元素（超时待取消订单）&lt;/li&gt;
+&lt;li&gt;当有满足的条件的元素（超时待取消订单）, 先删除该元素（保证不被其他进程取到），再进行业务逻辑处理&lt;/li&gt;
+&lt;li&gt;此处为了考虑性能，建议每次只处理 1（count=1）条消息数据，offset=0&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;存在问题：延迟队列满足条件的元素为空（或者集合为空）时候，进程还会频繁不断向 redis 服务获取满足条件的元素，造成 redis 服务资源占用和浪费&lt;br&gt;
+解决办法：可以在没有取到满足条件的时候让程序阻塞一段时间 unsleep(10000)&lt;/p&gt;
+&lt;h4 id=&#34;消费者2-2&#34;&gt;消费者2&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;    /**
+     * 消费
+     */
+    public function consumer2()
+    {
+        /**
+         * 循环执行消费
+         */
+        while (true) {
+            $msg = Redis::connection()-&amp;gt;zrangebyscore(self::$delayKey, 0, time(), [&#39;limit&#39; =&amp;gt; [&#39;offset&#39; =&amp;gt; 0, &#39;count&#39; =&amp;gt; 1]]);
+            if ($msg) {
+                // 删除当前处理消息
+                if (Redis::connection()-&amp;gt;zrem(self::$delayKey, $msg)) {
+                    // TODO 业务处理并返回处理结果
+                }
+            } else {
+                /**
+                 * 阻塞1s,减少redis服务资源浪费
+                 */
+                unsleep(1000000);
+            }
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;存在问题：单机部署基本没有任何问题了，但是在分布式架构中，有可能出现 zrangebyscore 和 zrem 非同一个客户端的问题，即原子性问题&lt;br&gt;
+解决办法：&lt;code&gt;Lua&lt;/code&gt; 解决办法&lt;/p&gt;
+&lt;h4 id=&#34;消费者3-2&#34;&gt;消费者3&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;
+    /**
+     * 消费
+     * 没有备份机制的lua脚本
+     */
+    public function consumer3()
+    {
+        $luaScript = &amp;lt;&amp;lt;&amp;lt;EOF
+local delayKey = KEYS[1]
+local start = ARGV[1]
+local endTime = ARGV[2]
+local limitNum = ARGV[3]
+local result = redis.call(&#39;zrangebyscore&#39;,delayKey,start,endTime,&#39;limit&#39;,0, limitNum)
+
+if next(result) ~= nil  
+then 
+    local res = redis.call(&#39;zrem&#39;,delayKey,unpack(result))
+    if res &amp;gt; 0
+    then
+        return result
+    end 
+else
+    return {}
+end
+EOF;
+        /**
+         * 循环执行消费
+         */
+        while (true) {
+            $startTime = 0;
+            $endTime   = time();
+            $limit     = 1;
+            /**
+             * 为了防止并发，保证原子性操作
+             * 利用lua脚本获取满足条件的消息，并删除满足条件消息
+             * 返回满足条件的消息
+             */
+            $msg = Redis::connection()-&amp;gt;eval($luaScript, 1, self::$delayKey, $startTime, $endTime, $limit);
+            if ($msg) {
+                // TODO 业务处理并返回处理结果
+            } else {
+                /**
+                 * 阻塞1s,减少redis服务资源浪费
+                 */
+                unsleep(100000);
+            }
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+">Redis 实现消息队列</a>
       </div>
       
       <div class="item">
