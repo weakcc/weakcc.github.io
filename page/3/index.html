@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1624677725585">
+<link rel="shortcut icon" href="/favicon.ico?v=1624679701958">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -1594,7 +1594,80 @@ mysql -uroot -p123456
 &lt;p&gt;业务系统正常时段的 QPS 如果是1K，流量最高峰是10K，为了应对流量高峰配置高性能的服务器显然不划算，这时可以使用消息队列对峰值流量进行削峰。&lt;br&gt;
 &lt;img src=&#34;http://weakcc.github.io/post-images/1615870854381.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
 &lt;h1 id=&#34;各种消息队列产品的比较&#34;&gt;各种消息队列产品的比较&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;特性&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;RabbitMQ&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;RocketMQ&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;Kafka&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;开发语言&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;erlang&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;Java&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;scala&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;单机吞吐量&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;万级&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;十万级&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;十万级&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;时效性&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;us级&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;ms级&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;ms级以内&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;可用性&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;高（主从架构）&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;非常高（分布式架构）&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;非常高（分布式架构）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;功能特性&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;基于 erlang开发，所以并发能力很强，性能极其好，延时很低管理界面较丰富&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;MQ功能比较完备，扩展性佳&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;只支持主要的MQ功能，像一些消息查询，消息回溯等功能没有提供，毕竟是为大数据准备的，在大数据领域应用广&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;RabbitMQ，开发语言 erlang 阻止了大量工程师去深入研究和掌握它，对公司而言，几乎处于不可控的状态，但是它是开源的，比较稳定的支持，活跃度也很高，如不考虑二次开发，推荐使用&lt;/p&gt;
+&lt;p&gt;RocketMQ，开发语言 Java，在阿里内部经受过高并发业务的考验，稳定性和性能均不错，考虑后期可能二开，推荐使用&lt;/p&gt;
+&lt;p&gt;Kafka，大数据领域的实时计算、日志采集等场景，用 Kafka 是业内标准的，社区活跃度很高，推荐使用。大数据领域日志采集等业务推荐使用&lt;/p&gt;
 &lt;h1 id=&#34;消息队列的优点和缺点&#34;&gt;消息队列的优点和缺点&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;优点&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;缺点&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;解耦&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;系统可用性降低&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;异步&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;系统复杂度提高&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;削峰&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;一致性问题&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;code&gt;系统可用性降低&lt;/code&gt;：系统引入的外部依赖越多，系统稳定性越差。一旦 MQ 宕机，就会对业务造成影响。&lt;br&gt;
+（如何保证 MQ 的高可用？）&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;系统复杂度提高&lt;/code&gt;：MQ 的加入大大增加了系统的复杂度，以前系统间是同步的远程调用，现在是通过 MQ 进行一步调用。&lt;br&gt;
+（消息丢失怎么办？重复消息怎么处理？如何保证消息传递的顺序性？）&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;一致性问题&lt;/code&gt;：A 系统处理完业务，通过 MQ 给 B、C、D 三个系统发消息数据，如果 B 系统、C 系统处理完成，D 系统处理失败。&lt;br&gt;
+（如何保证消息数据处理的一致性？）&lt;/p&gt;
 &lt;h1 id=&#34;如何保证消息队列的高可用&#34;&gt;如何保证消息队列的高可用&lt;/h1&gt;
 &lt;h1 id=&#34;如何保证消息不丢失&#34;&gt;如何保证消息不丢失&lt;/h1&gt;
 &lt;h1 id=&#34;如何保证消息不被重复消费如何保证消息消费的幂等性&#34;&gt;如何保证消息不被重复消费（如何保证消息消费的幂等性）&lt;/h1&gt;
