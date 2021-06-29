@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>连接池 | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1624679701958">
+<link rel="shortcut icon" href="/favicon.ico?v=1624938410904">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -2207,10 +2207,83 @@ mysql -uroot -p123456
 &lt;p&gt;&lt;code&gt;一致性问题&lt;/code&gt;：A 系统处理完业务，通过 MQ 给 B、C、D 三个系统发消息数据，如果 B 系统、C 系统处理完成，D 系统处理失败。&lt;br&gt;
 （如何保证消息数据处理的一致性？）&lt;/p&gt;
 &lt;h1 id=&#34;如何保证消息队列的高可用&#34;&gt;如何保证消息队列的高可用&lt;/h1&gt;
+&lt;p&gt;RabbitMQ：镜像集群&lt;br&gt;
+RocketMQ：双主双从&lt;/p&gt;
 &lt;h1 id=&#34;如何保证消息不丢失&#34;&gt;如何保证消息不丢失&lt;/h1&gt;
+&lt;h2 id=&#34;消息丢失的原因&#34;&gt;消息丢失的原因&lt;/h2&gt;
+&lt;p&gt;发送方，MQ，消费方都有可能导致消息丢失&lt;/p&gt;
+&lt;h3 id=&#34;情况1&#34;&gt;情况1&lt;/h3&gt;
+&lt;p&gt;消息生产者没有成功发送到 MQ Broker&lt;/p&gt;
+&lt;h3 id=&#34;情况2&#34;&gt;情况2&lt;/h3&gt;
+&lt;p&gt;消息发送给 MQ Broker 后，Broker 宕机导致内存中的消息数据丢失&lt;/p&gt;
+&lt;h3 id=&#34;情况3&#34;&gt;情况3&lt;/h3&gt;
+&lt;p&gt;消费者获取到消息，但消费者还没有来得及处理宕机了，但此时 MQ 中消息已经删除，消费者重启后不能再消费之前的消息&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1624933872334.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;如何确保消息不丢失&#34;&gt;如何确保消息不丢失&lt;/h2&gt;
+&lt;p&gt;发送方可靠发送，MQ 进行消息持久化，消费方消费完毕后进行 ACK 确认，MQ 收到消费方的 ACK 确认后在删除本地消息&lt;/p&gt;
+&lt;ol&gt;
+    &lt;li&gt;消息发送者发送给 MQ Broker 后，MQ Broker 给生产者确认收到&lt;/li&gt;
+    &lt;li&gt;MQ 收到消息后进行消息持久化&lt;/li&gt;
+    &lt;li&gt;消费者收到消息处理完毕后手动进行 ACK 确认&lt;/li&gt;
+    &lt;li&gt;MQ 收到消费者 ACK 确认后删除持久化的消息&lt;/li&gt;
+&lt;/ol&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;http://weakcc.github.io/post-images/1624934257575.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
 &lt;h1 id=&#34;如何保证消息不被重复消费如何保证消息消费的幂等性&#34;&gt;如何保证消息不被重复消费（如何保证消息消费的幂等性）&lt;/h1&gt;
+&lt;pre&gt;&lt;code&gt;消息重复的根本原因就是网络不可达
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;发送时消息重复&#34;&gt;发送时消息重复&lt;/h2&gt;
+&lt;p&gt;当一条消息已被成功发送到服务端，此时出现了网络闪断，导致服务端对客户端应答失败。如果此时生产者意识到消息发送失败并尝试再次发送消息，消费者后续会收到两天内容相同的消息。&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1624934825235.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;消费时消息重复&#34;&gt;消费时消息重复&lt;/h2&gt;
+&lt;p&gt;消息消费的场景下，消息已投递到消费者并完成业务处理，当消费方给 MQ 服务端反馈应答的时候网络闪断。为了保证消息至少被消费一次，MQ 服务端将在网络恢复后再次尝试投递之前已被消费方处理过的消息，此时消费者就会收到两条内容相同的消息。&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1624935043623.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;消息幂等性解决消息重复问题&#34;&gt;消息幂等性解决消息重复问题&lt;/h2&gt;
+&lt;p&gt;消息携带全局ID，消费方接收到消息时先查在处理，根据全局ID做判重操作&lt;/p&gt;
+&lt;ol&gt;
+    &lt;li&gt;消息发送者发送消息时携带一个全局唯一的消息id&lt;/li&gt;
+    &lt;li&gt;消费者获取消费后先根据id在 redis/db 中查询是否存在消费记录&lt;/li&gt;
+    &lt;li&gt;如果没有消费过就正常消费，消费完毕后写入 redis/db&lt;/li&gt;
+    &lt;li&gt;如果消息消费过就直接舍弃&lt;/li&gt;
+&lt;/ol&gt;
 &lt;h1 id=&#34;如何保证消息消费的顺序性&#34;&gt;如何保证消息消费的顺序性&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;消息有序&lt;/code&gt; 指的是可以按照消息的发送顺序进行消费。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;例如：一笔订单产生了3条消息，分别是订单创建，订单付款，订单完成。消费时，要按照顺序依次消费才有意义。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;与此同时多笔订单之间又是可以并行消费的。&lt;/p&gt;
+&lt;p&gt;消费方按照消息发送的顺序进行消费，分为全局顺序消息和局部顺序消息，常见的是局部顺序消费&lt;/p&gt;
+&lt;p&gt;保证消息的顺序消费：&lt;br&gt;
+全局顺序消费，生产者：MQ Server：消费者 = 1 : 1 : 1&lt;br&gt;
+局部顺序消费，1，生产者将同一组消息发送到单个队列；2，多个消费者并行对消息进行消费；3，Queue 通过分段锁保证消息消费的顺序性。&lt;/p&gt;
+&lt;h2 id=&#34;模型1&#34;&gt;模型1&lt;/h2&gt;
+&lt;p&gt;M1，M2 按照先后顺序发送到2台Server，被2个消费者分别消费&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1624937135467.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;p&gt;存在问题：1，不能保证消息的顺序到达MQ；2，不能保证消息的顺序消费。&lt;/p&gt;
+&lt;h2 id=&#34;模型2&#34;&gt;模型2&lt;/h2&gt;
+&lt;p&gt;M1，M2 按照先后顺序发送到1台Server，被2个消费者分别消费&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1624937236013.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;p&gt;存在问题：1，可以保证消息的顺序到达MQ；2，消费方如果出现网络延迟问题，不能严格保证消息的顺序消费。&lt;/p&gt;
+&lt;h2 id=&#34;模型3&#34;&gt;模型3&lt;/h2&gt;
+&lt;p&gt;生产者：MQ Server：消费者 《=》1 : 1 : 1&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1624937379625.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;p&gt;可以保证消息顺序到达MQ，可以保证消息顺序消费。&lt;br&gt;
+存在问题：全局的顺序消费，不常见。1，吞吐量下降；2，容错性降低。&lt;/p&gt;
+&lt;h2 id=&#34;模型4&#34;&gt;模型4&lt;/h2&gt;
+&lt;p&gt;局部顺序消费&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1624937513605.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;p&gt;1，生产者根据消息ID将同一组消息发送到一个 &lt;code&gt;Queue&lt;/code&gt; 中；&lt;br&gt;
+2，多个消费者同时获取 &lt;code&gt;Queue&lt;/code&gt; 中的消息进行消费；&lt;br&gt;
+3，MQ 使用&lt;b&gt;分段锁&lt;/b&gt;保证单个 &lt;code&gt;Queue&lt;/code&gt; 中的有序消费。&lt;/p&gt;
 &lt;h1 id=&#34;基于-mq-的分布式事务实现&#34;&gt;基于 MQ 的分布式事务实现&lt;/h1&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;2&#34;&gt;&lt;img src=&#34;http://weakcc.github.io/post-images/1624938219891.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;p&gt;本质上来说，分布式事务就是为了保证不同数据库的数据一致性。&lt;/p&gt;
+&lt;ol&gt;
+    &lt;li&gt;用户提交订单&lt;/li&gt;
+    &lt;li&gt;库存服务操作库存DB，减库存&lt;/li&gt;
+    &lt;li&gt;订单服务操作订单DB，生成订单数据&lt;/li&gt;
+    &lt;li&gt;库存服务和订单服务要么同时成功，要么同时失败&lt;/li&gt;
+&lt;/ol&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;3&#34;&gt;&lt;img src=&#34;http://weakcc.github.io/post-images/1624938407908.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
 ">消息队列</a>
       </div>
       
