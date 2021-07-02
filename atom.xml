@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-07-02T02:18:29.858Z</updated>
+    <updated>2021-07-02T07:58:51.959Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -52,7 +52,11 @@
     <li>缓存数据的时间设置随机，防止同一时间大量数据过期现象发生</li>
     <li>如果缓存数据库是分布式部署，将热点数据均匀分布在不同的缓存数据库中</li>
     <li>设置热点数据永不过期</li>
-</ol>]]></content>
+</ol>
+<blockquote>
+<p>https://zhuanlan.zhihu.com/p/359118610</p>
+</blockquote>
+]]></content>
     </entry>
     <entry>
         <title type="html"><![CDATA[连接池]]></title>
