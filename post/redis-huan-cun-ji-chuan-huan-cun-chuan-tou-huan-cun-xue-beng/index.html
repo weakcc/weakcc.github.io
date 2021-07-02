@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>优雅地实现在 Python 退出时强制运行一段代码 | 腰盐醋</title>
+<title>Redis 缓存击穿 缓存穿透 缓存雪崩 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1625192302608">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="优雅地实现在 Python 退出时强制运行一段代码" />
-  <meta name="keywords" content="Python" />
+  <meta name="description" content="Redis 缓存击穿 缓存穿透 缓存雪崩" />
+  <meta name="keywords" content="" />
 </head>
 
 <body>
@@ -177,7 +177,8 @@
       <div class="sidebar-body pisces" id="sidebar_body">
         
           
-            
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -213,6 +214,209 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#%E7%BC%93%E5%AD%98%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B">缓存处理流程</a></li>
+<li><a href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F">缓存穿透</a>
+<ul>
+<li><a href="#%E5%AE%9A%E4%B9%89">定义</a></li>
+<li><a href="#%E6%96%B9%E6%A1%88">方案</a></li>
+</ul>
+</li>
+<li><a href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF">缓存击穿</a>
+<ul>
+<li><a href="#%E5%AE%9A%E4%B9%89-2">定义</a></li>
+<li><a href="#%E6%96%B9%E6%A1%88-2">方案</a></li>
+</ul>
+</li>
+<li><a href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9">缓存雪崩</a>
+<ul>
+<li><a href="#%E5%AE%9A%E4%B9%89-3">定义</a></li>
+<li><a href="#%E6%96%B9%E6%A1%88-3">方案</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</div>
+
+<script>
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
+      }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0] && elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
+    });
+  }
+
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
           
         
       </div>
@@ -300,8 +504,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/">
-      优雅地实现在 Python 退出时强制运行一段代码
+    <a class="post-title-link" href="http://weakcc.github.io/post/redis-huan-cun-ji-chuan-huan-cun-chuan-tou-huan-cun-xue-beng/">
+      Redis 缓存击穿 缓存穿透 缓存雪崩
     </a>
   </h1>
   <div class="post-meta">
@@ -309,84 +513,56 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-11-28 16:30:15">2020-11-28</span>
+      <span class="publish-time" data-t="2021-07-02 09:28:08">2021-07-02</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
     <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/CUorjbHG_/">
-        <span>Python</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>2<span class="language" data-lan="minute">分钟</span></span>
+      <span>1<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>352<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>176<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <p>如果有这样一个场景，你要给一个项目开发测试程序，程序开始运行的时候，会创建初始环境，测试完成以后，会清理环境。<br>
-使用 Python 自带的 <code>atexit</code> 这个模块</p>
-<pre><code class="language-python">import atexit
-
-@atexit.register
-def clean():
-    print(&quot;清理环境相关的代码&quot;)
-
-def test():
-    print(&quot;这里先执行&quot;)
-    example = {'a': 1, 'b': 2}
-    print(example['c'])  # 显然这里会报错
-
-test()
-
-# 这里先执行
-# Traceback (most recent call last):
-# 清理环境相关的代码
-#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 15, in &lt;module&gt;
-#     test()
-#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 12, in test
-#     print(example['c'])  # 显然这里会报错
-# KeyError: 'c'
-</code></pre>
+              <h1 id="缓存处理流程">缓存处理流程</h1>
+<p>前台请求，后台先从缓存中取数据，取到直接返回结果，取不到时从数据库中取，数据库取到更新到缓存，并返回结果，数据库也没取到，那直接返回结果。<br>
+<img src="http://weakcc.github.io/post-images/1625190068679.png" alt="" loading="lazy"></p>
 <!-- more -->
-<p><code>atexit</code> 使用中有下面几个注意事项：</p>
-<ul>
-<li>你可以注册多个退出函数，他们会按照注册时间从晚到早以此执行。例如
-<pre><code class="language-python">import atexit
-
-@atexit.register
-def clean_1():
-    ...
-
-@atexit.register
-def clean_2():
-    ...
-</code></pre>
-<p>会先运行 <code>clean_2()</code> 后运行 <code>clean_1()</code></li></p>
-<li>如果 `clean()` 函数有参数，那么你可以不用装饰器，而是直接调用 `atexit.register(clean_1, 参数1, 参数2, 参数3='xxx')`</li>
-<li>如果程序是被你没有处理过的系统信号杀死的，那么注册的函数无法正常执行</li>
-<li>如果发生了严重的Python内部错误，你注册的函数无法正常执行</li>
-<li>如果你手动调用了 `os._exit()`，你注册的函数无法正常执行</li>
-</ul>
+<h1 id="缓存穿透">缓存穿透</h1>
+<h2 id="定义">定义</h2>
+<p><code>缓存穿透</code>是指缓存和数据库中都没有的数据，而用户不断发起请求，造成了类似攻击行为。如发起 id 为-1的数据或 id 特别大不存在的数据，这是用户可能就是攻击者，攻击会导致数据库压力过大。</p>
+<h2 id="方案">方案</h2>
+<ol>
+    <li>接口层增加校验，如用户鉴权校验，id做基础校验，id<0的直接拦截</li>
+    <li>从缓存取不到的数据，在数据库中也取不到，这时也可以将 key-value 对写为 key-null，缓存有效时间可以设置短点，如30s（设置时间太长会导致正常情况也没办法使用）。这样可以防止攻击用户反复用同一个 id 暴力攻击</li>
+</ol>
+<h1 id="缓存击穿">缓存击穿</h1>
+<h2 id="定义-2">定义</h2>
+<p><code>缓存击穿</code>是指缓存中没有但数据库中有数据（一般是缓存时间到期），大批量的请求在访问同一个 key，这个 key 失效的瞬间，请求打到了数据库，这时由于并发用户特别多，同时读缓存没读到数据，又同时又去数据库去取数据，引起数据库压力瞬间增大，造成过大压力</p>
+<h2 id="方案-2">方案</h2>
+<ol>
+    <li>设置热点数据永不过期</li>
+    <li>加互斥锁</li>
+</ol>
 <blockquote>
-<p>https://mp.weixin.qq.com/s/Q65F49ZhFV02mqVPyxILHg</p>
+<p>互斥锁，先从缓存中读取数据，如果有数据直接返回，没有数据获取锁，锁成功，去数据库读取数据，更新缓存，然后释放锁。<br>
+没有释放锁之前，其他并行进入的线程会等待100ms（时间不易设置太长），再重新去读取缓存数据，这样就防止都去数据库重复取数据</p>
 </blockquote>
-
+<h1 id="缓存雪崩">缓存雪崩</h1>
+<h2 id="定义-3">定义</h2>
+<p><code>缓存雪崩</code>是指缓存中数据大批量的到期，而查询数据量巨大，引起数据库压力过大甚至宕机。大批量的请求在访问大批量的 key，这些 key 同时失效，所有请求打到数据库，造成数据库无法响应</p>
+<h2 id="方案-3">方案</h2>
+<ol>
+    <li>缓存数据的时间设置随机，防止同一时间大量数据过期现象发生</li>
+    <li>如果缓存数据库是分布式部署，将热点数据均匀分布在不同的缓存数据库中</li>
+    <li>设置热点数据永不过期</li>
+</ol>
             </div>
             
               <div class="reward-btn">
@@ -402,7 +578,7 @@ def clean_2():
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/" title="优雅地实现在 Python 退出时强制运行一段代码">http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/</a>
+      <a href="http://weakcc.github.io/post/redis-huan-cun-ji-chuan-huan-cun-chuan-tou-huan-cun-xue-beng/" title="Redis 缓存击穿 缓存穿透 缓存雪崩">http://weakcc.github.io/post/redis-huan-cun-ji-chuan-huan-cun-chuan-tou-huan-cun-xue-beng/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -411,21 +587,15 @@ def clean_2():
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/CUorjbHG_/"># Python</a>
-    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="Go sql 知识总结" href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/">Go sql 知识总结</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="Go sql 知识总结" href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="MySQL 写 sql 的21个好习惯，学习工作效率翻倍" href="http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/">MySQL 写 sql 的21个好习惯，学习工作效率翻倍</a>
-        <a class="nav-mobile-next" title="MySQL 写 sql 的21个好习惯，学习工作效率翻倍" href="http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/">下一篇</a>
+        <a class="nav-pc-next" title="连接池" href="http://weakcc.github.io/post/lian-jie-chi/">连接池</a>
+        <a class="nav-mobile-next" title="连接池" href="http://weakcc.github.io/post/lian-jie-chi/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
