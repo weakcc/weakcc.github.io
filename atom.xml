@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-07-07T03:41:22.386Z</updated>
+    <updated>2021-07-07T09:15:50.170Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,25 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[实现大数据量文件的异步导出]]></title>
+        <id>http://weakcc.github.io/post/shi-xian-da-shu-ju-liang-wen-jian-de-yi-bu-dao-chu/</id>
+        <link href="http://weakcc.github.io/post/shi-xian-da-shu-ju-liang-wen-jian-de-yi-bu-dao-chu/">
+        </link>
+        <updated>2021-07-07T09:14:59.000Z</updated>
+        <summary type="html"><![CDATA[<ol>
+    <li>点击导出后，将筛选条件推进队列。（包括总条数）（提示正在处理）</li>
+    <li>消费队列任务，并分页获取列表数据。生成文件。（提示正在处理）</li>
+    <li>将生成的文件，上传某地，并提供下载链接（提示处理完成，超链接下载）</li>
+</ol>]]></summary>
+        <content type="html"><![CDATA[<ol>
+    <li>点击导出后，将筛选条件推进队列。（包括总条数）（提示正在处理）</li>
+    <li>消费队列任务，并分页获取列表数据。生成文件。（提示正在处理）</li>
+    <li>将生成的文件，上传某地，并提供下载链接（提示处理完成，超链接下载）</li>
+</ol>
+<!-- more -->
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[如何防止超卖]]></title>
         <id>http://weakcc.github.io/post/ru-he-fang-zhi-chao-mai/</id>
@@ -810,43 +829,6 @@ EOF;
         }
     }
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[jupyter 基本使用]]></title>
-        <id>http://weakcc.github.io/post/jupyter-ji-ben-shi-yong/</id>
-        <link href="http://weakcc.github.io/post/jupyter-ji-ben-shi-yong/">
-        </link>
-        <updated>2021-05-14T08:58:12.000Z</updated>
-        <summary type="html"><![CDATA[<h3 id="服务启动与停止-cmd">服务启动与停止（ CMD ）</h3>
-<pre><code>- 启动 jupyter notebook
-- 停止 Control + C</code></pre>
-]]></summary>
-        <content type="html"><![CDATA[<h3 id="服务启动与停止-cmd">服务启动与停止（ CMD ）</h3>
-<pre><code>- 启动 jupyter notebook
-- 停止 Control + C
-</code></pre>
-<!-- more -->
-<h3 id="cell-两种模式">cell 两种模式</h3>
-<pre><code>- code     : 编写代码 ( y 修改为 code 模式 )
-- markdown : 编写笔记 ( m 修改为 markdown 模式 )
-</code></pre>
-<h3 id="模式切换">模式切换</h3>
-<pre><code>- 当前 cell 侧边为蓝色时，表示此时为命令模式，按 Enter 切换为编辑模式
-- 当前 cell 侧边为绿色时，表示此时为编辑模式，按 Esc 切换为命令模式
-</code></pre>
-<h3 id="快捷键">快捷键</h3>
-<pre><code>- a 在上方新建 cell
-- b 在下方新建 cell
-- x 删除
-- y 修改为 code 模式
-- m 修改为 markdown 模式
-- shift + enter 运行当前 cell 并跳转到下一个 cell
-- command + enter 运行当前 cell 
-- tab 自动补全
-- shift + tab 打开帮助文档
-- dd 删除当前 cell
-- z 撤销删除</code></pre>
 ]]></content>
     </entry>
 </feed>

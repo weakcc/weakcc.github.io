@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法 | 腰盐醋</title>
+<title>实现大数据量文件的异步导出 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1625649347885">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法" />
-  <meta name="keywords" content="MySQL" />
+  <meta name="description" content="实现大数据量文件的异步导出" />
+  <meta name="keywords" content="" />
 </head>
 
 <body>
@@ -300,8 +300,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/">
-      MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法
+    <a class="post-title-link" href="http://weakcc.github.io/post/shi-xian-da-shu-ju-liang-wen-jian-de-yi-bu-dao-chu/">
+      实现大数据量文件的异步导出
     </a>
   </h1>
   <div class="post-meta">
@@ -309,22 +309,9 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-08-25 17:34:51">2020-08-25</span>
+      <span class="publish-time" data-t="2021-07-07 17:14:59">2021-07-07</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
-    
-    <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/VwbG72yxK/">
-        <span>MySQL</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
@@ -333,22 +320,18 @@
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>28<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>78<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598348346116.png" alt="" loading="lazy"></figure>
+              <ol>
+    <li>点击导出后，将筛选条件推进队列。（包括总条数）（提示正在处理）</li>
+    <li>消费队列任务，并分页获取列表数据。生成文件。（提示正在处理）</li>
+    <li>将生成的文件，上传某地，并提供下载链接（提示处理完成，超链接下载）</li>
+</ol>
 <!-- more -->
-<p>已 MAMP 为例：<br>
-<img src="http://weakcc.github.io/post-images/1598348508212.png" alt="" loading="lazy"><br>
-<img src="http://weakcc.github.io/post-images/1598348628532.png" alt="" loading="lazy"><br>
-在[mysqld]下面添加这段</p>
-<pre><code>sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION  
-</code></pre>
-<p><img src="http://weakcc.github.io/post-images/1598348771324.png" alt="" loading="lazy"><br>
-最后重启 MAMP 就可以了</p>
 
             </div>
             
@@ -365,7 +348,7 @@
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/" title="MySQL5.7 版本 sql_mode=only_full_group_by 问题解决办法">http://weakcc.github.io/post/mysql57-ban-ben-sql_modeonly_full_group_by-wen-ti-jie-jue-ban-fa/</a>
+      <a href="http://weakcc.github.io/post/shi-xian-da-shu-ju-liang-wen-jian-de-yi-bu-dao-chu/" title="实现大数据量文件的异步导出">http://weakcc.github.io/post/shi-xian-da-shu-ju-liang-wen-jian-de-yi-bu-dao-chu/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -374,18 +357,16 @@
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/VwbG72yxK/"># MySQL</a>
-    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="MySQL 优化" href="http://weakcc.github.io/post/mysql-you-hua/">MySQL 优化</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="MySQL 优化" href="http://weakcc.github.io/post/mysql-you-hua/">上一篇</a>
-      
     </div>
     <div class="nav-next">
+      
+        <a class="nav-pc-next" title="如何防止超卖" href="http://weakcc.github.io/post/ru-he-fang-zhi-chao-mai/">如何防止超卖</a>
+        <a class="nav-mobile-next" title="如何防止超卖" href="http://weakcc.github.io/post/ru-he-fang-zhi-chao-mai/">下一篇</a>
+        <i class="fa fa-chevron-right"></i>
       
     </div>
   </div>
