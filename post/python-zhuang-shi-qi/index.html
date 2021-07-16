@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>Python 装饰器 | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1625823805082">
+<link rel="shortcut icon" href="/favicon.ico?v=1626402189759">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -2992,7 +2992,29 @@ def clean_2():
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/python-zheng-ze/"" data-c="
-          &lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;http://weakcc.github.io/post-images/1603761872681.jpeg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+          &lt;p&gt;Python 内置 &lt;code&gt;re模块&lt;/code&gt; 处理正则表达式，提供了下述函数：&lt;/p&gt;
+&lt;ul&gt;
+    &lt;li&gt;&lt;b&gt;匹配（找一个）&lt;/b&gt;：match() -&gt; 从开头进行匹配、search() -&gt; 扫描整个字符串&lt;/li&gt;
+    &lt;li&gt;&lt;b&gt;检索与替换（找多个）&lt;/b&gt;：findall() -&gt; 扫描整个字符串所有能匹配的、finditer() 、split() -&gt; 分割&lt;/li&gt;
+    &lt;li&gt;&lt;b&gt;编译 Pattern 对象&lt;/b&gt;：多次调用相同正则，将正则表达式编译成 Pattern 对象复用&lt;/li&gt;
+    &lt;li&gt;&lt;b&gt;分组&lt;/b&gt;：group() -&gt; 获得分组匹配内容，如 group(1) 获得第一个匹配分组&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;然后调用这些函数可以传入一个 &lt;code&gt;flags&lt;/code&gt; 参数（标志位修饰符），来控制匹配模式，可使用多个，用 &lt;code&gt;|&lt;/code&gt; 进行连接&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1626401704192.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+正则表达式的语法：（&lt;b&gt;字符 -&amp;gt; 数量 -&amp;gt; 边界 -&amp;gt; 分组 -&amp;gt; 断言 -&amp;gt; 贪婪与非贪婪&lt;/b&gt;）&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1626401856552.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1626401864250.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1626401867400.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1626401869852.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+断言就是：给指定位置加一个&lt;b&gt;限定条件&lt;/b&gt;，规定&lt;b&gt;此位置前/后的字符需满足条件才算匹配成功&lt;/b&gt;&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1626401988170.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+正则匹配默认是&lt;b&gt;贪婪匹配&lt;/b&gt;，就是匹配尽可能多的字符&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1626402081453.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;需要匹配特殊字符串时，可在前面加反斜杠进行转义，如 &lt;code&gt;\\(&lt;/code&gt;，想避免多次转义造成的反斜杠困扰，可在正则表达式前加上 &lt;code&gt;r&lt;/code&gt; 修饰，告知编译器它是原始字符串，不要转义反斜杠。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;http://weakcc.github.io/post-images/1603761872681.jpeg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
 ">Python 正则</a>
       </div>
       
