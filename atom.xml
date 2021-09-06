@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-09-06T02:23:51.471Z</updated>
+    <updated>2021-09-06T08:10:51.176Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -16,6 +16,14 @@
         <link href="http://weakcc.github.io/post/ngrok-shi-xian-nei-wang-chuan-tou-jiao-cheng/">
         </link>
         <updated>2021-09-06T02:04:37.000Z</updated>
+        <summary type="html"><![CDATA[<p>https://ngrok.com/</p>
+<h1 id="ngrok-authtoken-你的-token">ngrok authtoken {你的 Token}</h1>
+<p>Ngrok 注册完成之后会进入这个页面：<br>
+<img src="http://weakcc.github.io/post-images/1630894686441.png" alt="" loading="lazy"><br>
+复制这个框里的命令</p>
+<pre><code class="language-shell">ngrok authtoken {你的 Token}
+</code></pre>
+]]></summary>
         <content type="html"><![CDATA[<p>https://ngrok.com/</p>
 <h1 id="ngrok-authtoken-你的-token">ngrok authtoken {你的 Token}</h1>
 <p>Ngrok 注册完成之后会进入这个页面：<br>
@@ -23,6 +31,7 @@
 复制这个框里的命令</p>
 <pre><code class="language-shell">ngrok authtoken {你的 Token}
 </code></pre>
+<!-- more -->
 <h1 id="启动-ngrok-客户端">启动 Ngrok 客户端</h1>
 <pre><code class="language-shell">ngrok http -host-header=zbcrm.com -region us 80
 </code></pre>

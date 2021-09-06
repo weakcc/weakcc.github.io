@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>宝塔搭建 ThinkPHP | 腰盐醋</title>
+<title>腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1630895126895">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,6 @@
 
 
 
-  <meta name="description" content="宝塔搭建 ThinkPHP" />
-  <meta name="keywords" content="CentOS,PHP,ThinkPHP" />
 </head>
 
 <body>
@@ -159,26 +157,10 @@
   <div class="main-continer">
     
     <div
-      class="section-layout pisces ">
+      class="section-layout  pisces">
       <div class="section-layout-wrapper">
-        
-
-<div class="sidebar">
-  
-    <div class="sidebar-box box-shadow-wrapper bg-color right-motion" id="sidebar">
-      
-        <div class="post-list-sidebar">
-          <div class="sidebar-title">
-            <span id="tocSideBar" class="sidebar-title-item sidebar-title-active language" data-lan="index">文章目录</span>
-            <span id="metaSideBar" class="sidebar-title-item language" data-lan="preview">站点概览</span>
-          </div>
-        </div>
-      
-      <div class="sidebar-body pisces" id="sidebar_body">
-        
-          
-            <div class="post-side-meta" id="post_side_meta">
-              
+        <div id="sidebarMeta" class="sidebar">
+    
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -214,469 +196,174 @@
 
 
 </div>
-            </div>
-            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
-              <div class="toc-box right-motion">
-  <div class="toc-wrapper auto-number auto"
-    id="toc_wrapper">
-    <ul class="markdownIt-TOC">
-<li><a href="#%E5%AE%89%E8%A3%85%E6%96%B9%E6%B3%95">安装方法</a></li>
-<li><a href="#%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86">问题处理</a>
-<ul>
-<li><a href="#%E9%97%AE%E9%A2%98%E5%AE%89%E8%A3%85%E7%9A%84%E6%98%AF-php72-%E6%98%BE%E7%A4%BA%E7%9A%84-php54">问题：安装的是 PHP7.2 显示的 PHP5.4</a></li>
-<li><a href="#%E9%97%AE%E9%A2%98putenv-has-been-disabled-for-security-reasons">问题：putenv() has been disabled for security reasons</a></li>
-<li><a href="#%E9%97%AE%E9%A2%98%E5%AE%9D%E5%A1%94%E9%9D%A2%E6%9D%BF%E7%BD%91%E7%AB%99%E9%98%B2%E8%B7%A8%E7%AB%99%E6%94%BB%E5%87%BB-open_basedir-%E6%97%A0%E6%B3%95%E5%85%B3%E9%97%AD%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95">问题：宝塔面板网站防跨站攻击 <code>open_basedir</code> 无法关闭解决办法</a></li>
-<li><a href="#%E9%97%AE%E9%A2%98fatal-error-require-failed-opening-required-wwwwwwroo">问题：Fatal error: require(): Failed opening required ‘/www/wwwroo...</a></li>
-</ul>
-</li>
-</ul>
-
-  </div>
 </div>
-
 <script>
-
-  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
-  let active = 'active-show', activeClass = 'active-current';
-  let tocWrapper = document.querySelector('#toc_wrapper');
-  let tocContent = tocWrapper.children[0];
-  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
-
-  function addTocNumber(elem, deep) {
-    if (!elem) {
-      return;
-    }
-    let prop = elem.__proto__;
-
-    if (prop === HTMLUListElement.prototype) {
-      for (let i = 0; i < elem.children.length; i++) {
-        addTocNumber(elem.children[i], deep + (i + 1) + '.');
+  let sidebarMeta = document.querySelector('#sidebarMeta');
+  let scheme = 'pisces';
+  let sidebarWrapper = document.querySelector('.sidebar-wrapper');
+  if (sidebarMeta && (scheme === 'pisces' || scheme === 'gemini')) {
+    document.addEventListener('scroll', function(e) {
+      if (document.scrollingElement.scrollTop > parseInt(sidebarMeta.style.marginTop) + 10) {
+        sidebarWrapper.classList.add('home-sidebar-fixed')
+      } else {
+        sidebarWrapper.classList.remove('home-sidebar-fixed')
       }
-    } else if (prop === HTMLLIElement.prototype) {
-      // 保存li元素
-      if (elem.children[0] && elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
-        lList.push(elem);
-      }
-      for (let i = 0; i < elem.children.length; i++) {
-        let cur = elem.children[i];
-        if (cur.__proto__ === HTMLAnchorElement.prototype) {
-          if (autoNumber) {
-            cur.text = deep + ' ' + cur.text;
-          }
-        } else if (cur.__proto__ === HTMLUListElement.prototype) {
-          addTocNumber(cur, deep);
-        }
-      }
-    }
-  }
-
-  function removeParentActiveClass() {
-    let parents = tocContent.querySelectorAll('.' + active)
-    parents.forEach(function (elem) {
-      elem.classList.remove(active);
     });
   }
-
-  function addActiveClass(index) {
-    if (index >= 0 && index < hList.length) {
-      lList[index].classList.add(activeClass);
-    }
-  }
-
-  function removeActiveClass(index) {
-    if (index >= 0 && index < hList.length) {
-      lList[index].classList.remove(activeClass);
-    }
-  }
-
-  function addActiveLiElemment(elem, parent) {
-    if (!elem || elem === parent) {
-      return;
-    } else {
-      if (elem.__proto__ === HTMLLIElement.prototype) {
-        elem.classList.add(active);
-      }
-      addActiveLiElemment(elem.parentElement, parent);
-    }
-  }
-
-  function showToc() {
-    if (tocWrapper) {
-      postBody = document.querySelector('#post_body');
-      for (let i = 0; i < postBody.children.length; i++) {
-        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
-          hList.push(postBody.children[i]);
-        }
-      }
-      if (tocWrapper.classList.contains('compress')) {
-        tocContent.classList.add('closed');
-      } else if (tocWrapper.classList.contains('no_compress')) {
-        tocContent.classList.add('expanded');
-      } else {
-        if (hList.length > 10) {
-          active = 'active-hidden'
-          tocContent.classList.add('closed');
-        } else {
-          tocContent.classList.add('expanded');
-        }
-      }
-    }
-  }
-
-  (function () {
-    // 处理不是从#一级标题开始目录
-    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
-      let con = tocContent.children[0].children[0];
-      tocContent.innerHTML = con.innerHTML;
-    }
-    let markdownItTOC = document.querySelector('.markdownIt-TOC');
-    let innerHeight = window.innerHeight;
-    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
-    addTocNumber(tocContent, '');
-  })();
-
-  document.addEventListener('scroll', function (e) {
-    if (lList.length <= 0) {
-      return;
-    }
-    let scrollTop = document.scrollingElement.scrollTop + 10;
-    let dir;
-
-    if (lastTop - scrollTop > 0) {
-      dir = 'up';
-    } else {
-      dir = 'down';
-    }
-
-    lastTop = scrollTop;
-    if (scrollTop <= 0) {
-      if (lastIndex >= 0 && lastIndex < hList.length) {
-        lList[lastIndex].classList.remove(activeClass);
-      }
-      return;
-    }
-
-    let current = 0, hasFind = false;
-    for (let i = 0; i < hList.length; i++) {
-      if (hList[i].offsetTop > scrollTop) {
-        current = i;
-        hasFind = true;
-        break;
-      }
-    }
-    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
-      current = hList.length - 1;
-    } else {
-      current--;
-    }
-    if (dir === 'down') {
-      if (current > lastIndex) {
-        addActiveClass(current);
-        removeActiveClass(lastIndex)
-        lastIndex = current;
-        removeParentActiveClass();
-        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
-      }
-    } else {
-      if (current < lastIndex) {
-        addActiveClass(current);
-        removeActiveClass(lastIndex);
-        lastIndex = current;
-        removeParentActiveClass();
-        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
-      }
-    }
-  });
-
-
-  window.addEventListener('load', function () {
-    showToc();
-    document.querySelector('#sidebar').style = 'display: block;';
-    tocWrapper.classList.add('toc-active');
-    setTimeout(function () {
-      if ("createEvent" in document) {
-        let evt = document.createEvent("HTMLEvents");
-        evt.initEvent("scroll", false, true);
-        document.dispatchEvent(evt);
-      }
-      else {
-        document.fireEvent("scroll");
-      }
-    }, 500)
-  })
-
-</script>
-            </div>
-          
-        
+  </script>
+        <div class="section-box tag-line box-shadow-wrapper">
+          <section class="section tags-section posts-expand bg-color">
+            <div class="padding-wrapper">
+  <div class="tag-timeline-box">
+    <div class="tag-timeline-wrapper">
+      <div class="tag-timeline-title">
+        <h2>
+          内网
+          <small class="language" data-lan="tag">标签</small>
+        </h2>
       </div>
-    </div>
-  
-</div>
-<script>
-  const SIDEBAR_TITLE_ACTIVE = 'sidebar-title-active';
-  const SIDEBAR_BODY_ACTIVE = 'sidebar-body-active';
-  const SLIDE_UP_IN = 'slide-up-in';
-
-  let sidebar = document.querySelector('#sidebar'),
-  tocSideBar = document.querySelector('#tocSideBar'),
-  metaSideBar = document.querySelector('#metaSideBar'),
-  postToc = document.querySelector('#post_toc'),
-  postSiteMeta = document.querySelector('#post_side_meta'),
-  sidebarTitle = document.querySelector('.sidebar-title'),
-  sidebarBody = document.querySelector('#sidebar_body');
-
-  tocSideBar && tocSideBar.addEventListener('click', (e) => {
-    toggleSidebar(e);
-  });
-
-  metaSideBar && metaSideBar.addEventListener('click', (e) => {
-    toggleSidebar(e);
-  });
-
-  function toggleSidebar(e) {
-    let currentTitle = document.querySelector("."+SIDEBAR_TITLE_ACTIVE);
-    if (currentTitle == e.srcElement) {
-      return ;
-    }
-    let current, showElement, hideElement;
-    if (e.srcElement == metaSideBar) {
-      showElement = postSiteMeta;
-      hideElement = postToc;
-    } else if (e.srcElement == tocSideBar){
-      showElement = postToc;
-      hideElement = postSiteMeta;
-    }
-    currentTitle.classList.remove(SIDEBAR_TITLE_ACTIVE);
-    e.srcElement.classList.add(SIDEBAR_TITLE_ACTIVE);
-
-    window.Velocity(hideElement, 'stop');
-    window.Velocity(hideElement, 'transition.slideUpOut', {
-      display: 'none',
-      duration: 200,
-      complete: function () {
-        window.Velocity(showElement, 'transition.slideDownIn', {
-          duration: 200
-        });
-      }
-    })
-    hideElement.classList.remove(SIDEBAR_BODY_ACTIVE);
-    showElement.classList.add(SIDEBAR_BODY_ACTIVE);
-  }
-
-  postToc && postToc.addEventListener('transitionend', function() {
-    this.classList.remove(SLIDE_UP_IN);
-  });
-
-  if (sidebarBody) {
-    if (sidebarBody.classList.contains('pisces') || sidebarBody.classList.contains('gemini')) {
-      let hasFix = false;
-      let scrollEl = document.querySelector('.main-continer');
-      let limitTop = document.querySelector('#nav_ul').children.length * 42 + 162;
-      window.addEventListener('scroll', function(e) {
-        if (document.scrollingElement.scrollTop >= limitTop) {
-          if (!hasFix) {
-            sidebar.classList.add('sidebar-fixed');
-            hasFix = true;
-          }
-        } else {
-          if (hasFix) {
-            sidebar.classList.remove('sidebar-fixed');
-            hasFix = false;
-          }
-        }
-      });
-    }
-  }
-  
-</script>
-        <div class="section-box box-shadow-wrapper">
-          <div class="section bg-color post post-page">
-            <section class="post-header">
-  <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/">
-      宝塔搭建 ThinkPHP
-    </a>
-  </h1>
-  <div class="post-meta">
-    
-    <span class="meta-item pc-show">
-      <i class="fa fa-calendar-o"></i>
-      <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-08-29 10:45:32">2020-08-29</span>
-      <span class="post-meta-divider pc-show">|</span>
-    </span>
-    
-    <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/asiai48WJ/">
-        <span>CentOS</span>
-      </a>、
       
       
       
-      <a href="http://weakcc.github.io/tag/IuY5uV6ll/">
-        <span>PHP</span>
-      </a>、
       
       
-      
-      <a href="http://weakcc.github.io/tag/2bQ39Lzfo/">
-        <span>ThinkPHP</span>
+      <a href="http://weakcc.github.io/post/ngrok-shi-xian-nei-wang-chuan-tou-jiao-cheng/">
+        <div class="motion-warpper">
+          <div class="tag-post-node">
+            <h1>
+              09-06
+              <small>Ngrok 实现内网穿透教程</small>
+            </h1>
+          </div>
+        </div>
       </a>
       
       
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
-      <i class="fa fa-clock-o"></i>
-      <span>3<span class="language" data-lan="minute">分钟</span></span>
-    </span>
-    <span class="meta-item">
-      <span class="post-meta-divider">|</span>
-      <i class="fa fa-file-word-o"></i>
-      <span>477<span class="pc-show language" data-lan="words">字数</span></span>
-    </span>
-    
-  </div>
-</section>
-            <div class="post-body next-md-body" id="post_body">
-              <p>要使用宝塔面板首先需要开启端口:<br>
-腾讯云：<a href="https://www.bt.cn/bbs/thread-1229-1-1.html">https://www.bt.cn/bbs/thread-1229-1-1.html</a><br>
-阿里云：<a href="https://www.bt.cn/bbs/thread-2897-1-1.html">https://www.bt.cn/bbs/thread-2897-1-1.html</a><br>
-华为云：<a href="https://www.bt.cn/bbs/thread-3923-1-1.html">https://www.bt.cn/bbs/thread-3923-1-1.html</a></p>
-<!-- more -->
-<h1 id="安装方法">安装方法</h1>
-<p>示例是使用 <code>CentOS7.4</code><br>
-执行下面的命令即可</p>
-<pre><code>yum install -y wget &amp;&amp; wget -O install.sh http://download.bt.cn/install/install_6.0.sh &amp;&amp; sh install.sh
-</code></pre>
-<p><img src="http://weakcc.github.io/post-images/1598669843047.png" alt="" loading="lazy"><br>
-中途如果询问 <code>Do you want to install Bt-Panel to the /www directory now?(y/n)</code>: 输入 <code>y</code> 回车即可；<br>
-出现类似下面页面就是安装完成<br>
-<img src="http://weakcc.github.io/post-images/1598670082145.png" alt="" loading="lazy"><br>
-然后浏览器打开外网面板地址的链接<br>
-<img src="http://weakcc.github.io/post-images/1598670218637.png" alt="" loading="lazy"><br>
-输入 <code>username</code> 和 <code>password</code> 对应的值即完成登录<br>
-<img src="http://weakcc.github.io/post-images/1598670316511.png" alt="" loading="lazy"><br>
-选择环境类型<br>
-<img src="http://weakcc.github.io/post-images/1598670509110.png" alt="" loading="lazy"><br>
-选择编译安装，一键安装即可<br>
-<img src="http://weakcc.github.io/post-images/1598670547784.png" alt="" loading="lazy"><br>
-喝杯茶 loadIng... 任务列表为 0 时表示安装成功<br>
-<img src="http://weakcc.github.io/post-images/1598671037291.png" alt="" loading="lazy"><br>
-安装需要的 PHP 扩展（可以下拉选择）<br>
-<img src="http://weakcc.github.io/post-images/1598671326212.png" alt="" loading="lazy"><br>
-喝杯茶 loadIng... 任务列表为 0 时表示安装成功<br>
-<img src="http://weakcc.github.io/post-images/1598671459440.png" alt="" loading="lazy"><br>
-取消被禁用的 <code>proc_open</code> 函数<br>
-<img src="http://weakcc.github.io/post-images/1598671733927.png" alt="" loading="lazy"><br>
-新建一个站点<br>
-可以把域名解析到服务器 IP<br>
-<img src="http://weakcc.github.io/post-images/1598671957608.png" alt="" loading="lazy"><br>
-<img src="http://weakcc.github.io/post-images/1598672008074.png" alt="" loading="lazy"><br>
-如果想 IP 直接访问<br>
-<img src="http://weakcc.github.io/post-images/1598673615513.png" alt="" loading="lazy"><br>
-<img src="http://weakcc.github.io/post-images/1598673653330.png" alt="" loading="lazy"><br>
-安装 <code>composer</code><br>
-<img src="http://weakcc.github.io/post-images/1598688092769.png" alt="" loading="lazy"><br>
-切换国内镜像</p>
-<pre><code>composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/  
-</code></pre>
-<p>进入网站目录<br>
-<img src="http://weakcc.github.io/post-images/1598687672274.png" alt="" loading="lazy"><br>
-删除默认文件</p>
-<pre><code>rm -rf index.html 404.html .htaccess
-</code></pre>
-<p>安装 <code>ThinkPHP5.1</code><br>
-<img src="http://weakcc.github.io/post-images/1598688693276.png" alt="" loading="lazy"><br>
-更改网站运行目录<br>
-<img src="http://weakcc.github.io/post-images/1598689879556.png" alt="" loading="lazy"><br>
-定义伪静态<br>
-<img src="http://weakcc.github.io/post-images/1598691222921.png" alt="" loading="lazy"><br>
-所有者改为 <code>www</code></p>
-<pre><code>chown -R www:www * .*
-</code></pre>
-<p>赋予权限</p>
-<pre><code>chmod -R 755 *
-</code></pre>
-<p>运行<br>
-<img src="http://weakcc.github.io/post-images/1598689933583.png" alt="" loading="lazy"></p>
-<h1 id="问题处理">问题处理</h1>
-<h2 id="问题安装的是-php72-显示的-php54">问题：安装的是 PHP7.2 显示的 PHP5.4</h2>
-<p><img src="http://weakcc.github.io/post-images/1598685559996.png" alt="" loading="lazy"><br>
-在选个 PHP 版本，来回切下就行了<br>
-<img src="http://weakcc.github.io/post-images/1598685555408.png" alt="" loading="lazy"></p>
-<h2 id="问题putenv-has-been-disabled-for-security-reasons">问题：putenv() has been disabled for security reasons</h2>
-<p><img src="http://weakcc.github.io/post-images/1598688465332.png" alt="" loading="lazy"><br>
-在配置文件去掉 <code>putenv</code><br>
-<img src="http://weakcc.github.io/post-images/1598688493779.png" alt="" loading="lazy"></p>
-<h2 id="问题宝塔面板网站防跨站攻击-open_basedir-无法关闭解决办法">问题：宝塔面板网站防跨站攻击 <code>open_basedir</code> 无法关闭解决办法</h2>
-<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598691497862.png" alt="" loading="lazy"></figure>
-<h2 id="问题fatal-error-require-failed-opening-required-wwwwwwroo">问题：Fatal error: require(): Failed opening required ‘/www/wwwroo...</h2>
-<p>把目录下的 <code>.user.ini</code> 删掉（把防跨站攻击勾去掉）<br>
-网站根目录下有一个 <code>.user.ini</code> 的文件，将其删掉即可</p>
-<blockquote>
-<p>官网安装方法: <a href="https://www.bt.cn/bbs/thread-19376-1-1.html">https://www.bt.cn/bbs/thread-19376-1-1.html</a></p>
-</blockquote>
-
-            </div>
-            
-              <div class="reward-btn">
-                <div class="reward-btn-text">赞赏</div>
-              </div>
-            
-            
-              <div class="post-footer">
-  <ul class="post-copyright">
-    <li class="post-copyright-author">
-      <strong class="language" data-lan="author">本文作者：</strong>
-      腰盐醋
-    </li>
-    <li class="post-copyright-link">
-      <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/" title="宝塔搭建 ThinkPHP">http://weakcc.github.io/post/bao-ta-da-jian-thinkphp/</a>
-    </li>
-    <li class="post-copyright-license">
-      <strong class="language" data-lan="copyright">版权声明： </strong>
-      本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i> BY-NC-SA</a> 许可协议。转载请注明出处！
-    </li>
-  </ul>
-  <div class="tags">
-    
-      <a href="http://weakcc.github.io/tag/asiai48WJ/"># CentOS</a>
-    
-      <a href="http://weakcc.github.io/tag/IuY5uV6ll/"># PHP</a>
-    
-      <a href="http://weakcc.github.io/tag/2bQ39Lzfo/"># ThinkPHP</a>
-    
-  </div>
-  <div class="nav">
-    <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="Redis 基础指令及适用场景" href="http://weakcc.github.io/post/redis-ji-chu-zhi-ling/">Redis 基础指令及适用场景</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="Redis 基础指令及适用场景" href="http://weakcc.github.io/post/redis-ji-chu-zhi-ling/">上一篇</a>
       
-    </div>
-    <div class="nav-next">
       
-        <a class="nav-pc-next" title="Redis 概览" href="http://weakcc.github.io/post/redis-gai-lan/">Redis 概览</a>
-        <a class="nav-mobile-next" title="Redis 概览" href="http://weakcc.github.io/post/redis-gai-lan/">下一篇</a>
-        <i class="fa fa-chevron-right"></i>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       
     </div>
   </div>
 </div>
-            
-            
-  
-
-          </div>
+          </section>
         </div>
       </div>
     </div>
@@ -863,265 +550,6 @@
   }
 
 </script>
-    <div class="light-box" id="light_box"></div>
-<script>
-  let imgs = document.querySelectorAll('.post-body img');
-  let lightBox = document.querySelector('#light_box');
-  lightBox.addEventListener('mousedown', (e) => {
-    e.preventDefault()
-  })
-  lightBox.addEventListener('mousewheel', (e) => {
-    e.preventDefault()
-  })
-  let width = window.innerWidth * 0.8;
-  lightBox.onclick = () => {
-    let img = lightBox.querySelector('img');
-    lightBox.style = '';
-    img && img.remove();
-  }
-  imgs.forEach(item => {
-    item.onclick = function (e) {
-      let lightImg = document.createElement('img');
-      lightImg.src = this.src;
-      lightBox.style = `height: 100%; opacity: 1; background-color: rgba(0, 0, 0, 0.5);cursor: zoom-out;`;
-      lightImg.style = `width: ${width}px;border-radius: 2px;`;
-      lightImg.onclick = function () {
-        lightBox.style = '';
-        this.remove();
-      }
-      lightBox.append(lightImg);
-    }
-  })
-</script>
-    <div class="reward-mask" style="display: none;">
-  <div class="reward-relative">
-    <span class="close" aria-hidden="true">x</span>
-    <div class="reward-body">
-      <h2>感谢您的支持，我会继续努力的!</h2>
-      <div class="reward-img-box">
-        <div style="position: relative; width: 140px; height: 140px;">
-          
-          
-            <img id="zfb" class="reward-img" src="/media/images/custom-zfbImg.png" alt="赞赏码">
-          
-          
-            <img id="wx" class="reward-img" src="/media/images/custom-wxImg.png" alt="赞赏码">
-          
-        </div>
-      </div>
-      <p class="reward-word">扫码打赏，你说多少就多少</p>
-      <p class="reward-tip">打开微信扫一扫，即可进行扫码打赏哦</p>
-    </div>
-    <div class="bottom">
-      
-      <div id="zfbBtn" class="pay-text">
-        支付宝
-      </div>
-      
-      
-      <div id="wxBtn" class="pay-text">
-        微信支付
-      </div>
-      
-    </div>
-  </div>
-</div>
-<style>
-  .reward-mask {
-    position: fixed;
-    z-index: 99999;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #00000054;
-  }
-
-  .reward-relative {
-    position: relative;
-    width: 480px;
-    text-align: center;
-    margin: 0 auto;
-    border-radius: 5px;
-    background-color: #fff;
-    top: 50%;
-    margin-top: -205px;
-  }
-
-  .reward-relative .close {
-    position: absolute;
-    right: 10px;
-    font-weight: normal;
-    font-size: 16px;
-    color: #929292;
-  }
-
-  .reward-body {
-    padding: 40px 20px 20px;
-  }
-
-  .bottom {
-    display: flex;
-  }
-
-  .reward-btn {
-    text-align: center;
-  }
-
-  .reward-btn-text {
-    display: inline-block;
-    cursor: pointer;
-    width: 60px;
-    height: 60px;
-    line-height: 60px;
-    border-radius: 50%;
-    background-color: #ff9734;
-    color: #FFF;
-    margin-top: 20px;
-  }
-
-  .pay-text {
-    margin-top: 10px;
-    padding: 10px;
-    flex: 1;
-    transition: all .2s linear;
-  }
-
-  .pay-text:hover {
-    background-color: #a5a5a536;
-  }
-
-  .reward-body h2 {
-    padding-top: 10px;
-    text-align: center;
-    color: #a3a3a3;
-    font-size: 16px;
-    font-weight: normal;
-    margin: 0 0 20px;
-  }
-
-  .reward-body h2:after,
-  .reward-body h2:before {
-    font-family: Arial, Helvetica, sans-serif;
-    background: 0 0;
-    width: 0;
-    height: 0;
-    font-style: normal;
-    color: #eee;
-    font-size: 80px;
-    position: absolute;
-    top: 20px;
-  }
-
-  .reward-body h2:before {
-    content: '\201c';
-    left: 50px;
-  }
-
-  .reward-body h2:after {
-    content: '\201d';
-    right: 80px;
-  }
-
-  .reward-img-box {
-    display: inline-block;
-    padding: 10px;
-    border: 6px solid #ea5f00;
-    margin: 0 auto;
-    border-radius: 3px;
-    position: relative;
-  }
-
-  .reward-img {
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 100%;
-    height: 100%;
-  }
-
-  @media (max-width: 767px) {
-    .reward-relative {
-      height: 100%;
-      top: 0px;
-      margin-top: 0;
-      width: auto;
-    }
-
-    .reward-relative .bottom {
-      flex-direction: column;
-    }
-
-    .reward-relative .pay-text {
-      width: 80%;
-      margin: 5px auto;
-      border: 1px solid silver;
-      padding: 6px;
-      border-radius: 4px;
-    }
-
-    .reward-body h2:after {
-      right: 40px;
-    }
-
-    .reward-body h2:after,
-    .reward-body h2:before {
-      font-size: 60px;
-    }
-
-    .reward-body h2:before {
-      left: 20px;
-    }
-  }
-</style>
-<script>
-  !function () {
-    var mask = document.querySelector('.reward-mask');
-    let close = document.querySelector('.reward-relative .close');
-    let rewardBtn = document.querySelector('.reward-btn');
-
-    let zfb = document.querySelector('#zfb'),
-      wx = document.querySelector('#wx'),
-      zfbBtn = document.querySelector('#zfbBtn'),
-      wxBtn = document.querySelector('#wxBtn');
-
-    if (zfbBtn && wxBtn) {
-      zfbBtn.addEventListener('click', () => {
-        window.Velocity(zfb, 'transition.slideLeftIn', {
-          duration: 400
-        });
-        window.Velocity(wx, 'transition.slideRightOut', {
-          display: 'none',
-          duration: 400
-        });
-      });
-
-      wxBtn.addEventListener('click', () => {
-        window.Velocity(wx, 'transition.slideRightIn', {
-          duration: 400
-        });
-        window.Velocity(zfb, 'transition.slideLeftOut', {
-          display: 'none',
-          duration: 400
-        });
-      });
-    }
-
-    rewardBtn.addEventListener('click', (e) => {
-      window.Velocity(mask, 'transition.slideDownIn', {
-        duration: 400
-      })
-    });
-
-    close.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.Velocity(mask, 'transition.slideUpOut', {
-        duration: 400
-      })
-    })
-  }()
-</script>
-
   </div>
 </body>
 
@@ -3804,5 +3232,6 @@ OK
 
   <div class="snow-container"></div>
   <script src="/media/js/bg/snow.js"></script>
+
 
 </html>
