@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>PHP 在操作断点续传时文件如何分割合并 | 腰盐醋</title>
+<title>依赖注入,控制反转,反射各个概念的理解和使用 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1633513246017">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="PHP 在操作断点续传时文件如何分割合并" />
-  <meta name="keywords" content="PHP" />
+  <meta name="description" content="依赖注入,控制反转,反射各个概念的理解和使用" />
+  <meta name="keywords" content="" />
 </head>
 
 <body>
@@ -300,8 +300,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/php-zai-cao-zuo-duan-dian-xu-chuan-shi-wen-jian-ru-he-fen-ge-he-bing/">
-      PHP 在操作断点续传时文件如何分割合并
+    <a class="post-title-link" href="http://weakcc.github.io/post/yi-lai-zhu-ru-kong-zhi-fan-zhuan-fan-she-ge-ge-gai-nian-de-li-jie-he-shi-yong/">
+      依赖注入,控制反转,反射各个概念的理解和使用
     </a>
   </h1>
   <div class="post-meta">
@@ -309,84 +309,168 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2021-03-02 10:17:45">2021-03-02</span>
+      <span class="publish-time" data-t="2021-09-10 08:59:49">2021-09-10</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
     <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/IuY5uV6ll/">
-        <span>PHP</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>1<span class="language" data-lan="minute">分钟</span></span>
+      <span>4<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>154<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>865<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <p>php 实现断点续传，就需要把大文件分割成多个小文件，然后单个上传。传完后在合并。</p>
-<!-- more -->
+              <p>举个通俗的例子，我们用户登录需要提供记录日志的功能，可以选择使用文件或者数据库。下面我们用代码来演示：</p>
 <pre><code class="language-php">&lt;?php
 
-/**
- * 分隔文件
- */
-function file_split($filePath, $tmpDir = &quot;tmp&quot;, $fileSize = 1024)
+// 定义写日志的接口规范
+interface Log
 {
-    $fp = fopen($filePath, 'rb');
-    $i = 0;
-    $no = 1;
-    while (!feof($fp)) {
-        $file = fread($fp, $fileSize);
-        $fileName = pathinfo($filePath, PATHINFO_FILENAME);
-        $tmpFp = fopen('./' . $tmpDir . '/' . $fileName . sprintf('%04d', $no) . '.' . $i . '-' . ($i + $fileSize) . '.tmp', 'wb');
-        fwrite($tmpFp, $file, $fileSize);
-        fclose($tmpFp);
-        $i += $fileSize + 1;
-        $no++;
-    }
-    fclose($fp);
+    public function write();
 }
 
-/**
- * 合并文件
- */
-function file_merge($tmpDir, $mergeFileName = 'merge.zip', $fileSize = 1024)
+// 文件记录日志
+class FileLog implements Log
 {
-    $tmpFilePaths = glob($tmpDir . '/*.tmp');
-    @unlink($mergeFileName);
-    $fp = fopen($mergeFileName, 'w+');
-    foreach ($tmpFilePaths as $v) {
-        $tmpFp = fopen($v, 'rb');
-        $content = fread($tmpFp, $fileSize);
-        fwrite($fp, $content, $fileSize);
-        unset($content);
-        unlink($v);
-        fclose($tmpFp);
+    public function write()
+    {
+        echo 'file log write...';
     }
-    fclose($fp);
 }
 
-$dir = 'tmp';
-// 切割文件
-file_split('./1.zip', $dir);
-// 合并文件
-file_merge($dir);
+// 数据库记录日志
+class DatabaseLog implements Log
+{
+    public function write()
+    {
+        echo 'database log write...';
+    }
+}
+
+// 程序操作类
+class User
+{
+    protected $fileLog;
+
+    public function __construct()
+    {
+        $this-&gt;fileLog = new FileLog();
+    }
+
+    public function login()
+    {
+        echo 'login success...';
+        echo PHP_EOL;
+        $this-&gt;fileLog-&gt;write();
+    }
+}
+
+$user = new User();
+$user-&gt;login();
+</code></pre>
+<p>假设现在想用数据库记录日志的话，我们就得修改 User 类，这份代码没达到解耦合，也不符合编程开放封闭原则，那如何修改呢？我们可以把日志处理类通过构造函数方式传递进去。下面我们试着修改 User 类的代码：</p>
+<pre><code class="language-php">class User
+{
+    protected $log;
+
+    public function __construct(Log $log)
+    {
+        $this-&gt;log = $log;
+    }
+
+    public function login()
+    {
+        echo 'login success...';
+        echo PHP_EOL;
+        $this-&gt;log-&gt;write();
+    }
+}
+
+$user = new User(new DatabaseLog());
+$user-&gt;login();
+</code></pre>
+<p>这样想用任何方式记录操作日志都不需要去修改 User 类了，只需要通过构造函数参数传递就可以实现，其实这就是 <code>控制反转</code>。不需要自己内容修改，改成由外部传递。这种由外部负责其依赖需求的行为，我们可以称其为 <code>控制反转（IoC）</code>。</p>
+<p>反射的概念其实可以理解成根据类名返回该类的任何信息，比如该类有什么方法，参数，变量等等。我们先来学习下反射要用到的 api。拿 User 举例：</p>
+<pre><code class="language-php">// 获取User的reflectionClass对象
+$reflector = new ReflectionClass(User::class);
+
+// 拿到User的构造函数
+$constructor = $reflector-&gt;getConstructor();
+
+// 拿到User的构造函数的所有依赖参数
+$dependencies = $constructor-&gt;getParameters();
+
+
+// 创建user对象
+$user = $reflector-&gt;newInstance();
+
+// 创建user对象，需要传递参数的
+$user = $reflector-&gt;newInstanceArgs($dependencies = []);
+</code></pre>
+<p>这时候我们可以创建一个 make 方法，传入 User，利用反射机制拿到 User 的构造函数，进而得到构造函数的参数对象。用递归的方式创建参数依赖。最后调用 newInstanceArgs 方法生成 User 实例。 可能有些同学还不是很理解。下面我们用代码去简单模拟下：</p>
+<pre><code class="language-php">function make($concrete){
+    // 或者User的反射类
+    $reflector = new ReflectionClass($concrete);
+    // User构造函数
+    $constructor = $reflector-&gt;getConstructor();
+    // User构造函数参数
+    $dependencies = $constructor-&gt;getParameters();
+    // 最后生成User    
+    return $reflector-&gt;newInstanceArgs($dependencies);
+}
+
+$user = make('User');
+$user-&gt;login();
+</code></pre>
+<p>那什么是依赖注入呢？，其实上面的例子也算是依赖注入，不是由自己内部 new 对象或者实例，通过构造函数，或者方法传入的都属于 <code>依赖注入（DI）</code> 。</p>
+<pre><code class="language-php">// 注意我们这里需要修改一下User的构造函数，如果不去修改。反射是不能动态创建接口的，那如果非要用接口该怎么处理呢？下一节我们讲Ioc容器的时候会去解决。
+
+class User 
+{
+    protected $log;
+
+    public function __construct(FileLog $log)
+    {
+        $this-&gt;log = $log;   
+    }
+
+    public function login()
+    {
+        // 登录成功，记录登录日志
+        echo 'login success...';
+        $this-&gt;log-&gt;write();
+    }
+
+}
+
+function make($concrete){
+
+    $reflector = new ReflectionClass($concrete);
+    $constructor = $reflector-&gt;getConstructor();
+    // 为什么这样写的? 主要是递归。比如创建FileLog不需要传入参数。
+    if(is_null($constructor)) {
+        return $reflector-&gt;newInstance();
+    }else {
+        // 构造函数依赖的参数
+        $dependencies = $constructor-&gt;getParameters();
+        // 根据参数返回实例，如FileLog
+        $instances = getDependencies($dependencies);
+        return $reflector-&gt;newInstanceArgs($instances);
+    }
+
+}
+
+function getDependencies($paramters) {
+    $dependencies = [];
+    foreach ($paramters as $paramter) {
+        $dependencies[] = make($paramter-&gt;getClass()-&gt;name);
+    }
 </code></pre>
 
             </div>
@@ -404,7 +488,7 @@ file_merge($dir);
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/php-zai-cao-zuo-duan-dian-xu-chuan-shi-wen-jian-ru-he-fen-ge-he-bing/" title="PHP 在操作断点续传时文件如何分割合并">http://weakcc.github.io/post/php-zai-cao-zuo-duan-dian-xu-chuan-shi-wen-jian-ru-he-fen-ge-he-bing/</a>
+      <a href="http://weakcc.github.io/post/yi-lai-zhu-ru-kong-zhi-fan-zhuan-fan-she-ge-ge-gai-nian-de-li-jie-he-shi-yong/" title="依赖注入,控制反转,反射各个概念的理解和使用">http://weakcc.github.io/post/yi-lai-zhu-ru-kong-zhi-fan-zhuan-fan-she-ge-ge-gai-nian-de-li-jie-he-shi-yong/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -413,21 +497,19 @@ file_merge($dir);
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/IuY5uV6ll/"># PHP</a>
-    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
         <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="悲观锁和乐观锁" href="http://weakcc.github.io/post/bei-guan-suo-he-le-guan-suo/">悲观锁和乐观锁</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="悲观锁和乐观锁" href="http://weakcc.github.io/post/bei-guan-suo-he-le-guan-suo/">上一篇</a>
+        <a class="nav-pc-next" title="SSH 免密登录" href="http://weakcc.github.io/post/ssh-mian-mi-deng-lu/">SSH 免密登录</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="SSH 免密登录" href="http://weakcc.github.io/post/ssh-mian-mi-deng-lu/">上一篇</a>
       
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="二维数组根据某个字段排序" href="http://weakcc.github.io/post/er-wei-shu-zu-gen-ju-mou-ge-zi-duan-pai-xu/">二维数组根据某个字段排序</a>
-        <a class="nav-mobile-next" title="二维数组根据某个字段排序" href="http://weakcc.github.io/post/er-wei-shu-zu-gen-ju-mou-ge-zi-duan-pai-xu/">下一篇</a>
+        <a class="nav-pc-next" title="Ngrok 实现内网穿透教程" href="http://weakcc.github.io/post/ngrok-shi-xian-nei-wang-chuan-tou-jiao-cheng/">Ngrok 实现内网穿透教程</a>
+        <a class="nav-mobile-next" title="Ngrok 实现内网穿透教程" href="http://weakcc.github.io/post/ngrok-shi-xian-nei-wang-chuan-tou-jiao-cheng/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>

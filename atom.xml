@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-09-06T10:44:10.759Z</updated>
+    <updated>2021-10-06T09:47:05.134Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,243 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[SSH 免密登录]]></title>
+        <id>http://weakcc.github.io/post/ssh-mian-mi-deng-lu/</id>
+        <link href="http://weakcc.github.io/post/ssh-mian-mi-deng-lu/">
+        </link>
+        <updated>2021-10-06T09:26:01.000Z</updated>
+        <summary type="html"><![CDATA[<h2 id="设置免密登录">设置免密登录</h2>
+<h3 id="生成私钥公钥文件">生成私钥公钥文件</h3>
+<p>如果你的本地主机不包含 <code>~/.ssh/id_rsa</code> 文件，可以通过运行如下命令生成</p>
+<pre><code>ssh-keygen -t rsa
+</code></pre>
+<p>每次执行上述命令后产生的私钥文件都不同，如果 <code>~/.ssh/id_rsa</code> 文件已经存在，会提示是否覆盖，选择 <code>n</code> 不覆盖，如果该文件不存在则会生成该文件（提示需要输入的地方都可以留空）</p>
+]]></summary>
+        <content type="html"><![CDATA[<h2 id="设置免密登录">设置免密登录</h2>
+<h3 id="生成私钥公钥文件">生成私钥公钥文件</h3>
+<p>如果你的本地主机不包含 <code>~/.ssh/id_rsa</code> 文件，可以通过运行如下命令生成</p>
+<pre><code>ssh-keygen -t rsa
+</code></pre>
+<p>每次执行上述命令后产生的私钥文件都不同，如果 <code>~/.ssh/id_rsa</code> 文件已经存在，会提示是否覆盖，选择 <code>n</code> 不覆盖，如果该文件不存在则会生成该文件（提示需要输入的地方都可以留空）</p>
+<!-- more -->
+<p>运行该命令会生成 <code>~/.ssh/id_rsa</code> 和 <code>~/.ssh/id_rsa.pub</code> 两个文件，分别存储私钥和公钥，接下来我们通过 <code>scp</code> 命令将公钥文件拷贝到远程服务器的 <code>.ssh</code> 目录下（如果服务器上没有该目录，先创建这个目录）</p>
+<pre><code>scp ~/.ssh/id_rsa.pub root@47.98.218.227:~/.ssh/
+</code></pre>
+<h2 id="登录远程服务器">登录远程服务器</h2>
+<pre><code class="language-shell">ssh -p 22 root@47.98.218.227
+</code></pre>
+<h3 id="将公钥添加到授权-key">将公钥添加到授权 KEY</h3>
+<p>登录到远程服务器，运行如下命令将公钥文件内容追加到 <code>~/.ssh/authorized_keys</code> 文件</p>
+<pre><code>cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
+</code></pre>
+<p>如果服务器上没有 <code>~/.ssh/authorized_keys</code> 这个文件，可以运行如下命令将 <code>~/.ssh/id_rsa.pub</code> 文件拷贝过来</p>
+<pre><code>cp id_rsa.pub authorized_keys
+</code></pre>
+<h2 id="测试">测试</h2>
+<p>现在可以通过 <code>ssh -p 22 root@47.98.218.227</code> 是否成功免密登录了，如果失败，登录远程服务器输入</p>
+<pre><code>chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+</code></pre>
+<h2 id="别名登录ssh-config-配置">别名登录（SSH config 配置）</h2>
+<p>config 放在 <code>~/.ssh/config</code></p>
+<pre><code>Host            别名
+HostName        主机名
+Port            端口（默认22）
+User            用户名
+IdentityFile    密钥文件的路径
+
+host &quot;weakcc&quot;
+    HostName        47.98.218.227
+    Port            22
+    User            root
+    IdentityFile    ~/.ssh/id_rsa.pub
+    IdentitiesOnly  yes
+</code></pre>
+<p><code>MAC</code> 下</p>
+<pre><code>1) cd ~/.ssh/
+2) touch config
+3) vim config
+    host weakcc
+        HostName    47.98.218.227
+        Port            22
+        User            root
+</code></pre>
+<h3 id="ssh-免密码登录-ssh-key">SSH 免密码登录 ssh key</h3>
+<pre><code>ssh-keygen -t rsa
+cd ~/.ssh
+ls -al
+ssh-copy-id -i  ~/.ssh/id_rsa.pub root@47.98.218.227
+ssh weakcc
+</code></pre>
+<h3 id="可能存在问题">可能存在问题</h3>
+<h4 id="1-warning-remote-host-identification-has-changed">1. WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!</h4>
+<p>解决办法</p>
+<pre><code>vim ~/.ssh/known_hosts
+删除对应 ip 的 ssh-rsa
+</code></pre>
+<h4 id="2-按照操作免密登录失败">2. 按照操作免密登录失败</h4>
+<p>解决办法</p>
+<pre><code>查看文件权限是否正确
+.ssh 需要 chmod 700 ~/.ssh
+authorized_keys 需要 chmod 600 ~/.ssh/authorized_keys
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[依赖注入,控制反转,反射各个概念的理解和使用]]></title>
+        <id>http://weakcc.github.io/post/yi-lai-zhu-ru-kong-zhi-fan-zhuan-fan-she-ge-ge-gai-nian-de-li-jie-he-shi-yong/</id>
+        <link href="http://weakcc.github.io/post/yi-lai-zhu-ru-kong-zhi-fan-zhuan-fan-she-ge-ge-gai-nian-de-li-jie-he-shi-yong/">
+        </link>
+        <updated>2021-09-10T00:59:49.000Z</updated>
+        <content type="html"><![CDATA[<p>举个通俗的例子，我们用户登录需要提供记录日志的功能，可以选择使用文件或者数据库。下面我们用代码来演示：</p>
+<pre><code class="language-php">&lt;?php
+
+// 定义写日志的接口规范
+interface Log
+{
+    public function write();
+}
+
+// 文件记录日志
+class FileLog implements Log
+{
+    public function write()
+    {
+        echo 'file log write...';
+    }
+}
+
+// 数据库记录日志
+class DatabaseLog implements Log
+{
+    public function write()
+    {
+        echo 'database log write...';
+    }
+}
+
+// 程序操作类
+class User
+{
+    protected $fileLog;
+
+    public function __construct()
+    {
+        $this-&gt;fileLog = new FileLog();
+    }
+
+    public function login()
+    {
+        echo 'login success...';
+        echo PHP_EOL;
+        $this-&gt;fileLog-&gt;write();
+    }
+}
+
+$user = new User();
+$user-&gt;login();
+</code></pre>
+<p>假设现在想用数据库记录日志的话，我们就得修改 User 类，这份代码没达到解耦合，也不符合编程开放封闭原则，那如何修改呢？我们可以把日志处理类通过构造函数方式传递进去。下面我们试着修改 User 类的代码：</p>
+<pre><code class="language-php">class User
+{
+    protected $log;
+
+    public function __construct(Log $log)
+    {
+        $this-&gt;log = $log;
+    }
+
+    public function login()
+    {
+        echo 'login success...';
+        echo PHP_EOL;
+        $this-&gt;log-&gt;write();
+    }
+}
+
+$user = new User(new DatabaseLog());
+$user-&gt;login();
+</code></pre>
+<p>这样想用任何方式记录操作日志都不需要去修改 User 类了，只需要通过构造函数参数传递就可以实现，其实这就是 <code>控制反转</code>。不需要自己内容修改，改成由外部传递。这种由外部负责其依赖需求的行为，我们可以称其为 <code>控制反转（IoC）</code>。</p>
+<p>反射的概念其实可以理解成根据类名返回该类的任何信息，比如该类有什么方法，参数，变量等等。我们先来学习下反射要用到的 api。拿 User 举例：</p>
+<pre><code class="language-php">// 获取User的reflectionClass对象
+$reflector = new ReflectionClass(User::class);
+
+// 拿到User的构造函数
+$constructor = $reflector-&gt;getConstructor();
+
+// 拿到User的构造函数的所有依赖参数
+$dependencies = $constructor-&gt;getParameters();
+
+
+// 创建user对象
+$user = $reflector-&gt;newInstance();
+
+// 创建user对象，需要传递参数的
+$user = $reflector-&gt;newInstanceArgs($dependencies = []);
+</code></pre>
+<p>这时候我们可以创建一个 make 方法，传入 User，利用反射机制拿到 User 的构造函数，进而得到构造函数的参数对象。用递归的方式创建参数依赖。最后调用 newInstanceArgs 方法生成 User 实例。 可能有些同学还不是很理解。下面我们用代码去简单模拟下：</p>
+<pre><code class="language-php">function make($concrete){
+    // 或者User的反射类
+    $reflector = new ReflectionClass($concrete);
+    // User构造函数
+    $constructor = $reflector-&gt;getConstructor();
+    // User构造函数参数
+    $dependencies = $constructor-&gt;getParameters();
+    // 最后生成User    
+    return $reflector-&gt;newInstanceArgs($dependencies);
+}
+
+$user = make('User');
+$user-&gt;login();
+</code></pre>
+<p>那什么是依赖注入呢？，其实上面的例子也算是依赖注入，不是由自己内部 new 对象或者实例，通过构造函数，或者方法传入的都属于 <code>依赖注入（DI）</code> 。</p>
+<pre><code class="language-php">// 注意我们这里需要修改一下User的构造函数，如果不去修改。反射是不能动态创建接口的，那如果非要用接口该怎么处理呢？下一节我们讲Ioc容器的时候会去解决。
+
+class User 
+{
+    protected $log;
+
+    public function __construct(FileLog $log)
+    {
+        $this-&gt;log = $log;   
+    }
+
+    public function login()
+    {
+        // 登录成功，记录登录日志
+        echo 'login success...';
+        $this-&gt;log-&gt;write();
+    }
+
+}
+
+function make($concrete){
+
+    $reflector = new ReflectionClass($concrete);
+    $constructor = $reflector-&gt;getConstructor();
+    // 为什么这样写的? 主要是递归。比如创建FileLog不需要传入参数。
+    if(is_null($constructor)) {
+        return $reflector-&gt;newInstance();
+    }else {
+        // 构造函数依赖的参数
+        $dependencies = $constructor-&gt;getParameters();
+        // 根据参数返回实例，如FileLog
+        $instances = getDependencies($dependencies);
+        return $reflector-&gt;newInstanceArgs($instances);
+    }
+
+}
+
+function getDependencies($paramters) {
+    $dependencies = [];
+    foreach ($paramters as $paramter) {
+        $dependencies[] = make($paramter-&gt;getClass()-&gt;name);
+    }
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Ngrok 实现内网穿透教程]]></title>
         <id>http://weakcc.github.io/post/ngrok-shi-xian-nei-wang-chuan-tou-jiao-cheng/</id>
@@ -161,268 +398,6 @@ if(empty($result))
         }
     }
 }
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Redis 缓存击穿 缓存穿透 缓存雪崩]]></title>
-        <id>http://weakcc.github.io/post/redis-huan-cun-ji-chuan-huan-cun-chuan-tou-huan-cun-xue-beng/</id>
-        <link href="http://weakcc.github.io/post/redis-huan-cun-ji-chuan-huan-cun-chuan-tou-huan-cun-xue-beng/">
-        </link>
-        <updated>2021-07-02T01:28:08.000Z</updated>
-        <summary type="html"><![CDATA[<h1 id="缓存处理流程">缓存处理流程</h1>
-<p>前台请求，后台先从缓存中取数据，取到直接返回结果，取不到时从数据库中取，数据库取到更新到缓存，并返回结果，数据库也没取到，那直接返回结果。<br>
-<img src="http://weakcc.github.io/post-images/1625190068679.png" alt="" loading="lazy"></p>
-]]></summary>
-        <content type="html"><![CDATA[<h1 id="缓存处理流程">缓存处理流程</h1>
-<p>前台请求，后台先从缓存中取数据，取到直接返回结果，取不到时从数据库中取，数据库取到更新到缓存，并返回结果，数据库也没取到，那直接返回结果。<br>
-<img src="http://weakcc.github.io/post-images/1625190068679.png" alt="" loading="lazy"></p>
-<!-- more -->
-<h1 id="缓存穿透">缓存穿透</h1>
-<h2 id="定义">定义</h2>
-<p><code>缓存穿透</code>是指缓存和数据库中都没有的数据，而用户不断发起请求，造成了类似攻击行为。如发起 id 为-1的数据或 id 特别大不存在的数据，这是用户可能就是攻击者，攻击会导致数据库压力过大。</p>
-<h2 id="方案">方案</h2>
-<ol>
-    <li>接口层增加校验，如用户鉴权校验，id做基础校验，id<0的直接拦截</li>
-    <li>从缓存取不到的数据，在数据库中也取不到，这时也可以将 key-value 对写为 key-null，缓存有效时间可以设置短点，如30s（设置时间太长会导致正常情况也没办法使用）。这样可以防止攻击用户反复用同一个 id 暴力攻击</li>
-</ol>
-<h1 id="缓存击穿">缓存击穿</h1>
-<h2 id="定义-2">定义</h2>
-<p><code>缓存击穿</code>是指缓存中没有但数据库中有数据（一般是缓存时间到期），大批量的请求在访问同一个 key，这个 key 失效的瞬间，请求打到了数据库，这时由于并发用户特别多，同时读缓存没读到数据，又同时又去数据库去取数据，引起数据库压力瞬间增大，造成过大压力</p>
-<h2 id="方案-2">方案</h2>
-<ol>
-    <li>设置热点数据永不过期</li>
-    <li>加互斥锁</li>
-</ol>
-<blockquote>
-<p>互斥锁，先从缓存中读取数据，如果有数据直接返回，没有数据获取锁，锁成功，去数据库读取数据，更新缓存，然后释放锁。<br>
-没有释放锁之前，其他并行进入的线程会等待100ms（时间不易设置太长），再重新去读取缓存数据，这样就防止都去数据库重复取数据</p>
-</blockquote>
-<h1 id="缓存雪崩">缓存雪崩</h1>
-<h2 id="定义-3">定义</h2>
-<p><code>缓存雪崩</code>是指缓存中数据大批量的到期，而查询数据量巨大，引起数据库压力过大甚至宕机。大批量的请求在访问大批量的 key，这些 key 同时失效，所有请求打到数据库，造成数据库无法响应</p>
-<h2 id="方案-3">方案</h2>
-<ol>
-    <li>缓存数据的时间设置随机，防止同一时间大量数据过期现象发生</li>
-    <li>如果缓存数据库是分布式部署，将热点数据均匀分布在不同的缓存数据库中</li>
-    <li>设置热点数据永不过期</li>
-</ol>
-<blockquote>
-<p>https://zhuanlan.zhihu.com/p/359118610</p>
-</blockquote>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[连接池]]></title>
-        <id>http://weakcc.github.io/post/lian-jie-chi/</id>
-        <link href="http://weakcc.github.io/post/lian-jie-chi/">
-        </link>
-        <updated>2021-06-24T06:10:52.000Z</updated>
-        <summary type="html"><![CDATA[<h1 id="什么是连接池">什么是连接池</h1>
-<p>在实际应用开发中，一般会有很多访问下游的需求（下游包括但不限于<b>服务</b>/<b>数据库</b>/<b>缓存</b>），在并发量很低的时候，通常不会有任何问题的，但当服务器单机<b>QPS</b>（每秒查询率）达到几百，几千，甚至上万的时候，如果每一次访问都是必须经历建立连接=》收发请求=》关闭连接=》释放资源等步骤，系统的性能必然急剧下降，严重导致系统崩溃。</p>
-<p>上面简化为：</p>
-<ul>
-    <li>与下游建立一个连接</li>
-    <li>通过这个连接，收发请求</li>
-    <li>交互结束，关闭连接，释放资源</li>
-</ul>]]></summary>
-        <content type="html"><![CDATA[<h1 id="什么是连接池">什么是连接池</h1>
-<p>在实际应用开发中，一般会有很多访问下游的需求（下游包括但不限于<b>服务</b>/<b>数据库</b>/<b>缓存</b>），在并发量很低的时候，通常不会有任何问题的，但当服务器单机<b>QPS</b>（每秒查询率）达到几百，几千，甚至上万的时候，如果每一次访问都是必须经历建立连接=》收发请求=》关闭连接=》释放资源等步骤，系统的性能必然急剧下降，严重导致系统崩溃。</p>
-<p>上面简化为：</p>
-<ul>
-    <li>与下游建立一个连接</li>
-    <li>通过这个连接，收发请求</li>
-    <li>交互结束，关闭连接，释放资源</li>
-</ul>
-<!-- more -->
-<blockquote>
-<p>QPS是每秒查询率 ,是一台服务器每秒能够相应的查询次数，是对一个特定的查询服务器在规定时间内所处理流量多少的衡量标准, 即每秒的响应请求数，也即是最大吞吐能力</p>
-</blockquote>
-<p>以 PHP 连接 MySQL 为例：</p>
-<pre><code class="language-php">&lt;?php
-$host = '127.0.0.1';
-$username = 'root';
-$password = '123456';
-$dbname = 'demo';
-// 打开一个到 MySQL 服务器的新的连接
-$link = @mysqli_connect($host, $username, $password, $dbname); 
-if ($link) {
-    // SQL 语句
-    $sql = 'select version()'; 
-    // 执行 SQL 语句，并返回结果
-    $result = mysqli_query($link, $sql); 
-    // 从结果集中获取所有数据
-    $data = mysqli_fetch_all($result); 
-    print_r($data);
-    // 关闭连接
-    mysqli_close($link);
-} else {
-    echo '数据库连接失败！';
-}
-</code></pre>
-<h1 id="为什么需要连接池">为什么需要连接池</h1>
-<p>当服务单机 QPS 达到几百、几千的时候，<b>建立连接</b>和<b>销毁连接</b>就会成为瓶颈，此时该如何优化？<br>
-很简单，服务启动的时候，<b>先建立好若干连接</b>形成一个<code>池子</code>，当有请求过来的时候，从建立好的<code>池子</code>中取出一个连接，执行下游操作，执行完毕再放回到<code>池子</code>中，以此提升性能。</p>
-<h2 id="定义">定义：</h2>
-<p><code>连接池</code>：创建和管理一个连接的缓冲池的技术，这些连接准备好被任何需要它们的线程使用。</p>
-<h2 id="运行机制">运行机制：</h2>
-<ol>
-    <li><b>init</b> 程序初始化时创建连接池：初始化的时候创建，在服务启动的时候只调用一次</li>
-    <li><b>get</b> 使用时向连接池申请可用连接：每次请求通过连接池的接口拿取数据</li>
-    <li><b>push</b> 使用完毕，将连接返还给连接池：访问结束，并不是关闭这个连接，而是把这个连接放回到连接池中</li>
-    <li>程序退出时，断开所有连接，并释放资源</li>
-</ol>
-<h2 id="伪代码">伪代码</h2>
-<pre><code class="language-php">&lt;?php
-
-class Pool
-{
-    public static function getIn()
-    {
-        // 单例模式
-    }
-
-    public function init()
-    {
-        // pool 准备好就填充指定的资源 比如10个连接
-        $this-&gt;pool = $array;
-    }
-
-    public function get()
-    {
-        return array_pop($this-&gt;pool);
-    }
-
-    public function push($obj)
-    {
-        $this-&gt;pool[] = $obj;
-    }
-}
-
-// 实例化池子
-$dbPool = Pool::getIn();
-
-// 获取连接
-$db = $db-&gt;get();
-
-// 执行语句
-$res = $db-&gt;query('SQL 语句');
-
-// 归还连接
-$dbPool-&gt;push($db);
-</code></pre>
-<h2 id="数据库连接池">数据库连接池</h2>
-<h3 id="定义-2">定义</h3>
-<p><code>数据库连接池</code>：程序启动时建立足够的数据库连接，并将这些连接组成一个连接池，由程序动态地对池中的连接申请，使用，释放。</p>
-<h3 id="优点">优点</h3>
-<p>减少 <code>I/O</code> 操作，提高资源利用率<br>
-如果在短时间内进行一万次mysql的连接，就需要在这个往返过程循环，在路上浪费了很多时间、性能消耗。<br>
-如果我们先把连接连接好，并且放在连接池中，程序中需要使用就从池中获取，执行操作。</p>
-<ol>
-    <li>减少连接创建时间。连接池中的连接是已准备好的、可重复使用的，获取后可以直接访问数据库，因此减少了连接创建的次数和时间</li>
-    <li>简化的编程模式。当使用连接池时，每一个单独的线程能够像创建一个自己的 JDBC 连接一样操作，允许用户直接使用 JDBC 编程技术</li>
-    <li>控制资源的使用。如果不使用连接池，每次访问数据库都需要创建一个连接，这样系统的稳定性受系统连接需求影响很大，很容易产生资源浪费和高负载异常。连接池能够使性能最大化，将资源利用控制在一定的水平之下。连接池能控制池中的连接数量，增强了系统在大量用户应用时的稳定性</li>
-</ol>
-<blockquote>
-<p>Java数据库连接，（Java Database Connectivity，简称JDBC）是Java语言中用来规范客户端程序如何来访问数据库的应用程序接口，提供了诸如查询和更新数据库中数据的方法。JDBC也是Sun Microsystems的商标。我们通常说的JDBC是面向关系型数据库的。</p>
-</blockquote>
-<h3 id="数量如何设置">数量如何设置</h3>
-<p>连接数量需要根据并发数，以及数据库的处理情况来决定的，并不是越多越好，比如你的数据库最大只能处理500个连接，那你设置700个，数据库照样处理不过来，设置过多并没有什么用处,反而可能会让数据库宕机。</p>
-<blockquote>
-<p>连接池数量，也就是总数，需要根据进程来看，每个进程 * 连接池配置数量 = 总数量 如 swoole 中 worker 进程为8，那你设置20个，则总数就是 8 * 20 = 160</p>
-</blockquote>
-<p>连接池中到底应该放置多少连接，才能使系统的性能最佳？系统可采取设置最小连接数（minConnection）和最大连接数（maxConnection）等参数来控制连接池中的连接。比方说，最小连接数是系统启动时连接池所创建的连接数。如果创建过多，则系统启动就慢，但创建后系统的响应速度会很快；如果创建过少，则系统启动的很快，响应起来却慢。这样，可以在开发时，设置较小的最小连接数，开发起来会快，而在系统实际使用时设置较大的，因为这样对访问客户来说速度会快些。最大连接数是连接池中允许连接的最大数目，具体设置多少，要看系统的访问量，可通过软件需求上得到。</p>
-<p>如何确保连接池中的最小连接数呢？有动态和静态两种策略。动态即每隔一定时间就对连接池进行检测，如果发现连接数量小于最小连接数，则补充相应数量的新连接，以保证连接池的正常运转。静态是发现空闲连接不够时再去检查。</p>
-<h3 id="为何要使用">为何要使用</h3>
-<ul>
-    <li>假设网站一天有很大的访问量，数据库服务器就需要为每次连接创建一次数据库连接，极大的浪费数据库的资源，并且极易造成数据库服务器内存溢出、宕机</li>
-    <li>数据库连接是一种关键的有限的昂贵的资源，这一点在多用户的网页应用程序中体现的尤为突出。对数据库连接的管理能显著影响到整个应用程序的伸缩性和健壮性，影响到程序的性能指标。数据库连接池正式针对这个问题提出来的。数据库连接池负责分配，管理和释放数据库连接，它允许应用程序重复使用一个现有的数据库连接，而不是重新建立一个</li>
-    <li>数据库连接池在初始化时将创建一定数量的数据库连接放到连接池中，这些数据库连接的数量是由最小数据库连接数来设定的。无论这些数据库连接是否被使用，连接池都将一直保证至少拥有这么多的连接数量。连接池的最大数据库连接数量限定了这个连接池能占有的最大连接数，当应用程序向连接池请求的连接数超过最大连接数量时，这些请求将被加入到等待队列中</li>
-</ul>
-<h3 id="并发问题">并发问题</h3>
-<p>为了使连接管理服务具有最大的通用性，必须考虑多线程环境，即并发问题。这个问题相对比较好解决，因为各个语言自身提供了对并发管理的支持像 java,c# 等等，使用 synchronized (java) lock (C#) 关键字即可确保线程是同步的。</p>
-<h3 id="事务处理">事务处理</h3>
-<ul>
-    <li>DB 连接池必须要确保某一时间内一个 conn 只能分配给一个线程。不同 conn 的事务是相互独立的</li>
-    <li>事务具有原子性，此时要求对数据库的操作符合 “ALL-ALL-NOTHING” 原则，即对于一组 SQL 语句要么全做，要么全不做</li>
-    <li>我们知道当２个线程共用一个连接 Connection 对象，而且各自都有自己的事务要处理时候，对于连接池是一个很头疼的问题，因为即使 Connection 类提供了相应的事务支持，可是我们仍然不能确定那个数据库操作是对应那个事务的，这是由于我们有２个线程都在进行事务操作而引起的。为此我们可以使用每一个事务独占一个连接来实现，虽然这种方法有点浪费连接池资源但是可以大大降低事务管理的复杂性</li>
-</ul>
-<h3 id="工作原理">工作原理</h3>
-<p>连接池的工作原理主要由三部分组成，分别为连接池的建立、连接池中连接的使用管理、连接池的关闭。</p>
-<ul>
-    <li>第一、连接池的建立。一般在系统初始化时，连接池会根据系统配置建立，并在池中创建了几个连接对象，以便使用时能从连接池中获取。连接池中的连接不能随意创建和关闭，这样避免了连接随意建立和关闭造成的系统开销。Java 中提供了很多容器类可以方便的构建连接池，例如 Vector、Stack 等</li>
-    <li>第二、连接池的管理。连接池管理策略是连接池机制的核心，连接池内连接的分配和释放对系统的性能有很大的影响。其管理策略是：
-     <ul>
-        <li>当客户请求数据库连接时，首先查看连接池中是否有空闲连接，如果存在空闲连接，则将连接分配给客户使用；如果没有空闲连接，则查看当前所开的连接数是否已经达到最大连接数，如果没达到就重新创建一个连接给请求的客户；如果达到就按设定的最大等待时间进行等待，如果超出最大等待时间，则抛出异常给客户</li>
-        <li>当客户释放数据库连接时，先判断该连接的引用次数是否超过了规定值，如果超过就从连接池中删除该连接，否则保留为其他客户服务</li>
-        <li>该策略保证了数据库连接的有效复用，避免频繁的建立、释放连接所带来的系统资源开销</li>
-    </ul>
-    </li>
-    <li>第三、连接池的关闭。当应用程序退出时，关闭连接池中所有的连接，释放连接池相关的资源，该过程正好与创建相反</li>
-</ul>
-<h3 id="使用-swoole-实现简单的-redis连接池">使用 Swoole 实现简单的 Redis连接池</h3>
-<pre><code class="language-php">&lt;?php
-use http\Exception\RuntimeException;
-class Pool
-{
-    protected static $instance;
-
-    public static function i() :self
-    {
-        return static::$instance ?? (static::$instance = new static);
-    }
-
-    protected $channel;
-
-    public function __construct(int $size = 10)
-    {
-        $this-&gt;channel = new Swoole\Coroutine\Channel($size);
-
-        while ($size--) {
-            // 协程 Redis 客户端
-            $redis = new Swoole\Coroutine\Redis;
-            $res = $redis-&gt;connect('127.0.0.1', 6379);
-            if ($res) {
-                // pull
-                $this-&gt;put($redis);
-            } else {
-                // 抛入异常或者做错误处理或者重试
-                throw new RuntimeException($res-&gt;errMsg, $res-&gt;errCode);
-            }
-        }
-    }
-
-    // 入列
-    public function put(Swoole\Coroutine\Redis $redis): void
-    {
-        $this-&gt;channel-&gt;push($redis);
-    }
-
-    // 出列
-    public function get($timeout = -1): ?Swoole\Coroutine\Redis
-    {
-        return $this-&gt;channel-&gt;pop($timeout) ?: null;
-    }
-
-    // 关闭
-    public function close(): void
-    {
-        $this-&gt;channel-&gt;close();
-    }
-}
-
-// 使用了 Co\run() 来创建一个协程容器
-Co\run(function() {
-    $pool = Pool::i();
-    $redis = $pool-&gt;get();
-//    $redis-&gt;set('foo', '小熊');
-    $value = $redis-&gt;get('foo');
-    if ($value === false) {
-        throw new RuntimeException($redis-&gt;errMsg, $redis-&gt;errCode);
-    }
-    echo $value;
-    $pool-&gt;put($redis);
-});
 </code></pre>
 ]]></content>
     </entry>

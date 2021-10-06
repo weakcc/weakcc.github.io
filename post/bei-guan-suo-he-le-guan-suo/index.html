@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>悲观锁和乐观锁 | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1630895126895">
+<link rel="shortcut icon" href="/favicon.ico?v=1633513246017">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -189,19 +189,19 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">27</span>
+        <span class="site-item-stat-count">29</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="">
-        <span class="site-item-stat-count">16</span>
+        <span class="site-item-stat-count">18</span>
         <span class="site-item-stat-name language" data-lan="category">分类</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="/tags/">
-        <span class="site-item-stat-count">16</span>
+        <span class="site-item-stat-count">18</span>
         <span class="site-item-stat-name language" data-lan="tag">标签</span>
       </a>
     </div>
@@ -1081,6 +1081,230 @@ update t_goods set status=2,version=version+1 where id=#{id} and version=#{versi
       <hr>
     </div>
     <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/ssh-mian-mi-deng-lu/"" data-c="
+          &lt;h2 id=&#34;设置免密登录&#34;&gt;设置免密登录&lt;/h2&gt;
+&lt;h3 id=&#34;生成私钥公钥文件&#34;&gt;生成私钥公钥文件&lt;/h3&gt;
+&lt;p&gt;如果你的本地主机不包含 &lt;code&gt;~/.ssh/id_rsa&lt;/code&gt; 文件，可以通过运行如下命令生成&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ssh-keygen -t rsa
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;每次执行上述命令后产生的私钥文件都不同，如果 &lt;code&gt;~/.ssh/id_rsa&lt;/code&gt; 文件已经存在，会提示是否覆盖，选择 &lt;code&gt;n&lt;/code&gt; 不覆盖，如果该文件不存在则会生成该文件（提示需要输入的地方都可以留空）&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;运行该命令会生成 &lt;code&gt;~/.ssh/id_rsa&lt;/code&gt; 和 &lt;code&gt;~/.ssh/id_rsa.pub&lt;/code&gt; 两个文件，分别存储私钥和公钥，接下来我们通过 &lt;code&gt;scp&lt;/code&gt; 命令将公钥文件拷贝到远程服务器的 &lt;code&gt;.ssh&lt;/code&gt; 目录下（如果服务器上没有该目录，先创建这个目录）&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;scp ~/.ssh/id_rsa.pub root@47.98.218.227:~/.ssh/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;登录远程服务器&#34;&gt;登录远程服务器&lt;/h2&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;ssh -p 22 root@47.98.218.227
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;将公钥添加到授权-key&#34;&gt;将公钥添加到授权 KEY&lt;/h3&gt;
+&lt;p&gt;登录到远程服务器，运行如下命令将公钥文件内容追加到 &lt;code&gt;~/.ssh/authorized_keys&lt;/code&gt; 文件&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat ~/.ssh/id_rsa.pub &amp;gt;&amp;gt; ~/.ssh/authorized_keys
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如果服务器上没有 &lt;code&gt;~/.ssh/authorized_keys&lt;/code&gt; 这个文件，可以运行如下命令将 &lt;code&gt;~/.ssh/id_rsa.pub&lt;/code&gt; 文件拷贝过来&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cp id_rsa.pub authorized_keys
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;测试&#34;&gt;测试&lt;/h2&gt;
+&lt;p&gt;现在可以通过 &lt;code&gt;ssh -p 22 root@47.98.218.227&lt;/code&gt; 是否成功免密登录了，如果失败，登录远程服务器输入&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;别名登录ssh-config-配置&#34;&gt;别名登录（SSH config 配置）&lt;/h2&gt;
+&lt;p&gt;config 放在 &lt;code&gt;~/.ssh/config&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Host            别名
+HostName        主机名
+Port            端口（默认22）
+User            用户名
+IdentityFile    密钥文件的路径
+
+host &amp;quot;weakcc&amp;quot;
+    HostName        47.98.218.227
+    Port            22
+    User            root
+    IdentityFile    ~/.ssh/id_rsa.pub
+    IdentitiesOnly  yes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;MAC&lt;/code&gt; 下&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;1) cd ~/.ssh/
+2) touch config
+3) vim config
+    host weakcc
+        HostName    47.98.218.227
+        Port            22
+        User            root
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;ssh-免密码登录-ssh-key&#34;&gt;SSH 免密码登录 ssh key&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;ssh-keygen -t rsa
+cd ~/.ssh
+ls -al
+ssh-copy-id -i  ~/.ssh/id_rsa.pub root@47.98.218.227
+ssh weakcc
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;可能存在问题&#34;&gt;可能存在问题&lt;/h3&gt;
+&lt;h4 id=&#34;1-warning-remote-host-identification-has-changed&#34;&gt;1. WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!&lt;/h4&gt;
+&lt;p&gt;解决办法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vim ~/.ssh/known_hosts
+删除对应 ip 的 ssh-rsa
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;2-按照操作免密登录失败&#34;&gt;2. 按照操作免密登录失败&lt;/h4&gt;
+&lt;p&gt;解决办法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;查看文件权限是否正确
+.ssh 需要 chmod 700 ~/.ssh
+authorized_keys 需要 chmod 600 ~/.ssh/authorized_keys
+&lt;/code&gt;&lt;/pre&gt;
+">SSH 免密登录</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/yi-lai-zhu-ru-kong-zhi-fan-zhuan-fan-she-ge-ge-gai-nian-de-li-jie-he-shi-yong/"" data-c="
+          &lt;p&gt;举个通俗的例子，我们用户登录需要提供记录日志的功能，可以选择使用文件或者数据库。下面我们用代码来演示：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;&amp;lt;?php
+
+// 定义写日志的接口规范
+interface Log
+{
+    public function write();
+}
+
+// 文件记录日志
+class FileLog implements Log
+{
+    public function write()
+    {
+        echo &#39;file log write...&#39;;
+    }
+}
+
+// 数据库记录日志
+class DatabaseLog implements Log
+{
+    public function write()
+    {
+        echo &#39;database log write...&#39;;
+    }
+}
+
+// 程序操作类
+class User
+{
+    protected $fileLog;
+
+    public function __construct()
+    {
+        $this-&amp;gt;fileLog = new FileLog();
+    }
+
+    public function login()
+    {
+        echo &#39;login success...&#39;;
+        echo PHP_EOL;
+        $this-&amp;gt;fileLog-&amp;gt;write();
+    }
+}
+
+$user = new User();
+$user-&amp;gt;login();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;假设现在想用数据库记录日志的话，我们就得修改 User 类，这份代码没达到解耦合，也不符合编程开放封闭原则，那如何修改呢？我们可以把日志处理类通过构造函数方式传递进去。下面我们试着修改 User 类的代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;class User
+{
+    protected $log;
+
+    public function __construct(Log $log)
+    {
+        $this-&amp;gt;log = $log;
+    }
+
+    public function login()
+    {
+        echo &#39;login success...&#39;;
+        echo PHP_EOL;
+        $this-&amp;gt;log-&amp;gt;write();
+    }
+}
+
+$user = new User(new DatabaseLog());
+$user-&amp;gt;login();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这样想用任何方式记录操作日志都不需要去修改 User 类了，只需要通过构造函数参数传递就可以实现，其实这就是 &lt;code&gt;控制反转&lt;/code&gt;。不需要自己内容修改，改成由外部传递。这种由外部负责其依赖需求的行为，我们可以称其为 &lt;code&gt;控制反转（IoC）&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;反射的概念其实可以理解成根据类名返回该类的任何信息，比如该类有什么方法，参数，变量等等。我们先来学习下反射要用到的 api。拿 User 举例：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;// 获取User的reflectionClass对象
+$reflector = new ReflectionClass(User::class);
+
+// 拿到User的构造函数
+$constructor = $reflector-&amp;gt;getConstructor();
+
+// 拿到User的构造函数的所有依赖参数
+$dependencies = $constructor-&amp;gt;getParameters();
+
+
+// 创建user对象
+$user = $reflector-&amp;gt;newInstance();
+
+// 创建user对象，需要传递参数的
+$user = $reflector-&amp;gt;newInstanceArgs($dependencies = []);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这时候我们可以创建一个 make 方法，传入 User，利用反射机制拿到 User 的构造函数，进而得到构造函数的参数对象。用递归的方式创建参数依赖。最后调用 newInstanceArgs 方法生成 User 实例。 可能有些同学还不是很理解。下面我们用代码去简单模拟下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;function make($concrete){
+    // 或者User的反射类
+    $reflector = new ReflectionClass($concrete);
+    // User构造函数
+    $constructor = $reflector-&amp;gt;getConstructor();
+    // User构造函数参数
+    $dependencies = $constructor-&amp;gt;getParameters();
+    // 最后生成User    
+    return $reflector-&amp;gt;newInstanceArgs($dependencies);
+}
+
+$user = make(&#39;User&#39;);
+$user-&amp;gt;login();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;那什么是依赖注入呢？，其实上面的例子也算是依赖注入，不是由自己内部 new 对象或者实例，通过构造函数，或者方法传入的都属于 &lt;code&gt;依赖注入（DI）&lt;/code&gt; 。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;// 注意我们这里需要修改一下User的构造函数，如果不去修改。反射是不能动态创建接口的，那如果非要用接口该怎么处理呢？下一节我们讲Ioc容器的时候会去解决。
+
+class User 
+{
+    protected $log;
+
+    public function __construct(FileLog $log)
+    {
+        $this-&amp;gt;log = $log;   
+    }
+
+    public function login()
+    {
+        // 登录成功，记录登录日志
+        echo &#39;login success...&#39;;
+        $this-&amp;gt;log-&amp;gt;write();
+    }
+
+}
+
+function make($concrete){
+
+    $reflector = new ReflectionClass($concrete);
+    $constructor = $reflector-&amp;gt;getConstructor();
+    // 为什么这样写的? 主要是递归。比如创建FileLog不需要传入参数。
+    if(is_null($constructor)) {
+        return $reflector-&amp;gt;newInstance();
+    }else {
+        // 构造函数依赖的参数
+        $dependencies = $constructor-&amp;gt;getParameters();
+        // 根据参数返回实例，如FileLog
+        $instances = getDependencies($dependencies);
+        return $reflector-&amp;gt;newInstanceArgs($instances);
+    }
+
+}
+
+function getDependencies($paramters) {
+    $dependencies = [];
+    foreach ($paramters as $paramter) {
+        $dependencies[] = make($paramter-&amp;gt;getClass()-&amp;gt;name);
+    }
+&lt;/code&gt;&lt;/pre&gt;
+">依赖注入,控制反转,反射各个概念的理解和使用</a>
+      </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/ngrok-shi-xian-nei-wang-chuan-tou-jiao-cheng/"" data-c="
