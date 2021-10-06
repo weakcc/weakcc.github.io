@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>Scrapy | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1633513246017">
+<link rel="shortcut icon" href="/favicon.ico?v=1633513924474">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -189,19 +189,19 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">29</span>
+        <span class="site-item-stat-count">33</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="">
-        <span class="site-item-stat-count">18</span>
+        <span class="site-item-stat-count">19</span>
         <span class="site-item-stat-name language" data-lan="category">分类</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="/tags/">
-        <span class="site-item-stat-count">18</span>
+        <span class="site-item-stat-count">19</span>
         <span class="site-item-stat-name language" data-lan="tag">标签</span>
       </a>
     </div>
@@ -1075,6 +1075,238 @@ LOG_LEVEL = 'ERROR'
       <hr>
     </div>
     <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/laravel-da-jian-zi-ji-de-websocket-fu-wu-qi/"" data-c="
+          &lt;h4 id=&#34;准备&#34;&gt;准备&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;laravel new weakcc
+cd weakcc/
+valet link weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;amp;&amp;amp; npm run dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;更新.env&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;APP_NAME=weakcc
+APP_URL=http://weakcc.test/
+DB_DATABASE=weakcc
+DB_USERNAME=root
+DB_PASSWORD=123456
+
+BROADCAST_DRIVER=pusher
+
+// 因为自己搭建的随意添加，唯一注意的就是 APP_KEY 前后端要保持一致 
+PUSHER_APP_ID=123456789
+PUSHER_APP_KEY=123
+PUSHER_APP_SECRET=123456
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;数据迁移&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan migrate
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果需要使用 &lt;code&gt;PrivateChannel&lt;/code&gt; 或 &lt;code&gt;PresenceChannel&lt;/code&gt; ，需要解除 &lt;code&gt;config/app.php&lt;/code&gt; 下 &lt;code&gt;App\Providers\BroadcastServiceProvider::class&lt;/code&gt; 注释&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;安装扩展&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;composer require beyondcode/laravel-websockets
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;加载配置&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan vendor:publish --provider=&amp;quot;BeyondCode\LaravelWebSockets\WebSocketsServiceProvider&amp;quot; --tag=&amp;quot;migrations&amp;quot;
+php artisan migrate
+php artisan vendor:publish --provider=&amp;quot;BeyondCode\LaravelWebSockets\WebSocketsServiceProvider&amp;quot; --tag=&amp;quot;config&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;调试仪表板，浏览器打开 &lt;code&gt;http://weakcc.test/laravel-websockets&lt;/code&gt;&lt;br&gt;
+更新 &lt;code&gt;config/broadcasting.php&lt;/code&gt; 下 &lt;code&gt;pusher&lt;/code&gt; 配置&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&#39;options&#39; =&amp;gt; [
+    &#39;cluster&#39; =&amp;gt; env(&#39;PUSHER_APP_CLUSTER&#39;),
+    &#39;host&#39; =&amp;gt; &#39;127.0.0.1&#39;,
+    &#39;port&#39; =&amp;gt; 6001,
+    &#39;scheme&#39; =&amp;gt; &#39;http&#39;
+],
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;解除 &lt;code&gt;resources/js/bootstrap.js&lt;/code&gt; 注释并更新如下&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import Echo from &#39;laravel-echo&#39;;
+
+window.Pusher = require(&#39;pusher-js&#39;);
+
+window.Echo = new Echo({
+    broadcaster: &#39;pusher&#39;,
+    key: &#39;123&#39;, // 要跟后台保持一致
+    wsHost: window.location.hostname,
+    wsPort: 6001,
+    disableStats: true,
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;安装前端依赖包&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;npm install --save laravel-echo pusher-js
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;运行服务&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan websockets:serve
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;.env 里的 APP_URL 一定要修改，不然寻址会出现问题&lt;/p&gt;
+&lt;/blockquote&gt;
+">Laravel 搭建自己的 WebSocket 服务器</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/laravel-kua-zhan-deng-lu/"" data-c="
+          &lt;h4 id=&#34;原理&#34;&gt;原理&lt;/h4&gt;
+&lt;p&gt;两个项目要共用一套验证体系，一般都是先做完主站，共用的用户系统就是主站的用户系统&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h4 id=&#34;准备&#34;&gt;准备&lt;/h4&gt;
+&lt;p&gt;创建主站项目&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;laravel new weakcc
+cd weakcc/
+valet link weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;amp;&amp;amp; npm run dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;更新.env&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;APP_NAME=weakcc
+APP_URL=http://weakcc.test/
+DB_DATABASE=weakcc
+DB_USERNAME=root
+DB_PASSWORD=123456
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;数据迁移&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan migrate
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;创建子站项目&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;laravel new weakcc2
+cd weakcc2/
+valet link zoo.weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;amp;&amp;amp; npm run dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;更新.env&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;APP_NAME=weakcc2
+APP_URL=http://zoo.weakcc.test/
+DB_DATABASE=weakcc2
+DB_USERNAME=root
+DB_PASSWORD=123456
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;数据迁移&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan migrate
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;实现&#34;&gt;实现&lt;/h4&gt;
+&lt;p&gt;子站需要新建一个能够关联到主站的数据库连接，打开子站的项目配置文件 &lt;code&gt;database.php&lt;/code&gt; 复制一遍 &lt;code&gt;mysql&lt;/code&gt; 信息并重名为 &lt;code&gt;cc_mysql&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// 本地测试，其他记录一样，只是更新数据库，其他环境，请自行更新
+&#39;cc_mysql&#39; =&amp;gt; [
+    &#39;driver&#39; =&amp;gt; &#39;mysql&#39;,
+    &#39;url&#39; =&amp;gt; env(&#39;DATABASE_URL&#39;),
+    &#39;host&#39; =&amp;gt; env(&#39;DB_HOST&#39;, &#39;127.0.0.1&#39;),
+    &#39;port&#39; =&amp;gt; env(&#39;DB_PORT&#39;, &#39;3306&#39;),
+    &#39;database&#39; =&amp;gt; &#39;weakcc&#39;, // 主项目的数据库
+    &#39;username&#39; =&amp;gt; env(&#39;DB_USERNAME&#39;, &#39;forge&#39;),
+    &#39;password&#39; =&amp;gt; env(&#39;DB_PASSWORD&#39;, &#39;&#39;),
+    &#39;unix_socket&#39; =&amp;gt; env(&#39;DB_SOCKET&#39;, &#39;&#39;),
+    &#39;charset&#39; =&amp;gt; &#39;utf8mb4&#39;,
+    &#39;collation&#39; =&amp;gt; &#39;utf8mb4_unicode_ci&#39;,
+    &#39;prefix&#39; =&amp;gt; &#39;&#39;,
+    &#39;prefix_indexes&#39; =&amp;gt; true,
+    &#39;strict&#39; =&amp;gt; true,
+    &#39;engine&#39; =&amp;gt; null,
+    &#39;options&#39; =&amp;gt; extension_loaded(&#39;pdo_mysql&#39;) ? array_filter([
+        PDO::MYSQL_ATTR_SSL_CA =&amp;gt; env(&#39;MYSQL_ATTR_SSL_CA&#39;),
+    ]) : [],
+],
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;子站更新 &lt;code&gt;User&lt;/code&gt; 模型数据库连接为新设置的 &lt;code&gt;cc_mysql&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// 主站对应的用户表
+protected $table = &#39;users&#39;;
+// 这样的话用户验证将去主项目的用户逻辑
+protected $connection = &#39;cc_mysql&#39;; 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;主项目和子项目同时更新 &lt;code&gt;.env&lt;/code&gt; 同时执行 &lt;code&gt;session&lt;/code&gt; 表生成&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// 此处使用数据库驱动（跨站登录可以使用 redis 和 database 驱动）
+SESSION_DRIVER=database
+// 执行 session 表格生成
+php artisan session:table
+php artisan migrate
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;关键步骤，是两个网站能够使用相同的域&lt;/p&gt;
+&lt;p&gt;主项目更新 &lt;code&gt;.env&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;SESSION_DOMAIN=.weakcc.test
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;子项目更新 &lt;code&gt;.env&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;SESSION_DOMAIN=.weakcc.test
+// 子项目的 session 连接信息必须为子站用来连接主站的那个 mysql 信息
+SESSION_CONNECTION=cc_mysql
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;最后一步，两个项目的的 &lt;code&gt;APP_KEY&lt;/code&gt; 必须相同，可以复制主站的 &lt;code&gt;APP_KEY&lt;/code&gt; 到子站，更新 &lt;code&gt;.env&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// 为主站的 APP_KEY
+APP_KEY=base64:mkmoK3/Y84EkxihfiqZZM9ooHoD2GHRbaMNH79CrD0Q=
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;好了，现在可以在主站注册用户登录，在子站访问了&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;页面显示 &lt;code&gt;419&lt;/code&gt; 需要清除下浏览器缓存的 &lt;code&gt;cookie&lt;/code&gt; 信息&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;!-- more --&gt;
+&lt;!-- more --&gt;
+&lt;!-- more --&gt;
+&lt;!-- more --&gt;
+">Laravel 跨站登录</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/laravel-dan-ren-deng-lu/"" data-c="
+          &lt;h4 id=&#34;原理&#34;&gt;原理&lt;/h4&gt;
+&lt;p&gt;一个账户只能在一个地方登录（用户登录网站会创建一个 &lt;code&gt;session&lt;/code&gt; 信息，实现单人登录的原理就是把以前已经生成的 &lt;code&gt;session&lt;/code&gt; 信息弃用掉，要么删除之前的 &lt;code&gt;session&lt;/code&gt; 信息，要么修改之前的 &lt;code&gt;session&lt;/code&gt; 信息，使浏览器提交 &lt;code&gt;cookie&lt;/code&gt; 信息匹配 &lt;code&gt;session&lt;/code&gt; 找不到就可以了）&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h4 id=&#34;准备&#34;&gt;准备&lt;/h4&gt;
+&lt;p&gt;创建主站项目&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;laravel new weakcc
+cd weakcc/
+valet link weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;amp;&amp;amp; npm run dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;更新.env&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;APP_NAME=weakcc
+APP_URL=http://weakcc.test/
+DB_DATABASE=weakcc
+DB_USERNAME=root
+DB_PASSWORD=123456
+SESSION_DRIVER=database
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;数据迁移&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan migrate
+php artisan session:table
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;实现&#34;&gt;实现&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;session&lt;/code&gt; 以 &lt;code&gt;database&lt;/code&gt; 为数据库驱动为例&lt;br&gt;
+覆写 &lt;code&gt;App\Http\Controllers\Auth\LoginController&lt;/code&gt; 文件下的 &lt;code&gt;authenticated&lt;/code&gt; 方法（当登录时，session 信息还没有生成，就是在这里把已经有的 &lt;code&gt;session&lt;/code&gt; 修改下）&lt;/p&gt;
+&lt;p&gt;方法1：&lt;/p&gt;
+&lt;p&gt;简单粗暴法，有登录就删除已有的 &lt;code&gt;session&lt;/code&gt; 信息&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;protected function authenticated(Request $request, $user)
+{
+    DB::table(&#39;sessions&#39;)-&amp;gt;where(&#39;user_id&#39;, $user-&amp;gt;id)-&amp;gt;delete();
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;方法2：&lt;/p&gt;
+&lt;p&gt;保留用户登录 &lt;code&gt;session&lt;/code&gt; 历史信息，方便后续做信息排查，修改已有的 &lt;code&gt;session&lt;/code&gt; 信息，变为无效的 &lt;code&gt;session&lt;/code&gt; 信息，确认不是恶意的登录信息，这时就可以对无效的信息进行删除&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// &#39;OUTMAN-&#39; 可以自己随意设置
+protected function authenticated(Request $request, $user)
+{
+    DB::table(&#39;sessions&#39;)-&amp;gt;where(&#39;user_id&#39;, $user-&amp;gt;id)-&amp;gt;orderBy(&#39;last_activity&#39;)-&amp;gt;each(function ($session) {
+        DB::table(&#39;sessions&#39;)-&amp;gt;where(&#39;id&#39;, $session-&amp;gt;id)-&amp;gt;update([&#39;id&#39; =&amp;gt; &#39;OUTMAN-&#39; . $session-&amp;gt;id]);
+    });
+}
+&lt;/code&gt;&lt;/pre&gt;
+">Laravel 单人登录</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/laravel-chao-shi-deng-lu/"" data-c="
+          &lt;p&gt;设置 &lt;code&gt;.env&lt;/code&gt; 默认为120分钟&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;SESSION_LIFETIME=120
+&lt;/code&gt;&lt;/pre&gt;
+">Laravel 超时登录</a>
+      </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/ssh-mian-mi-deng-lu/"" data-c="

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-10-06T09:47:05.134Z</updated>
+    <updated>2021-10-06T09:53:19.336Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,265 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[Laravel 搭建自己的 WebSocket 服务器]]></title>
+        <id>http://weakcc.github.io/post/laravel-da-jian-zi-ji-de-websocket-fu-wu-qi/</id>
+        <link href="http://weakcc.github.io/post/laravel-da-jian-zi-ji-de-websocket-fu-wu-qi/">
+        </link>
+        <updated>2021-10-06T09:51:25.000Z</updated>
+        <summary type="html"><![CDATA[<h4 id="准备">准备</h4>
+<pre><code>laravel new weakcc
+cd weakcc/
+valet link weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;&amp; npm run dev
+</code></pre>
+]]></summary>
+        <content type="html"><![CDATA[<h4 id="准备">准备</h4>
+<pre><code>laravel new weakcc
+cd weakcc/
+valet link weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;&amp; npm run dev
+</code></pre>
+<!-- more -->
+<p>更新.env</p>
+<pre><code>APP_NAME=weakcc
+APP_URL=http://weakcc.test/
+DB_DATABASE=weakcc
+DB_USERNAME=root
+DB_PASSWORD=123456
+
+BROADCAST_DRIVER=pusher
+
+// 因为自己搭建的随意添加，唯一注意的就是 APP_KEY 前后端要保持一致 
+PUSHER_APP_ID=123456789
+PUSHER_APP_KEY=123
+PUSHER_APP_SECRET=123456
+</code></pre>
+<p>数据迁移</p>
+<pre><code>php artisan migrate
+</code></pre>
+<blockquote>
+<p>如果需要使用 <code>PrivateChannel</code> 或 <code>PresenceChannel</code> ，需要解除 <code>config/app.php</code> 下 <code>App\Providers\BroadcastServiceProvider::class</code> 注释</p>
+</blockquote>
+<p>安装扩展</p>
+<pre><code>composer require beyondcode/laravel-websockets
+</code></pre>
+<p>加载配置</p>
+<pre><code>php artisan vendor:publish --provider=&quot;BeyondCode\LaravelWebSockets\WebSocketsServiceProvider&quot; --tag=&quot;migrations&quot;
+php artisan migrate
+php artisan vendor:publish --provider=&quot;BeyondCode\LaravelWebSockets\WebSocketsServiceProvider&quot; --tag=&quot;config&quot;
+</code></pre>
+<p>调试仪表板，浏览器打开 <code>http://weakcc.test/laravel-websockets</code><br>
+更新 <code>config/broadcasting.php</code> 下 <code>pusher</code> 配置</p>
+<pre><code>'options' =&gt; [
+    'cluster' =&gt; env('PUSHER_APP_CLUSTER'),
+    'host' =&gt; '127.0.0.1',
+    'port' =&gt; 6001,
+    'scheme' =&gt; 'http'
+],
+</code></pre>
+<p>解除 <code>resources/js/bootstrap.js</code> 注释并更新如下</p>
+<pre><code>import Echo from 'laravel-echo';
+
+window.Pusher = require('pusher-js');
+
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: '123', // 要跟后台保持一致
+    wsHost: window.location.hostname,
+    wsPort: 6001,
+    disableStats: true,
+});
+</code></pre>
+<p>安装前端依赖包</p>
+<pre><code>npm install --save laravel-echo pusher-js
+</code></pre>
+<p>运行服务</p>
+<pre><code>php artisan websockets:serve
+</code></pre>
+<blockquote>
+<p>.env 里的 APP_URL 一定要修改，不然寻址会出现问题</p>
+</blockquote>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Laravel 跨站登录]]></title>
+        <id>http://weakcc.github.io/post/laravel-kua-zhan-deng-lu/</id>
+        <link href="http://weakcc.github.io/post/laravel-kua-zhan-deng-lu/">
+        </link>
+        <updated>2021-10-06T09:48:13.000Z</updated>
+        <summary type="html"><![CDATA[<h4 id="原理">原理</h4>
+<p>两个项目要共用一套验证体系，一般都是先做完主站，共用的用户系统就是主站的用户系统</p>
+]]></summary>
+        <content type="html"><![CDATA[<h4 id="原理">原理</h4>
+<p>两个项目要共用一套验证体系，一般都是先做完主站，共用的用户系统就是主站的用户系统</p>
+<!-- more -->
+<h4 id="准备">准备</h4>
+<p>创建主站项目</p>
+<pre><code>laravel new weakcc
+cd weakcc/
+valet link weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;&amp; npm run dev
+</code></pre>
+<p>更新.env</p>
+<pre><code>APP_NAME=weakcc
+APP_URL=http://weakcc.test/
+DB_DATABASE=weakcc
+DB_USERNAME=root
+DB_PASSWORD=123456
+</code></pre>
+<p>数据迁移</p>
+<pre><code>php artisan migrate
+</code></pre>
+<p>创建子站项目</p>
+<pre><code>laravel new weakcc2
+cd weakcc2/
+valet link zoo.weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;&amp; npm run dev
+</code></pre>
+<p>更新.env</p>
+<pre><code>APP_NAME=weakcc2
+APP_URL=http://zoo.weakcc.test/
+DB_DATABASE=weakcc2
+DB_USERNAME=root
+DB_PASSWORD=123456
+</code></pre>
+<p>数据迁移</p>
+<pre><code>php artisan migrate
+</code></pre>
+<h4 id="实现">实现</h4>
+<p>子站需要新建一个能够关联到主站的数据库连接，打开子站的项目配置文件 <code>database.php</code> 复制一遍 <code>mysql</code> 信息并重名为 <code>cc_mysql</code></p>
+<pre><code>// 本地测试，其他记录一样，只是更新数据库，其他环境，请自行更新
+'cc_mysql' =&gt; [
+    'driver' =&gt; 'mysql',
+    'url' =&gt; env('DATABASE_URL'),
+    'host' =&gt; env('DB_HOST', '127.0.0.1'),
+    'port' =&gt; env('DB_PORT', '3306'),
+    'database' =&gt; 'weakcc', // 主项目的数据库
+    'username' =&gt; env('DB_USERNAME', 'forge'),
+    'password' =&gt; env('DB_PASSWORD', ''),
+    'unix_socket' =&gt; env('DB_SOCKET', ''),
+    'charset' =&gt; 'utf8mb4',
+    'collation' =&gt; 'utf8mb4_unicode_ci',
+    'prefix' =&gt; '',
+    'prefix_indexes' =&gt; true,
+    'strict' =&gt; true,
+    'engine' =&gt; null,
+    'options' =&gt; extension_loaded('pdo_mysql') ? array_filter([
+        PDO::MYSQL_ATTR_SSL_CA =&gt; env('MYSQL_ATTR_SSL_CA'),
+    ]) : [],
+],
+</code></pre>
+<p>子站更新 <code>User</code> 模型数据库连接为新设置的 <code>cc_mysql</code></p>
+<pre><code>// 主站对应的用户表
+protected $table = 'users';
+// 这样的话用户验证将去主项目的用户逻辑
+protected $connection = 'cc_mysql'; 
+</code></pre>
+<p>主项目和子项目同时更新 <code>.env</code> 同时执行 <code>session</code> 表生成</p>
+<pre><code>// 此处使用数据库驱动（跨站登录可以使用 redis 和 database 驱动）
+SESSION_DRIVER=database
+// 执行 session 表格生成
+php artisan session:table
+php artisan migrate
+</code></pre>
+<p>关键步骤，是两个网站能够使用相同的域</p>
+<p>主项目更新 <code>.env</code></p>
+<pre><code>SESSION_DOMAIN=.weakcc.test
+</code></pre>
+<p>子项目更新 <code>.env</code></p>
+<pre><code>SESSION_DOMAIN=.weakcc.test
+// 子项目的 session 连接信息必须为子站用来连接主站的那个 mysql 信息
+SESSION_CONNECTION=cc_mysql
+</code></pre>
+<p>最后一步，两个项目的的 <code>APP_KEY</code> 必须相同，可以复制主站的 <code>APP_KEY</code> 到子站，更新 <code>.env</code></p>
+<pre><code>// 为主站的 APP_KEY
+APP_KEY=base64:mkmoK3/Y84EkxihfiqZZM9ooHoD2GHRbaMNH79CrD0Q=
+</code></pre>
+<p>好了，现在可以在主站注册用户登录，在子站访问了</p>
+<blockquote>
+<p>页面显示 <code>419</code> 需要清除下浏览器缓存的 <code>cookie</code> 信息</p>
+</blockquote>
+<!-- more -->
+<!-- more -->
+<!-- more -->
+<!-- more -->
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Laravel 单人登录]]></title>
+        <id>http://weakcc.github.io/post/laravel-dan-ren-deng-lu/</id>
+        <link href="http://weakcc.github.io/post/laravel-dan-ren-deng-lu/">
+        </link>
+        <updated>2021-10-06T09:47:50.000Z</updated>
+        <summary type="html"><![CDATA[<h4 id="原理">原理</h4>
+<p>一个账户只能在一个地方登录（用户登录网站会创建一个 <code>session</code> 信息，实现单人登录的原理就是把以前已经生成的 <code>session</code> 信息弃用掉，要么删除之前的 <code>session</code> 信息，要么修改之前的 <code>session</code> 信息，使浏览器提交 <code>cookie</code> 信息匹配 <code>session</code> 找不到就可以了）</p>
+]]></summary>
+        <content type="html"><![CDATA[<h4 id="原理">原理</h4>
+<p>一个账户只能在一个地方登录（用户登录网站会创建一个 <code>session</code> 信息，实现单人登录的原理就是把以前已经生成的 <code>session</code> 信息弃用掉，要么删除之前的 <code>session</code> 信息，要么修改之前的 <code>session</code> 信息，使浏览器提交 <code>cookie</code> 信息匹配 <code>session</code> 找不到就可以了）</p>
+<!-- more -->
+<h4 id="准备">准备</h4>
+<p>创建主站项目</p>
+<pre><code>laravel new weakcc
+cd weakcc/
+valet link weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;&amp; npm run dev
+</code></pre>
+<p>更新.env</p>
+<pre><code>APP_NAME=weakcc
+APP_URL=http://weakcc.test/
+DB_DATABASE=weakcc
+DB_USERNAME=root
+DB_PASSWORD=123456
+SESSION_DRIVER=database
+</code></pre>
+<p>数据迁移</p>
+<pre><code>php artisan migrate
+php artisan session:table
+</code></pre>
+<h4 id="实现">实现</h4>
+<p><code>session</code> 以 <code>database</code> 为数据库驱动为例<br>
+覆写 <code>App\Http\Controllers\Auth\LoginController</code> 文件下的 <code>authenticated</code> 方法（当登录时，session 信息还没有生成，就是在这里把已经有的 <code>session</code> 修改下）</p>
+<p>方法1：</p>
+<p>简单粗暴法，有登录就删除已有的 <code>session</code> 信息</p>
+<pre><code>protected function authenticated(Request $request, $user)
+{
+    DB::table('sessions')-&gt;where('user_id', $user-&gt;id)-&gt;delete();
+}
+</code></pre>
+<p>方法2：</p>
+<p>保留用户登录 <code>session</code> 历史信息，方便后续做信息排查，修改已有的 <code>session</code> 信息，变为无效的 <code>session</code> 信息，确认不是恶意的登录信息，这时就可以对无效的信息进行删除</p>
+<pre><code>// 'OUTMAN-' 可以自己随意设置
+protected function authenticated(Request $request, $user)
+{
+    DB::table('sessions')-&gt;where('user_id', $user-&gt;id)-&gt;orderBy('last_activity')-&gt;each(function ($session) {
+        DB::table('sessions')-&gt;where('id', $session-&gt;id)-&gt;update(['id' =&gt; 'OUTMAN-' . $session-&gt;id]);
+    });
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Laravel 超时登录]]></title>
+        <id>http://weakcc.github.io/post/laravel-chao-shi-deng-lu/</id>
+        <link href="http://weakcc.github.io/post/laravel-chao-shi-deng-lu/">
+        </link>
+        <updated>2021-10-06T09:47:08.000Z</updated>
+        <content type="html"><![CDATA[<p>设置 <code>.env</code> 默认为120分钟</p>
+<pre><code>SESSION_LIFETIME=120
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[SSH 免密登录]]></title>
         <id>http://weakcc.github.io/post/ssh-mian-mi-deng-lu/</id>
@@ -90,314 +349,6 @@ ssh weakcc
 <pre><code>查看文件权限是否正确
 .ssh 需要 chmod 700 ~/.ssh
 authorized_keys 需要 chmod 600 ~/.ssh/authorized_keys
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[依赖注入,控制反转,反射各个概念的理解和使用]]></title>
-        <id>http://weakcc.github.io/post/yi-lai-zhu-ru-kong-zhi-fan-zhuan-fan-she-ge-ge-gai-nian-de-li-jie-he-shi-yong/</id>
-        <link href="http://weakcc.github.io/post/yi-lai-zhu-ru-kong-zhi-fan-zhuan-fan-she-ge-ge-gai-nian-de-li-jie-he-shi-yong/">
-        </link>
-        <updated>2021-09-10T00:59:49.000Z</updated>
-        <content type="html"><![CDATA[<p>举个通俗的例子，我们用户登录需要提供记录日志的功能，可以选择使用文件或者数据库。下面我们用代码来演示：</p>
-<pre><code class="language-php">&lt;?php
-
-// 定义写日志的接口规范
-interface Log
-{
-    public function write();
-}
-
-// 文件记录日志
-class FileLog implements Log
-{
-    public function write()
-    {
-        echo 'file log write...';
-    }
-}
-
-// 数据库记录日志
-class DatabaseLog implements Log
-{
-    public function write()
-    {
-        echo 'database log write...';
-    }
-}
-
-// 程序操作类
-class User
-{
-    protected $fileLog;
-
-    public function __construct()
-    {
-        $this-&gt;fileLog = new FileLog();
-    }
-
-    public function login()
-    {
-        echo 'login success...';
-        echo PHP_EOL;
-        $this-&gt;fileLog-&gt;write();
-    }
-}
-
-$user = new User();
-$user-&gt;login();
-</code></pre>
-<p>假设现在想用数据库记录日志的话，我们就得修改 User 类，这份代码没达到解耦合，也不符合编程开放封闭原则，那如何修改呢？我们可以把日志处理类通过构造函数方式传递进去。下面我们试着修改 User 类的代码：</p>
-<pre><code class="language-php">class User
-{
-    protected $log;
-
-    public function __construct(Log $log)
-    {
-        $this-&gt;log = $log;
-    }
-
-    public function login()
-    {
-        echo 'login success...';
-        echo PHP_EOL;
-        $this-&gt;log-&gt;write();
-    }
-}
-
-$user = new User(new DatabaseLog());
-$user-&gt;login();
-</code></pre>
-<p>这样想用任何方式记录操作日志都不需要去修改 User 类了，只需要通过构造函数参数传递就可以实现，其实这就是 <code>控制反转</code>。不需要自己内容修改，改成由外部传递。这种由外部负责其依赖需求的行为，我们可以称其为 <code>控制反转（IoC）</code>。</p>
-<p>反射的概念其实可以理解成根据类名返回该类的任何信息，比如该类有什么方法，参数，变量等等。我们先来学习下反射要用到的 api。拿 User 举例：</p>
-<pre><code class="language-php">// 获取User的reflectionClass对象
-$reflector = new ReflectionClass(User::class);
-
-// 拿到User的构造函数
-$constructor = $reflector-&gt;getConstructor();
-
-// 拿到User的构造函数的所有依赖参数
-$dependencies = $constructor-&gt;getParameters();
-
-
-// 创建user对象
-$user = $reflector-&gt;newInstance();
-
-// 创建user对象，需要传递参数的
-$user = $reflector-&gt;newInstanceArgs($dependencies = []);
-</code></pre>
-<p>这时候我们可以创建一个 make 方法，传入 User，利用反射机制拿到 User 的构造函数，进而得到构造函数的参数对象。用递归的方式创建参数依赖。最后调用 newInstanceArgs 方法生成 User 实例。 可能有些同学还不是很理解。下面我们用代码去简单模拟下：</p>
-<pre><code class="language-php">function make($concrete){
-    // 或者User的反射类
-    $reflector = new ReflectionClass($concrete);
-    // User构造函数
-    $constructor = $reflector-&gt;getConstructor();
-    // User构造函数参数
-    $dependencies = $constructor-&gt;getParameters();
-    // 最后生成User    
-    return $reflector-&gt;newInstanceArgs($dependencies);
-}
-
-$user = make('User');
-$user-&gt;login();
-</code></pre>
-<p>那什么是依赖注入呢？，其实上面的例子也算是依赖注入，不是由自己内部 new 对象或者实例，通过构造函数，或者方法传入的都属于 <code>依赖注入（DI）</code> 。</p>
-<pre><code class="language-php">// 注意我们这里需要修改一下User的构造函数，如果不去修改。反射是不能动态创建接口的，那如果非要用接口该怎么处理呢？下一节我们讲Ioc容器的时候会去解决。
-
-class User 
-{
-    protected $log;
-
-    public function __construct(FileLog $log)
-    {
-        $this-&gt;log = $log;   
-    }
-
-    public function login()
-    {
-        // 登录成功，记录登录日志
-        echo 'login success...';
-        $this-&gt;log-&gt;write();
-    }
-
-}
-
-function make($concrete){
-
-    $reflector = new ReflectionClass($concrete);
-    $constructor = $reflector-&gt;getConstructor();
-    // 为什么这样写的? 主要是递归。比如创建FileLog不需要传入参数。
-    if(is_null($constructor)) {
-        return $reflector-&gt;newInstance();
-    }else {
-        // 构造函数依赖的参数
-        $dependencies = $constructor-&gt;getParameters();
-        // 根据参数返回实例，如FileLog
-        $instances = getDependencies($dependencies);
-        return $reflector-&gt;newInstanceArgs($instances);
-    }
-
-}
-
-function getDependencies($paramters) {
-    $dependencies = [];
-    foreach ($paramters as $paramter) {
-        $dependencies[] = make($paramter-&gt;getClass()-&gt;name);
-    }
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Ngrok 实现内网穿透教程]]></title>
-        <id>http://weakcc.github.io/post/ngrok-shi-xian-nei-wang-chuan-tou-jiao-cheng/</id>
-        <link href="http://weakcc.github.io/post/ngrok-shi-xian-nei-wang-chuan-tou-jiao-cheng/">
-        </link>
-        <updated>2021-09-06T02:04:37.000Z</updated>
-        <summary type="html"><![CDATA[<p>https://ngrok.com/</p>
-<h1 id="ngrok-authtoken-你的-token">ngrok authtoken {你的 Token}</h1>
-<p>Ngrok 注册完成之后会进入这个页面：<br>
-<img src="http://weakcc.github.io/post-images/1630894686441.png" alt="" loading="lazy"><br>
-复制这个框里的命令</p>
-<pre><code class="language-shell">ngrok authtoken {你的 Token}
-</code></pre>
-]]></summary>
-        <content type="html"><![CDATA[<p>https://ngrok.com/</p>
-<h1 id="ngrok-authtoken-你的-token">ngrok authtoken {你的 Token}</h1>
-<p>Ngrok 注册完成之后会进入这个页面：<br>
-<img src="http://weakcc.github.io/post-images/1630894686441.png" alt="" loading="lazy"><br>
-复制这个框里的命令</p>
-<pre><code class="language-shell">ngrok authtoken {你的 Token}
-</code></pre>
-<!-- more -->
-<h1 id="启动-ngrok-客户端">启动 Ngrok 客户端</h1>
-<pre><code class="language-shell">ngrok http -host-header=zbcrm.com -region us 80
-</code></pre>
-<p>http 代表我们要映射的是 HTTP 协议；-host-header= 代表本地站点的域名，如果你用的不是 shop.test 请更换成对应的域名；-region us 代表我们要使用的是美国的公共节点；80 代表映射到本地的 80 端口。<br>
-<img src="http://weakcc.github.io/post-images/1630894831743.png" alt="" loading="lazy"><br>
-<code>Forwarding</code> 代表 Ngrok 分配给你的域名，<b>对于免费账号来说，每次启动 Ngrok ，都会重新分配一个随机的域名，无法固定。</b><br>
-<code>Web Interface</code> 是 Ngrok 内置的一个管理面板，它可以展示所有通过 Ngrok 进来的请求信息以及返回的数据，现在我们访问一下 http://127.0.0.1:4040/ 看看：<br>
-<img src="http://weakcc.github.io/post-images/1630894964212.png" alt="" loading="lazy"></p>
-<blockquote>
-<p>国际带宽不稳定的时候有可能出现连接超时，这个时候可以试试把启动 Ngrok 命令中的 us 改成 au 澳大利亚或者 eu 欧洲</p>
-</blockquote>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[实现大数据量文件的异步导出]]></title>
-        <id>http://weakcc.github.io/post/shi-xian-da-shu-ju-liang-wen-jian-de-yi-bu-dao-chu/</id>
-        <link href="http://weakcc.github.io/post/shi-xian-da-shu-ju-liang-wen-jian-de-yi-bu-dao-chu/">
-        </link>
-        <updated>2021-07-07T09:14:59.000Z</updated>
-        <summary type="html"><![CDATA[<ol>
-    <li>点击导出后，将筛选条件推进队列。（包括总条数）（提示正在处理）</li>
-    <li>消费队列任务，并分页获取列表数据。生成文件。（提示正在处理）</li>
-    <li>将生成的文件，上传某地，并提供下载链接（提示处理完成，超链接下载）</li>
-</ol>]]></summary>
-        <content type="html"><![CDATA[<ol>
-    <li>点击导出后，将筛选条件推进队列。（包括总条数）（提示正在处理）</li>
-    <li>消费队列任务，并分页获取列表数据。生成文件。（提示正在处理）</li>
-    <li>将生成的文件，上传某地，并提供下载链接（提示处理完成，超链接下载）</li>
-</ol>
-<!-- more -->
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[如何防止超卖]]></title>
-        <id>http://weakcc.github.io/post/ru-he-fang-zhi-chao-mai/</id>
-        <link href="http://weakcc.github.io/post/ru-he-fang-zhi-chao-mai/">
-        </link>
-        <updated>2021-07-02T08:00:29.000Z</updated>
-        <summary type="html"><![CDATA[<h1 id="悲观锁">悲观锁</h1>
-<p><code>悲观并发控制</code>（又名“<b>悲观锁</b>”）是一种并发控制的方法。它可以阻止一个事务以影响其他用户的方式来修改数据。如果一个事务执行的操作读某行数据应用了锁，那只用当这个事务把锁释放，其他事务才能够执行与该锁冲突的操作。</p>
-]]></summary>
-        <content type="html"><![CDATA[<h1 id="悲观锁">悲观锁</h1>
-<p><code>悲观并发控制</code>（又名“<b>悲观锁</b>”）是一种并发控制的方法。它可以阻止一个事务以影响其他用户的方式来修改数据。如果一个事务执行的操作读某行数据应用了锁，那只用当这个事务把锁释放，其他事务才能够执行与该锁冲突的操作。</p>
-<!-- more -->
-<p>悲观锁主要用于数据争用激烈的环境，以及发生并发冲突时锁保护数据的成本要低于回滚事务的成本的环境中。</p>
-<p>简而言之，悲观锁主要用于保护数据的完整性。当多个事务并发执行时，某个事务对数据应用了锁，则其他事务只能等该事务执行完了，才能进行对该数据进行修改操作。</p>
-<pre><code class="language-php">update goods set num = num - 1 where id = 1001 and num &gt; 0
-</code></pre>
-<p>假设现在商品只剩下一件了，此是数据库中 <b>num = 1</b>；<br>
-但有 100 个线程同时读取到了这个 <b>num = 1</b>，所以 100 个线程都开始减库存了。<br>
-但你最终会发觉， <b>其实只有一个线程减库存成功，其他 99 个线程全部失败</b>。<br>
-需要注意的是，<code>FOR UPDATE</code> 生效需要同时满足两个条件才生效：</p>
-<ul>
-    <li>数据库的引擎为 innoDB</li>
-    <li>操作位于事务块中（BEGIN/COMMIT）</li>
-</ul>
-<p>悲观锁采用的是「先获取锁再访问」的策略，来保障数据的安全。但是加锁策略，依赖数据库实现，会增加数据库的负担，且会增加死锁发生的几率。此外，对于不会发生变化的只读数据，加锁只会增加额外不必要的负担。在实际的实践中，对于并发很高的场景并不会使用悲观锁，因为当一个事务锁住了数据，那么其他事务都会发生阻塞，会导致大量的事务发生积压拖垮整个系统。</p>
-<h1 id="乐观锁">乐观锁</h1>
-<pre><code class="language-php">select version from goods where id = 1001;
-
-update goods set num = num - 1, version = version + 1 where id = 1001 and num &gt; 0 and version = @version(上面查到的version);
-</code></pre>
-<p>这种方式采用了<b>版本号</b>的方式，其实也就是 <b>CAS</b> 的原理。<br>
-假设此时 version = 100, num = 1;  现在有 100 个线程进入到了这里，同时他们 select 出来版本号都是 version = 100。<br>
-然后直接 update 的时候，只有其中一个先 update 了，同时更新了版本号。<br>
-那么其他 99 个在更新的时候，会发觉 version 并不等于上次 select 的 version，就说明 version 被其他线程修改过了，就放弃这次的 update。</p>
-<h1 id="redis-消息队列">Redis 消息队列</h1>
-<p>在秒杀的情况下，高频率的去读写数据库，会严重造成性能问题。<br>
-所以必须借助其他服务，可以利用 redis 的单线程预减库存。<br>
-比如商品有 100 件，那么我可以在 redis 中先存储一个 <code>k, v</code>。<br>
-例如：每一个用户线程进来，key 值就减 1，等减到 0 的时候，全部拒绝剩下的请求。<br>
-那么也就是只有 100 个线程会进入到后续操作。所以一定不会出现超卖的现象。</p>
-<h1 id="redis-分布式锁">Redis 分布式锁</h1>
-<pre><code class="language-php">&lt;?php
-/**
- * 实现Redis分布锁
- */
- 
-$key        = 'test';       //要更新信息的缓存KEY
-$lockKey    = 'lock:'.$key; //设置锁KEY
-$lockExpire = 10;           //设置锁的有效期为10秒
- 
-//获取缓存信息
-$result = $redis-&gt;get($key);
-//判断缓存中是否有数据
-if(empty($result))
-{
-    $status = TRUE;
-    while ($status)
-    {
-        //设置锁值为当前时间戳 + 有效期
-        $lockValue = time() + $lockExpire;
-        /**
-         * 创建锁
-         * 试图以$lockKey为key创建一个缓存,value值为当前时间戳
-         * 由于setnx()函数只有在不存在当前key的缓存时才会创建成功
-         * 所以，用此函数就可以判断当前执行的操作是否已经有其他进程在执行了
-         * @var [type]
-         */
-        $lock = $redis-&gt;setnx($lockKey, $lockValue);
-        /**
-         * 满足两个条件中的一个即可进行操作
-         * 1、上面一步创建锁成功;
-         * 2、   1）判断锁的值（时间戳）是否小于当前时间    $redis-&gt;get()
-         *      2）同时给锁设置新值成功    $redis-&gt;getset()
-         */
-        if(!empty($lock) || ($redis-&gt;get($lockKey) &lt; time() &amp;&amp; $redis-&gt;getSet($lockKey, $lockValue) &lt; time() ))
-        {
-            //给锁设置生存时间
-            $redis-&gt;expire($lockKey, $lockExpire);
-            //******************************
-            //此处执行插入、更新缓存操作...
-            //******************************
- 
-            //以上程序走完删除锁
-            //检测锁是否过期，过期锁没必要删除
-            if($redis-&gt;ttl($lockKey))
-                $redis-&gt;del($lockKey);
-            $status = FALSE;
-        }else{
-            /**
-             * 如果存在有效锁这里做相应处理
-             *      等待当前操作完成再执行此次请求
-             *      直接返回
-             */
-            sleep(2);//等待2秒后再尝试执行操作
-        }
-    }
-}
 </code></pre>
 ]]></content>
     </entry>

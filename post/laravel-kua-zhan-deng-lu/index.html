@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>消息队列 | 腰盐醋</title>
+<title>Laravel 跨站登录 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1633513924474">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="消息队列" />
-  <meta name="keywords" content="" />
+  <meta name="description" content="Laravel 跨站登录" />
+  <meta name="keywords" content="Laravel,PHP" />
 </head>
 
 <body>
@@ -220,46 +220,21 @@
   <div class="toc-wrapper auto-number auto"
     id="toc_wrapper">
     <ul class="markdownIt-TOC">
-<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF">为什么要用消息队列（消息队列的应用场景）</a>
+<li>
 <ul>
-<li><a href="#%E8%A7%A3%E8%80%A6">解耦</a></li>
-<li><a href="#%E5%BC%82%E6%AD%A5">异步</a></li>
-<li><a href="#%E5%89%8A%E5%B3%B0">削峰</a></li>
-<li><a href="#%E6%97%A5%E5%BF%97%E5%A4%84%E7%90%86">日志处理</a></li>
-<li><a href="#%E6%B6%88%E6%81%AF%E9%80%9A%E8%AE%AF">消息通讯</a></li>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#%E5%8E%9F%E7%90%86">原理</a></li>
+<li><a href="#%E5%87%86%E5%A4%87">准备</a></li>
+<li><a href="#%E5%AE%9E%E7%8E%B0">实现</a></li>
 </ul>
 </li>
-<li><a href="#%E5%90%84%E7%A7%8D%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%BA%A7%E5%93%81%E7%9A%84%E6%AF%94%E8%BE%83">各种消息队列产品的比较</a></li>
-<li><a href="#%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%9A%84%E4%BC%98%E7%82%B9%E5%92%8C%E7%BC%BA%E7%82%B9">消息队列的优点和缺点</a></li>
-<li><a href="#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8">如何保证消息队列的高可用</a></li>
-<li><a href="#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E4%B8%8D%E4%B8%A2%E5%A4%B1">如何保证消息不丢失</a>
-<ul>
-<li><a href="#%E6%B6%88%E6%81%AF%E4%B8%A2%E5%A4%B1%E7%9A%84%E5%8E%9F%E5%9B%A0">消息丢失的原因</a>
-<ul>
-<li><a href="#%E6%83%85%E5%86%B51">情况1</a></li>
-<li><a href="#%E6%83%85%E5%86%B52">情况2</a></li>
-<li><a href="#%E6%83%85%E5%86%B53">情况3</a></li>
 </ul>
 </li>
-<li><a href="#%E5%A6%82%E4%BD%95%E7%A1%AE%E4%BF%9D%E6%B6%88%E6%81%AF%E4%B8%8D%E4%B8%A2%E5%A4%B1">如何确保消息不丢失</a></li>
 </ul>
 </li>
-<li><a href="#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E4%B8%8D%E8%A2%AB%E9%87%8D%E5%A4%8D%E6%B6%88%E8%B4%B9%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E6%B6%88%E8%B4%B9%E7%9A%84%E5%B9%82%E7%AD%89%E6%80%A7">如何保证消息不被重复消费（如何保证消息消费的幂等性）</a>
-<ul>
-<li><a href="#%E5%8F%91%E9%80%81%E6%97%B6%E6%B6%88%E6%81%AF%E9%87%8D%E5%A4%8D">发送时消息重复</a></li>
-<li><a href="#%E6%B6%88%E8%B4%B9%E6%97%B6%E6%B6%88%E6%81%AF%E9%87%8D%E5%A4%8D">消费时消息重复</a></li>
-<li><a href="#%E6%B6%88%E6%81%AF%E5%B9%82%E7%AD%89%E6%80%A7%E8%A7%A3%E5%86%B3%E6%B6%88%E6%81%AF%E9%87%8D%E5%A4%8D%E9%97%AE%E9%A2%98">消息幂等性解决消息重复问题</a></li>
-</ul>
-</li>
-<li><a href="#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E6%B6%88%E8%B4%B9%E7%9A%84%E9%A1%BA%E5%BA%8F%E6%80%A7">如何保证消息消费的顺序性</a>
-<ul>
-<li><a href="#%E6%A8%A1%E5%9E%8B1">模型1</a></li>
-<li><a href="#%E6%A8%A1%E5%9E%8B2">模型2</a></li>
-<li><a href="#%E6%A8%A1%E5%9E%8B3">模型3</a></li>
-<li><a href="#%E6%A8%A1%E5%9E%8B4">模型4</a></li>
-</ul>
-</li>
-<li><a href="#%E5%9F%BA%E4%BA%8E-mq-%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0">基于 MQ 的分布式事务实现</a></li>
 </ul>
 
   </div>
@@ -525,8 +500,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/xiao-xi-dui-lie/">
-      消息队列
+    <a class="post-title-link" href="http://weakcc.github.io/post/laravel-kua-zhan-deng-lu/">
+      Laravel 跨站登录
     </a>
   </h1>
   <div class="post-meta">
@@ -534,246 +509,139 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2021-03-16 08:48:30">2021-03-16</span>
+      <span class="publish-time" data-t="2021-10-06 17:48:13">2021-10-06</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
     <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show language" data-lan="category-in">分类于</span>
+      
+      
+      <a href="http://weakcc.github.io/tag/jToeViyOW/">
+        <span>Laravel</span>
+      </a>、
+      
+      
+      
+      <a href="http://weakcc.github.io/tag/IuY5uV6ll/">
+        <span>PHP</span>
+      </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>14<span class="language" data-lan="minute">分钟</span></span>
+      <span>3<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>3855<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>543<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <p><code>消息（Message）</code>：传输的数据。<br>
-<code>队列（Queue）</code>：队列是一种先进先出的数据结构。<br>
-<code>消息队列</code>是消息的传输过程中保存消息的容器，也可以简单理解为：<b>把要传输的数据放在队列中</b>。</p>
-<p>一般来说，<b>消息队列是一种异步的服务间通信方式，是分布式系统中重要的组件，主要解决应用耦合，异步消息，流量削锋等问题，实现高性能，高可用，可伸缩和最终一致性架构</b>。使用较多的消息队列有<code>RocketMQ</code>、<code>RabbitMQ</code>、<code>Kafka</code>等。</p>
-<blockquote>
-<p>生产者：把数据放到消息队列叫做生产者<br>
-消费者：从消息队列里边取数据叫做消费者</p>
-</blockquote>
-<h1 id="为什么要用消息队列消息队列的应用场景">为什么要用消息队列（消息队列的应用场景）</h1>
-<p>常用应用场景：解耦、异步、削峰</p>
-<h2 id="解耦">解耦</h2>
-<p>应用耦合：<b>多应用间通过消息队列对同一消息进行处理，避免调用接口失败导致整个过程失败</b></p>
-<p>场景说明：用户下单后，订单系统需要通知库存系统。传统的做法是，订单系统调用库存系统的接口<br>
-传统模式的缺点：</p>
-<ol>
-    <li>假如库存系统无法访问，则订单减库存将失败，从而导致订单失败</li>
-    <li>订单系统与库存系统耦合</li>
-</ol>
-如何解决以上问题呢？引入应用消息队列后的方案
-<ul>
-    <li>订单系统：用户下单后，订单系统完成持久化处理，将消息写入消息队列，返回用户订单下单成功</li>
-    <li>库存系统：订阅下单的消息，采用拉/推的方式，获取下单信息，库存系统根据下单信息，进行库存操作</li>
-</ul>
-<blockquote>
-<p>假如：在下单时库存系统不能正常使用。也不影响正常下单，因为下单后，订单系统写入消息队列就不再关心其他的后续操作了。实现订单系统与库存系统的应用解耦</p>
-</blockquote>
-<p>系统未解耦：以电商应用为例，用户创建订单后，如果耦合调用库存系统、物流系统、支付系统，任何一个子系统出了故障或者因为升级等原因暂时不可用，都会造成下单异常，影响用户体验。（图1-1）</p>
-<p>系统解耦：使用消息队列解耦合，比如物流系统发生故障，需要几分钟才能修复，在这段时间内，物流系统要处理的数据被缓存到消息队列中，用户的下单操作正常完成。当物流系统恢复后，补充处理被缓存到消息队列中的订单数据，终端系统感知不到物流系统发生的故障。（图1-2）<br>
-<img src="http://weakcc.github.io/post-images/1615859297884.png" alt="" loading="lazy"><br>
-当订单系统不需要物流系统时，不用消息队列需要来回修改耦合的代码，用 MQ 后只需在物流系统消费者处不在接收订单队列信息即可。降低了人工成本，代码便于维护。</p>
-<h2 id="异步">异步</h2>
-<p>异步处理：<b>多应用对消息队列中同一消息进行处理，应用间并发处理消息，相比串行处理，减少处理时间</b></p>
-<p>场景说明：用户注册后，需要发注册邮件和注册短信。传统的做法有两种 1.串行的方式；2.并行方式</p>
-<ol>
-    <li>串行方式：将注册信息写入数据库成功后，发送注册邮件，再发送注册短信。以上三个任务全部完成后，返回给客户端</li>
-    <li>并行方式：将注册信息写入数据库成功后，发送注册邮件的同时，发送注册短信。以上三个任务完成后，返回给客户端。与串行的差别是，并行的方式可以提高处理的时间</li>
-</ol>
-<p>假设三个业务节点每个使用 50 毫秒钟，不考虑网络等其他开销，则串行方式的时间是150毫秒，并行的时间可能是 100 毫秒<br>
-因为 CPU 在单位时间内处理的请求数是一定的，假设 CPU 1 秒内吞吐量是 100 次。则串行方式 1 秒内 CPU 可处理的请求量是 7 次（1000/150）。并行方式处理的请求量是 10 次（1000/100）<br>
-引入消息队列，将不是必须的业务逻辑，异步处理。改造后的架构如下<br>
-按照以上约定，用户的响应时间相当于是注册信息写入数据库的时间，也就是50毫秒。注册邮件，发送短信写入消息队列后，直接返回，因此写入消息队列的速度很快，基本可以忽略，因此用户的响应时间可能是 50毫秒。因此架构改变后，系统的吞吐量提高到每秒 20 QPS。比串行提高了 3 倍，比并行提高了两倍</p>
-<p>系统未异步：A 系统接收一个请求，需要在自己本地写库，还需要在B、C、D三个系统写库，自己本地写库要 3ms，B、C、D三个系统写库分别要 300ms、450ms、200ms。最终请求总延迟是 3 + 300 + 450 + 200 = 953ms，接近 1s，用户体验很差，一般的互联网企业，对于用户的直接操作，容忍必须要 200ms 以内，对用户是无感知的，用户通过浏览器发起请求，等待 1s，这个几乎是无法接受的。（图1-1）</p>
-<p>系统异步：如果使用 MQ，那么 A 系统连续发送 3 条消息到 MQ 队列中，假设耗时 5ms，A 系统从接受一个请求到返回响应给用户，总时长为 5 + 3 = 8ms，响应速度大大提升，改善了用户的体验。（图1-2）<br>
-<img src="http://weakcc.github.io/post-images/1615860664817.png" alt="" loading="lazy"></p>
-<h2 id="削峰">削峰</h2>
-<p>限流削峰：<b>广泛应用于秒杀或抢购活动中，避免流量过大导致应用系统挂掉的情况</b></p>
-<p>场景说明：秒杀活动，一般会因为流量过大，导致流量暴增，应用挂掉。为解决这个问题，一般需要在应用前端加入消息队列</p>
-<ul>
-    <li>可以控制活动的人数</li>
-    <li>可以缓解短时间内高流量压垮应用</li>
-</ul>
-用户的请求，服务器接收后，首先写入消息队列。假如消息队列长度超过最大数量，则直接抛弃用户请求或跳转到错误页面；秒杀业务根据消息队列中的请求信息，再做后续处理
-<p>应用系统如果遇到系统请求流量的瞬间猛增，有可能会将系统压垮（图1-1）。有了消息队列可以将大量请求缓存起来，分散到很长一段时间处理，这样可以大大提升系统的稳定性和用户体验（图1-2）。</p>
-<p>一般情况，为了保证系统的稳定性，如果系统负载超过阈值，就会阻止用户请求，这会影响用户体验，而如果使用消息队列将请求缓存起来，等待系统处理完毕后通知用户下单完成，这样下单体验也好点。</p>
-<p>业务系统正常时段的 QPS 如果是 1 K，流量最高峰是 10 K，为了应对流量高峰配置高性能的服务器显然不划算，这时可以使用消息队列对峰值流量进行削峰。<br>
-<img src="http://weakcc.github.io/post-images/1615870854381.png" alt="" loading="lazy"></p>
-<h2 id="日志处理">日志处理</h2>
-<p>日志处理是指将消息队列用在日志处理中，比如 <code>Kafka</code> 的应用，解决大量日志传输的问题。架构简化如下</p>
-<ol>
-    <li>日志采集客户端，负责日志数据采集，定时写出写入 Kafka 队列</li>
-    <li>Kafka 消息队列，负责日志数据的接收，存储和转发</li>
-    <li>日志处理应用，订阅并消费 Kafka 队列中的日志数据</li>
-</ol>
-<h2 id="消息通讯">消息通讯</h2>
-<p>消息通讯是指消息队列一般都内置了高效的通信机制，因此也可以用在纯的消息通讯。<br>
-比如实现点对点消息队列或者聊天室等。</p>
-<p>点对点通讯：（点对点）<br>
-客户端A，客户端B使用同一队列，进行通讯</p>
-<p>聊天室通讯：（发布订阅模式）<br>
-客户端A，客户端B, ...，客户端订阅同一主题，进行消息发布和接收。实现类似聊天室效果</p>
-<h1 id="各种消息队列产品的比较">各种消息队列产品的比较</h1>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">特性</th>
-<th style="text-align:center">RabbitMQ</th>
-<th style="text-align:center">RocketMQ</th>
-<th style="text-align:center">Kafka</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">开发语言</td>
-<td style="text-align:center">erlang</td>
-<td style="text-align:center">Java</td>
-<td style="text-align:center">scala</td>
-</tr>
-<tr>
-<td style="text-align:center">单机吞吐量</td>
-<td style="text-align:center">万级</td>
-<td style="text-align:center">十万级</td>
-<td style="text-align:center">十万级</td>
-</tr>
-<tr>
-<td style="text-align:center">时效性</td>
-<td style="text-align:center">us级</td>
-<td style="text-align:center">ms级</td>
-<td style="text-align:center">ms级以内</td>
-</tr>
-<tr>
-<td style="text-align:center">可用性</td>
-<td style="text-align:center">高（主从架构）</td>
-<td style="text-align:center">非常高（分布式架构）</td>
-<td style="text-align:center">非常高（分布式架构）</td>
-</tr>
-<tr>
-<td style="text-align:center">功能特性</td>
-<td style="text-align:center">基于 erlang开发，所以并发能力很强，性能极其好，延时很低管理界面较丰富</td>
-<td style="text-align:center">MQ功能比较完备，扩展性佳</td>
-<td style="text-align:center">只支持主要的MQ功能，像一些消息查询，消息回溯等功能没有提供，毕竟是为大数据准备的，在大数据领域应用广</td>
-</tr>
-</tbody>
-</table>
-<p>RabbitMQ，开发语言 erlang 阻止了大量工程师去深入研究和掌握它，对公司而言，几乎处于不可控的状态，但是它是开源的，比较稳定的支持，活跃度也很高，如不考虑二次开发，推荐使用</p>
-<p>RocketMQ，开发语言 Java，在阿里内部经受过高并发业务的考验，稳定性和性能均不错，考虑后期可能二开，推荐使用</p>
-<p>Kafka，大数据领域的实时计算、日志采集等场景，用 Kafka 是业内标准的，社区活跃度很高，推荐使用。大数据领域日志采集等业务推荐使用</p>
-<h1 id="消息队列的优点和缺点">消息队列的优点和缺点</h1>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">优点</th>
-<th style="text-align:center">缺点</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">解耦</td>
-<td style="text-align:center">系统可用性降低</td>
-</tr>
-<tr>
-<td style="text-align:center">异步</td>
-<td style="text-align:center">系统复杂度提高</td>
-</tr>
-<tr>
-<td style="text-align:center">削峰</td>
-<td style="text-align:center">一致性问题</td>
-</tr>
-</tbody>
-</table>
-<p><code>系统可用性降低</code>：系统引入的外部依赖越多，系统稳定性越差。一旦 MQ 宕机，就会对业务造成影响。<br>
-（如何保证 MQ 的高可用？）</p>
-<p><code>系统复杂度提高</code>：MQ 的加入大大增加了系统的复杂度，以前系统间是同步的远程调用，现在是通过 MQ 进行一步调用。<br>
-（消息丢失怎么办？重复消息怎么处理？如何保证消息传递的顺序性？）</p>
-<p><code>一致性问题</code>：A 系统处理完业务，通过 MQ 给 B、C、D 三个系统发消息数据，如果 B 系统、C 系统处理完成，D 系统处理失败。<br>
-（如何保证消息数据处理的一致性？）</p>
-<h1 id="如何保证消息队列的高可用">如何保证消息队列的高可用</h1>
-<p>RabbitMQ：镜像集群<br>
-RocketMQ：双主双从</p>
-<h1 id="如何保证消息不丢失">如何保证消息不丢失</h1>
-<h2 id="消息丢失的原因">消息丢失的原因</h2>
-<p>发送方，MQ，消费方都有可能导致消息丢失</p>
-<h3 id="情况1">情况1</h3>
-<p>消息生产者没有成功发送到 MQ Broker</p>
-<h3 id="情况2">情况2</h3>
-<p>消息发送给 MQ Broker 后，Broker 宕机导致内存中的消息数据丢失</p>
-<h3 id="情况3">情况3</h3>
-<p>消费者获取到消息，但消费者还没有来得及处理宕机了，但此时 MQ 中消息已经删除，消费者重启后不能再消费之前的消息<br>
-<img src="http://weakcc.github.io/post-images/1624933872334.png" alt="" loading="lazy"></p>
-<h2 id="如何确保消息不丢失">如何确保消息不丢失</h2>
-<p>发送方可靠发送，MQ 进行消息持久化，消费方消费完毕后进行 ACK 确认，MQ 收到消费方的 ACK 确认后在删除本地消息</p>
-<ol>
-    <li>消息发送者发送给 MQ Broker 后，MQ Broker 给生产者确认收到</li>
-    <li>MQ 收到消息后进行消息持久化</li>
-    <li>消费者收到消息处理完毕后手动进行 ACK 确认</li>
-    <li>MQ 收到消费者 ACK 确认后删除持久化的消息</li>
-</ol>
-<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1624934257575.png" alt="" loading="lazy"></figure>
-<h1 id="如何保证消息不被重复消费如何保证消息消费的幂等性">如何保证消息不被重复消费（如何保证消息消费的幂等性）</h1>
-<pre><code>消息重复的根本原因就是网络不可达
+              <h4 id="原理">原理</h4>
+<p>两个项目要共用一套验证体系，一般都是先做完主站，共用的用户系统就是主站的用户系统</p>
+<!-- more -->
+<h4 id="准备">准备</h4>
+<p>创建主站项目</p>
+<pre><code>laravel new weakcc
+cd weakcc/
+valet link weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;&amp; npm run dev
 </code></pre>
-<h2 id="发送时消息重复">发送时消息重复</h2>
-<p>当一条消息已被成功发送到服务端，此时出现了网络闪断，导致服务端对客户端应答失败。如果此时生产者意识到消息发送失败并尝试再次发送消息，消费者后续会收到两天内容相同的消息。<br>
-<img src="http://weakcc.github.io/post-images/1624934825235.png" alt="" loading="lazy"></p>
-<h2 id="消费时消息重复">消费时消息重复</h2>
-<p>消息消费的场景下，消息已投递到消费者并完成业务处理，当消费方给 MQ 服务端反馈应答的时候网络闪断。为了保证消息至少被消费一次，MQ 服务端将在网络恢复后再次尝试投递之前已被消费方处理过的消息，此时消费者就会收到两条内容相同的消息。<br>
-<img src="http://weakcc.github.io/post-images/1624935043623.png" alt="" loading="lazy"></p>
-<h2 id="消息幂等性解决消息重复问题">消息幂等性解决消息重复问题</h2>
-<p>消息携带全局ID，消费方接收到消息时先查在处理，根据全局ID做判重操作</p>
-<ol>
-    <li>消息发送者发送消息时携带一个全局唯一的消息id</li>
-    <li>消费者获取消费后先根据id在 redis/db 中查询是否存在消费记录</li>
-    <li>如果没有消费过就正常消费，消费完毕后写入 redis/db</li>
-    <li>如果消息消费过就直接舍弃</li>
-</ol>
-<h1 id="如何保证消息消费的顺序性">如何保证消息消费的顺序性</h1>
-<p><code>消息有序</code> 指的是可以按照消息的发送顺序进行消费。</p>
+<p>更新.env</p>
+<pre><code>APP_NAME=weakcc
+APP_URL=http://weakcc.test/
+DB_DATABASE=weakcc
+DB_USERNAME=root
+DB_PASSWORD=123456
+</code></pre>
+<p>数据迁移</p>
+<pre><code>php artisan migrate
+</code></pre>
+<p>创建子站项目</p>
+<pre><code>laravel new weakcc2
+cd weakcc2/
+valet link zoo.weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;&amp; npm run dev
+</code></pre>
+<p>更新.env</p>
+<pre><code>APP_NAME=weakcc2
+APP_URL=http://zoo.weakcc.test/
+DB_DATABASE=weakcc2
+DB_USERNAME=root
+DB_PASSWORD=123456
+</code></pre>
+<p>数据迁移</p>
+<pre><code>php artisan migrate
+</code></pre>
+<h4 id="实现">实现</h4>
+<p>子站需要新建一个能够关联到主站的数据库连接，打开子站的项目配置文件 <code>database.php</code> 复制一遍 <code>mysql</code> 信息并重名为 <code>cc_mysql</code></p>
+<pre><code>// 本地测试，其他记录一样，只是更新数据库，其他环境，请自行更新
+'cc_mysql' =&gt; [
+    'driver' =&gt; 'mysql',
+    'url' =&gt; env('DATABASE_URL'),
+    'host' =&gt; env('DB_HOST', '127.0.0.1'),
+    'port' =&gt; env('DB_PORT', '3306'),
+    'database' =&gt; 'weakcc', // 主项目的数据库
+    'username' =&gt; env('DB_USERNAME', 'forge'),
+    'password' =&gt; env('DB_PASSWORD', ''),
+    'unix_socket' =&gt; env('DB_SOCKET', ''),
+    'charset' =&gt; 'utf8mb4',
+    'collation' =&gt; 'utf8mb4_unicode_ci',
+    'prefix' =&gt; '',
+    'prefix_indexes' =&gt; true,
+    'strict' =&gt; true,
+    'engine' =&gt; null,
+    'options' =&gt; extension_loaded('pdo_mysql') ? array_filter([
+        PDO::MYSQL_ATTR_SSL_CA =&gt; env('MYSQL_ATTR_SSL_CA'),
+    ]) : [],
+],
+</code></pre>
+<p>子站更新 <code>User</code> 模型数据库连接为新设置的 <code>cc_mysql</code></p>
+<pre><code>// 主站对应的用户表
+protected $table = 'users';
+// 这样的话用户验证将去主项目的用户逻辑
+protected $connection = 'cc_mysql'; 
+</code></pre>
+<p>主项目和子项目同时更新 <code>.env</code> 同时执行 <code>session</code> 表生成</p>
+<pre><code>// 此处使用数据库驱动（跨站登录可以使用 redis 和 database 驱动）
+SESSION_DRIVER=database
+// 执行 session 表格生成
+php artisan session:table
+php artisan migrate
+</code></pre>
+<p>关键步骤，是两个网站能够使用相同的域</p>
+<p>主项目更新 <code>.env</code></p>
+<pre><code>SESSION_DOMAIN=.weakcc.test
+</code></pre>
+<p>子项目更新 <code>.env</code></p>
+<pre><code>SESSION_DOMAIN=.weakcc.test
+// 子项目的 session 连接信息必须为子站用来连接主站的那个 mysql 信息
+SESSION_CONNECTION=cc_mysql
+</code></pre>
+<p>最后一步，两个项目的的 <code>APP_KEY</code> 必须相同，可以复制主站的 <code>APP_KEY</code> 到子站，更新 <code>.env</code></p>
+<pre><code>// 为主站的 APP_KEY
+APP_KEY=base64:mkmoK3/Y84EkxihfiqZZM9ooHoD2GHRbaMNH79CrD0Q=
+</code></pre>
+<p>好了，现在可以在主站注册用户登录，在子站访问了</p>
 <blockquote>
-<p>例如：一笔订单产生了3条消息，分别是订单创建，订单付款，订单完成。消费时，要按照顺序依次消费才有意义。</p>
+<p>页面显示 <code>419</code> 需要清除下浏览器缓存的 <code>cookie</code> 信息</p>
 </blockquote>
-<p>与此同时多笔订单之间又是可以并行消费的。</p>
-<p>消费方按照消息发送的顺序进行消费，分为全局顺序消息和局部顺序消息，常见的是局部顺序消费</p>
-<p>保证消息的顺序消费：<br>
-全局顺序消费，生产者：MQ Server：消费者 = 1 : 1 : 1<br>
-局部顺序消费，1，生产者将同一组消息发送到单个队列；2，多个消费者并行对消息进行消费；3，Queue 通过分段锁保证消息消费的顺序性。</p>
-<h2 id="模型1">模型1</h2>
-<p>M1，M2 按照先后顺序发送到2台Server，被2个消费者分别消费<br>
-<img src="http://weakcc.github.io/post-images/1624937135467.png" alt="" loading="lazy"></p>
-<p>存在问题：1，不能保证消息的顺序到达MQ；2，不能保证消息的顺序消费。</p>
-<h2 id="模型2">模型2</h2>
-<p>M1，M2 按照先后顺序发送到1台Server，被2个消费者分别消费<br>
-<img src="http://weakcc.github.io/post-images/1624937236013.png" alt="" loading="lazy"></p>
-<p>存在问题：1，可以保证消息的顺序到达MQ；2，消费方如果出现网络延迟问题，不能严格保证消息的顺序消费。</p>
-<h2 id="模型3">模型3</h2>
-<p>生产者：MQ Server：消费者 《=》1 : 1 : 1<br>
-<img src="http://weakcc.github.io/post-images/1624937379625.png" alt="" loading="lazy"></p>
-<p>可以保证消息顺序到达MQ，可以保证消息顺序消费。<br>
-存在问题：全局的顺序消费，不常见。1，吞吐量下降；2，容错性降低。</p>
-<h2 id="模型4">模型4</h2>
-<p>局部顺序消费<br>
-<img src="http://weakcc.github.io/post-images/1624937513605.png" alt="" loading="lazy"></p>
-<p>1，生产者根据消息ID将同一组消息发送到一个 <code>Queue</code> 中；<br>
-2，多个消费者同时获取 <code>Queue</code> 中的消息进行消费；<br>
-3，MQ 使用<b>分段锁</b>保证单个 <code>Queue</code> 中的有序消费。</p>
-<h1 id="基于-mq-的分布式事务实现">基于 MQ 的分布式事务实现</h1>
-<figure data-type="image" tabindex="2"><img src="http://weakcc.github.io/post-images/1624938219891.png" alt="" loading="lazy"></figure>
-<p>本质上来说，分布式事务就是为了保证不同数据库的数据一致性。</p>
-<ol>
-    <li>用户提交订单</li>
-    <li>库存服务操作库存DB，减库存</li>
-    <li>订单服务操作订单DB，生成订单数据</li>
-    <li>库存服务和订单服务要么同时成功，要么同时失败</li>
-</ol>
-<figure data-type="image" tabindex="3"><img src="http://weakcc.github.io/post-images/1624938407908.png" alt="" loading="lazy"></figure>
+<!-- more -->
+<!-- more -->
+<!-- more -->
+<!-- more -->
 
             </div>
             
@@ -790,7 +658,7 @@ RocketMQ：双主双从</p>
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/xiao-xi-dui-lie/" title="消息队列">http://weakcc.github.io/post/xiao-xi-dui-lie/</a>
+      <a href="http://weakcc.github.io/post/laravel-kua-zhan-deng-lu/" title="Laravel 跨站登录">http://weakcc.github.io/post/laravel-kua-zhan-deng-lu/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -799,19 +667,23 @@ RocketMQ：双主双从</p>
   </ul>
   <div class="tags">
     
+      <a href="http://weakcc.github.io/tag/jToeViyOW/"># Laravel</a>
+    
+      <a href="http://weakcc.github.io/tag/IuY5uV6ll/"># PHP</a>
+    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
         <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="MySQL 8.0 安装与配置" href="http://weakcc.github.io/post/mysql-80-bi-zhi-bi-hui/">MySQL 8.0 安装与配置</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="MySQL 8.0 安装与配置" href="http://weakcc.github.io/post/mysql-80-bi-zhi-bi-hui/">上一篇</a>
+        <a class="nav-pc-next" title="Laravel 搭建自己的 WebSocket 服务器" href="http://weakcc.github.io/post/laravel-da-jian-zi-ji-de-websocket-fu-wu-qi/">Laravel 搭建自己的 WebSocket 服务器</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="Laravel 搭建自己的 WebSocket 服务器" href="http://weakcc.github.io/post/laravel-da-jian-zi-ji-de-websocket-fu-wu-qi/">上一篇</a>
       
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="使用 Laradock 搭建基于 Docker 的 PHP 开发环境" href="http://weakcc.github.io/post/shi-yong-laradock-da-jian-ji-yu-docker-de-php-kai-fa-huan-jing/">使用 Laradock 搭建基于 Docker 的 PHP 开发环境</a>
-        <a class="nav-mobile-next" title="使用 Laradock 搭建基于 Docker 的 PHP 开发环境" href="http://weakcc.github.io/post/shi-yong-laradock-da-jian-ji-yu-docker-de-php-kai-fa-huan-jing/">下一篇</a>
+        <a class="nav-pc-next" title="Laravel 单人登录" href="http://weakcc.github.io/post/laravel-dan-ren-deng-lu/">Laravel 单人登录</a>
+        <a class="nav-mobile-next" title="Laravel 单人登录" href="http://weakcc.github.io/post/laravel-dan-ren-deng-lu/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>

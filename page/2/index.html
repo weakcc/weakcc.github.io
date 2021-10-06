@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1633513246017">
+<link rel="shortcut icon" href="/favicon.ico?v=1633513924474">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -171,19 +171,19 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">29</span>
+        <span class="site-item-stat-count">33</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="">
-        <span class="site-item-stat-count">18</span>
+        <span class="site-item-stat-count">19</span>
         <span class="site-item-stat-name language" data-lan="category">分类</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="/tags/">
-        <span class="site-item-stat-count">18</span>
+        <span class="site-item-stat-count">19</span>
         <span class="site-item-stat-name language" data-lan="tag">标签</span>
       </a>
     </div>
@@ -214,6 +214,280 @@
         <div class="section-box pisces">
           <section class="section bg-color posts-expand slide-down-in">
             
+  <article class="post-list-box  post box-shadow-wrapper">
+    <div class="article-wrapper bg-color">
+      <section class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="http://weakcc.github.io/post/lian-jie-chi/">
+      连接池
+    </a>
+  </h1>
+  <div class="post-meta">
+    
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span class="language" data-lan="publish">发布于</span>
+      <span class="publish-time" data-t="2021-06-24 14:10:52">2021-06-24</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
+    
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>12<span class="language" data-lan="minute">分钟</span></span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>3044<span class="pc-show language" data-lan="words">字数</span></span>
+    </span>
+    
+  </div>
+</section>
+      <div class="post-body">
+        
+        
+          
+            <h1 id="什么是连接池">什么是连接池</h1>
+<p>在实际应用开发中，一般会有很多访问下游的需求（下游包括但不限于<b>服务</b>/<b>数据库</b>/<b>缓存</b>），在并发量很低的时候，通常不会有任何问题的，但当服务器单机<b>QPS</b>（每秒查询率）达到几百，几千，甚至上万的时候，如果每一次访问都是必须经历建立连接=》收发请求=》关闭连接=》释放资源等步骤，系统的性能必然急剧下降，严重导致系统崩溃。</p>
+<p>上面简化为：</p>
+<ul>
+    <li>与下游建立一个连接</li>
+    <li>通过这个连接，收发请求</li>
+    <li>交互结束，关闭连接，释放资源</li>
+</ul>
+          
+        
+        
+        <div class="post-button text-center">
+          <a class="btn language" data-lan="read-more" href="http://weakcc.github.io/post/lian-jie-chi/" rel="contents">
+            阅读全文 »
+          </a>
+        </div>
+        
+      </div>
+      
+        <footer class="post-footer">
+          <div class="post-eof"></div>
+        </footer>
+      
+    </div>
+  </article>
+
+  <article class="post-list-box  post box-shadow-wrapper">
+    <div class="article-wrapper bg-color">
+      <section class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="http://weakcc.github.io/post/redis-shi-xian-xiao-xi-dui-lie/">
+      Redis 实现消息队列
+    </a>
+  </h1>
+  <div class="post-meta">
+    
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span class="language" data-lan="publish">发布于</span>
+      <span class="publish-time" data-t="2021-06-18 11:44:12">2021-06-18</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
+    
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show language" data-lan="category-in">分类于</span>
+      
+      
+      <a href="http://weakcc.github.io/tag/kApwmp63t/">
+        <span>MQ</span>
+      </a>、
+      
+      
+      
+      <a href="http://weakcc.github.io/tag/tayIXOYIs/">
+        <span>Redis</span>
+      </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>13<span class="language" data-lan="minute">分钟</span></span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>3312<span class="pc-show language" data-lan="words">字数</span></span>
+    </span>
+    
+  </div>
+</section>
+      <div class="post-body">
+        
+        
+          
+            <h2 id="消息队列是什么">消息队列是什么</h2>
+<p><code>消息队列</code>：把要传输的数据放在队列中。消息是两个服务之间沟通的媒介，队列就是两个服务之间进行沟通消息的载体或容器。（把数据放到消息队列叫做<b>生产者</b>，从消息队列里面取数据叫做<b>消费者</b>）<br>
+<img src="http://weakcc.github.io/post-images/1624000927881.png" alt="" loading="lazy"></p>
+<ul>
+    <li>生产者（producer）：用于组装消息，并将组装的消息通过 lpush（左进）的方式压入队列，供消费者消费此消息</li>
+    <li>消费者（consumer）：用于将队列里面的消息按照<b>先进先出</b> rpop（右进） 的原则弹出队列容器中</li>
+    <li>队列（queue）：用于承载消息的载体，在队列里面，被生产者压入的消息按照一定顺序进行存放，保证有序性</li>
+</ul>
+          
+        
+        
+        <div class="post-button text-center">
+          <a class="btn language" data-lan="read-more" href="http://weakcc.github.io/post/redis-shi-xian-xiao-xi-dui-lie/" rel="contents">
+            阅读全文 »
+          </a>
+        </div>
+        
+      </div>
+      
+        <footer class="post-footer">
+          <div class="post-eof"></div>
+        </footer>
+      
+    </div>
+  </article>
+
+  <article class="post-list-box  post box-shadow-wrapper">
+    <div class="article-wrapper bg-color">
+      <section class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="http://weakcc.github.io/post/jupyter-ji-ben-shi-yong/">
+      jupyter 基本使用
+    </a>
+  </h1>
+  <div class="post-meta">
+    
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span class="language" data-lan="publish">发布于</span>
+      <span class="publish-time" data-t="2021-05-14 16:58:12">2021-05-14</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
+    
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show language" data-lan="category-in">分类于</span>
+      
+      
+      <a href="http://weakcc.github.io/tag/LBYdFkNBV/">
+        <span>jupyter</span>
+      </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>1<span class="language" data-lan="minute">分钟</span></span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>183<span class="pc-show language" data-lan="words">字数</span></span>
+    </span>
+    
+  </div>
+</section>
+      <div class="post-body">
+        
+        
+          
+            <h3 id="服务启动与停止-cmd">服务启动与停止（ CMD ）</h3>
+<pre><code>- 启动 jupyter notebook
+- 停止 Control + C</code></pre>
+
+          
+        
+        
+        <div class="post-button text-center">
+          <a class="btn language" data-lan="read-more" href="http://weakcc.github.io/post/jupyter-ji-ben-shi-yong/" rel="contents">
+            阅读全文 »
+          </a>
+        </div>
+        
+      </div>
+      
+        <footer class="post-footer">
+          <div class="post-eof"></div>
+        </footer>
+      
+    </div>
+  </article>
+
+  <article class="post-list-box  post box-shadow-wrapper">
+    <div class="article-wrapper bg-color">
+      <section class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="http://weakcc.github.io/post/mysql-80-bi-zhi-bi-hui/">
+      MySQL 8.0 安装与配置
+    </a>
+  </h1>
+  <div class="post-meta">
+    
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span class="language" data-lan="publish">发布于</span>
+      <span class="publish-time" data-t="2021-05-14 09:17:17">2021-05-14</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
+    
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show language" data-lan="category-in">分类于</span>
+      
+      
+      <a href="http://weakcc.github.io/tag/VwbG72yxK/">
+        <span>MySQL</span>
+      </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>4<span class="language" data-lan="minute">分钟</span></span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>730<span class="pc-show language" data-lan="words">字数</span></span>
+    </span>
+    
+  </div>
+</section>
+      <div class="post-body">
+        
+        
+          
+            <h1 id="安装与配置">安装与配置</h1>
+<p>MySQL 8.0 下载地址</p>
+<pre><code>https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.15-linux-glibc2.12-x86_64.tar.xz
+</code></pre>
+
+          
+        
+        
+        <div class="post-button text-center">
+          <a class="btn language" data-lan="read-more" href="http://weakcc.github.io/post/mysql-80-bi-zhi-bi-hui/" rel="contents">
+            阅读全文 »
+          </a>
+        </div>
+        
+      </div>
+      
+        <footer class="post-footer">
+          <div class="post-eof"></div>
+        </footer>
+      
+    </div>
+  </article>
+
   <article class="post-list-box  post box-shadow-wrapper">
     <div class="article-wrapper bg-color">
       <section class="post-header">
@@ -667,331 +941,6 @@
       
     </div>
   </article>
-
-  <article class="post-list-box  post box-shadow-wrapper">
-    <div class="article-wrapper bg-color">
-      <section class="post-header">
-  <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/">
-      Go sql 知识总结
-    </a>
-  </h1>
-  <div class="post-meta">
-    
-    <span class="meta-item pc-show">
-      <i class="fa fa-calendar-o"></i>
-      <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2021-01-21 10:39:29">2021-01-21</span>
-      <span class="post-meta-divider pc-show">|</span>
-    </span>
-    
-    <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/Y1-XRtKZ3/">
-        <span>Go</span>
-      </a>、
-      
-      
-      
-      <a href="http://weakcc.github.io/tag/VwbG72yxK/">
-        <span>MySQL</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
-      <i class="fa fa-clock-o"></i>
-      <span>12<span class="language" data-lan="minute">分钟</span></span>
-    </span>
-    <span class="meta-item">
-      <span class="post-meta-divider">|</span>
-      <i class="fa fa-file-word-o"></i>
-      <span>2646<span class="pc-show language" data-lan="words">字数</span></span>
-    </span>
-    
-  </div>
-</section>
-      <div class="post-body">
-        
-        
-          
-            <h1 id="1-sql-驱动">1. sql 驱动</h1>
-<p>推荐驱动：<br>
-* MySQL/MariaDB  —— <a href="https://github.com/go-sql-driver/mysql/">github.com/go-sql-driver/mysql/</a><br>
-* Postgres SQL  —— <a href="https://github.com/lib/pq">github.com/lib/pq</a><br>
-* SQLite3  —— <a href="https://github.com/mattn/go-sqlite3">github.com/go-sql-driver/mysql/</a><br>
-* Oracle  —— <a href="https://github.com/mattn/go-oci8">github.com/go-sql-driver/mysql/</a><br>
-* SQL Serve  —— <a href="https://github.com/denisenkom/go-mssqldb">github.com/go-sql-driver/mysql/</a></p>
-
-          
-        
-        
-        <div class="post-button text-center">
-          <a class="btn language" data-lan="read-more" href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/" rel="contents">
-            阅读全文 »
-          </a>
-        </div>
-        
-      </div>
-      
-        <footer class="post-footer">
-          <div class="post-eof"></div>
-        </footer>
-      
-    </div>
-  </article>
-
-  <article class="post-list-box  post box-shadow-wrapper">
-    <div class="article-wrapper bg-color">
-      <section class="post-header">
-  <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/">
-      优雅地实现在 Python 退出时强制运行一段代码
-    </a>
-  </h1>
-  <div class="post-meta">
-    
-    <span class="meta-item pc-show">
-      <i class="fa fa-calendar-o"></i>
-      <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-11-28 16:30:15">2020-11-28</span>
-      <span class="post-meta-divider pc-show">|</span>
-    </span>
-    
-    <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/CUorjbHG_/">
-        <span>Python</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
-      <i class="fa fa-clock-o"></i>
-      <span>2<span class="language" data-lan="minute">分钟</span></span>
-    </span>
-    <span class="meta-item">
-      <span class="post-meta-divider">|</span>
-      <i class="fa fa-file-word-o"></i>
-      <span>352<span class="pc-show language" data-lan="words">字数</span></span>
-    </span>
-    
-  </div>
-</section>
-      <div class="post-body">
-        
-        
-          
-            <p>如果有这样一个场景，你要给一个项目开发测试程序，程序开始运行的时候，会创建初始环境，测试完成以后，会清理环境。<br>
-使用 Python 自带的 <code>atexit</code> 这个模块</p>
-<pre><code class="language-python">import atexit
-
-@atexit.register
-def clean():
-    print(&quot;清理环境相关的代码&quot;)
-
-def test():
-    print(&quot;这里先执行&quot;)
-    example = {'a': 1, 'b': 2}
-    print(example['c'])  # 显然这里会报错
-
-test()
-
-# 这里先执行
-# Traceback (most recent call last):
-# 清理环境相关的代码
-#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 15, in &lt;module&gt;
-#     test()
-#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 12, in test
-#     print(example['c'])  # 显然这里会报错
-# KeyError: 'c'
-</code></pre>
-
-          
-        
-        
-        <div class="post-button text-center">
-          <a class="btn language" data-lan="read-more" href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/" rel="contents">
-            阅读全文 »
-          </a>
-        </div>
-        
-      </div>
-      
-        <footer class="post-footer">
-          <div class="post-eof"></div>
-        </footer>
-      
-    </div>
-  </article>
-
-  <article class="post-list-box  post box-shadow-wrapper">
-    <div class="article-wrapper bg-color">
-      <section class="post-header">
-  <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/">
-      MySQL 写 sql 的21个好习惯，学习工作效率翻倍
-    </a>
-  </h1>
-  <div class="post-meta">
-    
-    <span class="meta-item pc-show">
-      <i class="fa fa-calendar-o"></i>
-      <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-11-25 09:44:20">2020-11-25</span>
-      <span class="post-meta-divider pc-show">|</span>
-    </span>
-    
-    <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/VwbG72yxK/">
-        <span>MySQL</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
-      <i class="fa fa-clock-o"></i>
-      <span>1<span class="language" data-lan="minute">分钟</span></span>
-    </span>
-    <span class="meta-item">
-      <span class="post-meta-divider">|</span>
-      <i class="fa fa-file-word-o"></i>
-      <span>5<span class="pc-show language" data-lan="words">字数</span></span>
-    </span>
-    
-  </div>
-</section>
-      <div class="post-body">
-        
-        
-          
-            <!-- 没有手动摘要切开启了自动摘要,则根据配置筛除摘要内容 -->
-            
-            
-              
-              
-              
-            
-              
-              
-              
-            
-              
-              
-              
-            
-            
-              <p><blockquote>
-<p>https://learnku.com/articles/51820</p>
-</blockquote>
-
-                
-              <p>
-            
-          
-        
-        
-        <div class="post-button text-center">
-          <a class="btn language" data-lan="read-more" href="http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/" rel="contents">
-            阅读全文 »
-          </a>
-        </div>
-        
-      </div>
-      
-        <footer class="post-footer">
-          <div class="post-eof"></div>
-        </footer>
-      
-    </div>
-  </article>
-
-  <article class="post-list-box  post box-shadow-wrapper">
-    <div class="article-wrapper bg-color">
-      <section class="post-header">
-  <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/python-zheng-ze/">
-      Python 正则
-    </a>
-  </h1>
-  <div class="post-meta">
-    
-    <span class="meta-item pc-show">
-      <i class="fa fa-calendar-o"></i>
-      <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-10-27 09:23:45">2020-10-27</span>
-      <span class="post-meta-divider pc-show">|</span>
-    </span>
-    
-    <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/CUorjbHG_/">
-        <span>Python</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
-      <i class="fa fa-clock-o"></i>
-      <span>2<span class="language" data-lan="minute">分钟</span></span>
-    </span>
-    <span class="meta-item">
-      <span class="post-meta-divider">|</span>
-      <i class="fa fa-file-word-o"></i>
-      <span>315<span class="pc-show language" data-lan="words">字数</span></span>
-    </span>
-    
-  </div>
-</section>
-      <div class="post-body">
-        
-        
-          
-            <p>Python 内置 <code>re模块</code> 处理正则表达式，提供了下述函数：</p>
-<ul>
-    <li><b>匹配（找一个）</b>：match() -> 从开头进行匹配、search() -> 扫描整个字符串</li>
-    <li><b>检索与替换（找多个）</b>：findall() -> 扫描整个字符串所有能匹配的、finditer() 、split() -> 分割</li>
-    <li><b>编译 Pattern 对象</b>：多次调用相同正则，将正则表达式编译成 Pattern 对象复用</li>
-    <li><b>分组</b>：group() -> 获得分组匹配内容，如 group(1) 获得第一个匹配分组</li>
-</ul>
-          
-        
-        
-        <div class="post-button text-center">
-          <a class="btn language" data-lan="read-more" href="http://weakcc.github.io/post/python-zheng-ze/" rel="contents">
-            阅读全文 »
-          </a>
-        </div>
-        
-      </div>
-      
-        <footer class="post-footer">
-          <div class="post-eof"></div>
-        </footer>
-      
-    </div>
-  </article>
   
             
             
@@ -1021,6 +970,12 @@ test()
         <li class="pagination-li ">
             <a href="/page/3">
               3
+            </a>
+        </li>
+      
+        <li class="pagination-li ">
+            <a href="/page/4">
+              4
             </a>
         </li>
       
@@ -1268,6 +1223,238 @@ test()
       <hr>
     </div>
     <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/laravel-da-jian-zi-ji-de-websocket-fu-wu-qi/"" data-c="
+          &lt;h4 id=&#34;准备&#34;&gt;准备&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;laravel new weakcc
+cd weakcc/
+valet link weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;amp;&amp;amp; npm run dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;更新.env&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;APP_NAME=weakcc
+APP_URL=http://weakcc.test/
+DB_DATABASE=weakcc
+DB_USERNAME=root
+DB_PASSWORD=123456
+
+BROADCAST_DRIVER=pusher
+
+// 因为自己搭建的随意添加，唯一注意的就是 APP_KEY 前后端要保持一致 
+PUSHER_APP_ID=123456789
+PUSHER_APP_KEY=123
+PUSHER_APP_SECRET=123456
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;数据迁移&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan migrate
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果需要使用 &lt;code&gt;PrivateChannel&lt;/code&gt; 或 &lt;code&gt;PresenceChannel&lt;/code&gt; ，需要解除 &lt;code&gt;config/app.php&lt;/code&gt; 下 &lt;code&gt;App\Providers\BroadcastServiceProvider::class&lt;/code&gt; 注释&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;安装扩展&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;composer require beyondcode/laravel-websockets
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;加载配置&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan vendor:publish --provider=&amp;quot;BeyondCode\LaravelWebSockets\WebSocketsServiceProvider&amp;quot; --tag=&amp;quot;migrations&amp;quot;
+php artisan migrate
+php artisan vendor:publish --provider=&amp;quot;BeyondCode\LaravelWebSockets\WebSocketsServiceProvider&amp;quot; --tag=&amp;quot;config&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;调试仪表板，浏览器打开 &lt;code&gt;http://weakcc.test/laravel-websockets&lt;/code&gt;&lt;br&gt;
+更新 &lt;code&gt;config/broadcasting.php&lt;/code&gt; 下 &lt;code&gt;pusher&lt;/code&gt; 配置&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&#39;options&#39; =&amp;gt; [
+    &#39;cluster&#39; =&amp;gt; env(&#39;PUSHER_APP_CLUSTER&#39;),
+    &#39;host&#39; =&amp;gt; &#39;127.0.0.1&#39;,
+    &#39;port&#39; =&amp;gt; 6001,
+    &#39;scheme&#39; =&amp;gt; &#39;http&#39;
+],
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;解除 &lt;code&gt;resources/js/bootstrap.js&lt;/code&gt; 注释并更新如下&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import Echo from &#39;laravel-echo&#39;;
+
+window.Pusher = require(&#39;pusher-js&#39;);
+
+window.Echo = new Echo({
+    broadcaster: &#39;pusher&#39;,
+    key: &#39;123&#39;, // 要跟后台保持一致
+    wsHost: window.location.hostname,
+    wsPort: 6001,
+    disableStats: true,
+});
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;安装前端依赖包&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;npm install --save laravel-echo pusher-js
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;运行服务&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan websockets:serve
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;.env 里的 APP_URL 一定要修改，不然寻址会出现问题&lt;/p&gt;
+&lt;/blockquote&gt;
+">Laravel 搭建自己的 WebSocket 服务器</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/laravel-kua-zhan-deng-lu/"" data-c="
+          &lt;h4 id=&#34;原理&#34;&gt;原理&lt;/h4&gt;
+&lt;p&gt;两个项目要共用一套验证体系，一般都是先做完主站，共用的用户系统就是主站的用户系统&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h4 id=&#34;准备&#34;&gt;准备&lt;/h4&gt;
+&lt;p&gt;创建主站项目&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;laravel new weakcc
+cd weakcc/
+valet link weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;amp;&amp;amp; npm run dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;更新.env&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;APP_NAME=weakcc
+APP_URL=http://weakcc.test/
+DB_DATABASE=weakcc
+DB_USERNAME=root
+DB_PASSWORD=123456
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;数据迁移&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan migrate
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;创建子站项目&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;laravel new weakcc2
+cd weakcc2/
+valet link zoo.weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;amp;&amp;amp; npm run dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;更新.env&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;APP_NAME=weakcc2
+APP_URL=http://zoo.weakcc.test/
+DB_DATABASE=weakcc2
+DB_USERNAME=root
+DB_PASSWORD=123456
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;数据迁移&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan migrate
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;实现&#34;&gt;实现&lt;/h4&gt;
+&lt;p&gt;子站需要新建一个能够关联到主站的数据库连接，打开子站的项目配置文件 &lt;code&gt;database.php&lt;/code&gt; 复制一遍 &lt;code&gt;mysql&lt;/code&gt; 信息并重名为 &lt;code&gt;cc_mysql&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// 本地测试，其他记录一样，只是更新数据库，其他环境，请自行更新
+&#39;cc_mysql&#39; =&amp;gt; [
+    &#39;driver&#39; =&amp;gt; &#39;mysql&#39;,
+    &#39;url&#39; =&amp;gt; env(&#39;DATABASE_URL&#39;),
+    &#39;host&#39; =&amp;gt; env(&#39;DB_HOST&#39;, &#39;127.0.0.1&#39;),
+    &#39;port&#39; =&amp;gt; env(&#39;DB_PORT&#39;, &#39;3306&#39;),
+    &#39;database&#39; =&amp;gt; &#39;weakcc&#39;, // 主项目的数据库
+    &#39;username&#39; =&amp;gt; env(&#39;DB_USERNAME&#39;, &#39;forge&#39;),
+    &#39;password&#39; =&amp;gt; env(&#39;DB_PASSWORD&#39;, &#39;&#39;),
+    &#39;unix_socket&#39; =&amp;gt; env(&#39;DB_SOCKET&#39;, &#39;&#39;),
+    &#39;charset&#39; =&amp;gt; &#39;utf8mb4&#39;,
+    &#39;collation&#39; =&amp;gt; &#39;utf8mb4_unicode_ci&#39;,
+    &#39;prefix&#39; =&amp;gt; &#39;&#39;,
+    &#39;prefix_indexes&#39; =&amp;gt; true,
+    &#39;strict&#39; =&amp;gt; true,
+    &#39;engine&#39; =&amp;gt; null,
+    &#39;options&#39; =&amp;gt; extension_loaded(&#39;pdo_mysql&#39;) ? array_filter([
+        PDO::MYSQL_ATTR_SSL_CA =&amp;gt; env(&#39;MYSQL_ATTR_SSL_CA&#39;),
+    ]) : [],
+],
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;子站更新 &lt;code&gt;User&lt;/code&gt; 模型数据库连接为新设置的 &lt;code&gt;cc_mysql&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// 主站对应的用户表
+protected $table = &#39;users&#39;;
+// 这样的话用户验证将去主项目的用户逻辑
+protected $connection = &#39;cc_mysql&#39;; 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;主项目和子项目同时更新 &lt;code&gt;.env&lt;/code&gt; 同时执行 &lt;code&gt;session&lt;/code&gt; 表生成&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// 此处使用数据库驱动（跨站登录可以使用 redis 和 database 驱动）
+SESSION_DRIVER=database
+// 执行 session 表格生成
+php artisan session:table
+php artisan migrate
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;关键步骤，是两个网站能够使用相同的域&lt;/p&gt;
+&lt;p&gt;主项目更新 &lt;code&gt;.env&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;SESSION_DOMAIN=.weakcc.test
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;子项目更新 &lt;code&gt;.env&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;SESSION_DOMAIN=.weakcc.test
+// 子项目的 session 连接信息必须为子站用来连接主站的那个 mysql 信息
+SESSION_CONNECTION=cc_mysql
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;最后一步，两个项目的的 &lt;code&gt;APP_KEY&lt;/code&gt; 必须相同，可以复制主站的 &lt;code&gt;APP_KEY&lt;/code&gt; 到子站，更新 &lt;code&gt;.env&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// 为主站的 APP_KEY
+APP_KEY=base64:mkmoK3/Y84EkxihfiqZZM9ooHoD2GHRbaMNH79CrD0Q=
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;好了，现在可以在主站注册用户登录，在子站访问了&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;页面显示 &lt;code&gt;419&lt;/code&gt; 需要清除下浏览器缓存的 &lt;code&gt;cookie&lt;/code&gt; 信息&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;!-- more --&gt;
+&lt;!-- more --&gt;
+&lt;!-- more --&gt;
+&lt;!-- more --&gt;
+">Laravel 跨站登录</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/laravel-dan-ren-deng-lu/"" data-c="
+          &lt;h4 id=&#34;原理&#34;&gt;原理&lt;/h4&gt;
+&lt;p&gt;一个账户只能在一个地方登录（用户登录网站会创建一个 &lt;code&gt;session&lt;/code&gt; 信息，实现单人登录的原理就是把以前已经生成的 &lt;code&gt;session&lt;/code&gt; 信息弃用掉，要么删除之前的 &lt;code&gt;session&lt;/code&gt; 信息，要么修改之前的 &lt;code&gt;session&lt;/code&gt; 信息，使浏览器提交 &lt;code&gt;cookie&lt;/code&gt; 信息匹配 &lt;code&gt;session&lt;/code&gt; 找不到就可以了）&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h4 id=&#34;准备&#34;&gt;准备&lt;/h4&gt;
+&lt;p&gt;创建主站项目&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;laravel new weakcc
+cd weakcc/
+valet link weakcc
+composer require laravel/ui
+php artisan ui vue --auth
+npm install &amp;amp;&amp;amp; npm run dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;更新.env&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;APP_NAME=weakcc
+APP_URL=http://weakcc.test/
+DB_DATABASE=weakcc
+DB_USERNAME=root
+DB_PASSWORD=123456
+SESSION_DRIVER=database
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;数据迁移&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan migrate
+php artisan session:table
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;实现&#34;&gt;实现&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;session&lt;/code&gt; 以 &lt;code&gt;database&lt;/code&gt; 为数据库驱动为例&lt;br&gt;
+覆写 &lt;code&gt;App\Http\Controllers\Auth\LoginController&lt;/code&gt; 文件下的 &lt;code&gt;authenticated&lt;/code&gt; 方法（当登录时，session 信息还没有生成，就是在这里把已经有的 &lt;code&gt;session&lt;/code&gt; 修改下）&lt;/p&gt;
+&lt;p&gt;方法1：&lt;/p&gt;
+&lt;p&gt;简单粗暴法，有登录就删除已有的 &lt;code&gt;session&lt;/code&gt; 信息&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;protected function authenticated(Request $request, $user)
+{
+    DB::table(&#39;sessions&#39;)-&amp;gt;where(&#39;user_id&#39;, $user-&amp;gt;id)-&amp;gt;delete();
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;方法2：&lt;/p&gt;
+&lt;p&gt;保留用户登录 &lt;code&gt;session&lt;/code&gt; 历史信息，方便后续做信息排查，修改已有的 &lt;code&gt;session&lt;/code&gt; 信息，变为无效的 &lt;code&gt;session&lt;/code&gt; 信息，确认不是恶意的登录信息，这时就可以对无效的信息进行删除&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// &#39;OUTMAN-&#39; 可以自己随意设置
+protected function authenticated(Request $request, $user)
+{
+    DB::table(&#39;sessions&#39;)-&amp;gt;where(&#39;user_id&#39;, $user-&amp;gt;id)-&amp;gt;orderBy(&#39;last_activity&#39;)-&amp;gt;each(function ($session) {
+        DB::table(&#39;sessions&#39;)-&amp;gt;where(&#39;id&#39;, $session-&amp;gt;id)-&amp;gt;update([&#39;id&#39; =&amp;gt; &#39;OUTMAN-&#39; . $session-&amp;gt;id]);
+    });
+}
+&lt;/code&gt;&lt;/pre&gt;
+">Laravel 单人登录</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/laravel-chao-shi-deng-lu/"" data-c="
+          &lt;p&gt;设置 &lt;code&gt;.env&lt;/code&gt; 默认为120分钟&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;SESSION_LIFETIME=120
+&lt;/code&gt;&lt;/pre&gt;
+">Laravel 超时登录</a>
+      </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/ssh-mian-mi-deng-lu/"" data-c="
