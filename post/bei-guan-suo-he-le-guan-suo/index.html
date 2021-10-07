@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>悲观锁和乐观锁 | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1633514136416">
+<link rel="shortcut icon" href="/favicon.ico?v=1633568930755">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -189,19 +189,19 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">33</span>
+        <span class="site-item-stat-count">34</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="">
-        <span class="site-item-stat-count">19</span>
+        <span class="site-item-stat-count">20</span>
         <span class="site-item-stat-name language" data-lan="category">分类</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="/tags/">
-        <span class="site-item-stat-count">19</span>
+        <span class="site-item-stat-count">20</span>
         <span class="site-item-stat-name language" data-lan="tag">标签</span>
       </a>
     </div>
@@ -1081,6 +1081,101 @@ update t_goods set status=2,version=version+1 where id=#{id} and version=#{versi
       <hr>
     </div>
     <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/er-cha-shu-de-bian-li-ji-dai-ma-shi-xian/"" data-c="
+          &lt;h1 id=&#34;遍历&#34;&gt;遍历&lt;/h1&gt;
+&lt;h2 id=&#34;前序遍历&#34;&gt;前序遍历&lt;/h2&gt;
+&lt;p&gt;如果二叉树为空，则返回空，否则从根节点开始，先遍历左子树，再遍历右子树&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1633568114149.jpeg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;中序遍历&#34;&gt;中序遍历&lt;/h2&gt;
+&lt;p&gt;如果是空树，返回空，否则从左子树最左侧的节点开始，然后从左到右依次遍历左子树，真正的根节点，最后是右子树（依然是从最左侧节点开始从左到右的顺序遍历）&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1633568152256.jpeg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;后序遍历&#34;&gt;后序遍历&lt;/h2&gt;
+&lt;p&gt;如果是空树，返回空，否则还是从左子树最左侧的节点开始，先遍历完叶子节点，再遍历父节点，遍历完左子树后，直接从右子树最左侧节点开始，按照和左子树同样的顺序遍历完右子树，最后访问根节点&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1633568168107.jpeg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;不同的遍历方式从不同维度将二叉树这种非线性的结构变成了某种意义上的线性序列，从而方便计算机操作。&lt;/p&gt;
+&lt;h1 id=&#34;代码&#34;&gt;代码&lt;/h1&gt;
+&lt;p&gt;二叉树的遍历其实就是个递归的过程，所以对应算法也采用递归来实现。&lt;/p&gt;
+&lt;p&gt;我们以二叉链表的方式来存储数组，对应的前序、中序、后序实现代码如下&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;&amp;lt;?php
+
+// 二叉链表节点
+class Node
+{
+    public $data;
+    public $left = null;
+    public $right = null;
+
+    public function __construct($data)
+    {
+        $this-&amp;gt;data = $data;
+    }
+}
+
+/**
+ * 前序遍历
+ * 如果二叉树为空，则返回空，否则从根节点开始，先遍历左子树，再遍历右子树
+ * @param Node $tree
+ */
+function preOrderTraverse($tree)
+{
+    if ($tree === null) {
+        return;
+    }
+    printf(&amp;quot;%s\n&amp;quot;, $tree-&amp;gt;data);
+    preOrderTraverse($tree-&amp;gt;left);
+    preOrderTraverse($tree-&amp;gt;right);
+}
+
+/**
+ * 中序遍历
+ * 如果二叉树为空，则返回空，否则从左子树最左侧的节点开始，然后从左到右依次遍历左子树，真正的根节点，最后是右子树（依然是从最左侧节点开始从左到右的顺序遍历）
+ * @param Node $tree
+ */
+function midOrderTraverse($tree)
+{
+    if ($tree === null) {
+        return;
+    }
+    midOrderTraverse($tree-&amp;gt;left);
+    printf(&amp;quot;%s\n&amp;quot;, $tree-&amp;gt;data);
+    midOrderTraverse($tree-&amp;gt;right);
+}
+
+/**
+ * 后序遍历
+ * 如果二叉树为空，则返回空，否则从左子树最左侧的节点开始，先遍历完叶子节点，再遍历父节点，遍历完左子树后，直接从右子树最左侧节点开始，按照和左子树同样的顺序遍历完右子树，最后访问根节点
+ * @param Node $tree
+ */
+function postOrderTraverse($tree)
+{
+    if ($tree === null) {
+        return;
+    }
+    postOrderTraverse($tree-&amp;gt;left);
+    postOrderTraverse($tree-&amp;gt;right);
+    printf(&amp;quot;%s\n&amp;quot;, $tree-&amp;gt;data);
+}
+
+// 节点树
+$node1 = new Node(&#39;A&#39;);
+$node2 = new Node(&#39;B&#39;);
+$node3 = new Node(&#39;C&#39;);
+$node1-&amp;gt;left = $node2;
+$node1-&amp;gt;right = $node3;
+// 前序遍历
+preOrderTraverse($node1);
+print(&amp;quot;========\n&amp;quot;);
+// 中序遍历
+midOrderTraverse($node1);
+print(&amp;quot;========\n&amp;quot;);
+// 后序遍历
+postOrderTraverse($node1);
+&lt;/code&gt;&lt;/pre&gt;
+">二叉树的遍历及代码实现</a>
+      </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/laravel-da-jian-zi-ji-de-websocket-fu-wu-qi/"" data-c="

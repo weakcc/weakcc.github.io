@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>MySQL 写 sql 的21个好习惯，学习工作效率翻倍 | 腰盐醋</title>
+<title>二叉树的遍历及代码实现 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1633568930755">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="MySQL 写 sql 的21个好习惯，学习工作效率翻倍" />
-  <meta name="keywords" content="MySQL" />
+  <meta name="description" content="二叉树的遍历及代码实现" />
+  <meta name="keywords" content="二叉树" />
 </head>
 
 <body>
@@ -177,7 +177,8 @@
       <div class="sidebar-body pisces" id="sidebar_body">
         
           
-            
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -213,6 +214,198 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#%E9%81%8D%E5%8E%86">遍历</a>
+<ul>
+<li><a href="#%E5%89%8D%E5%BA%8F%E9%81%8D%E5%8E%86">前序遍历</a></li>
+<li><a href="#%E4%B8%AD%E5%BA%8F%E9%81%8D%E5%8E%86">中序遍历</a></li>
+<li><a href="#%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86">后序遍历</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BB%A3%E7%A0%81">代码</a></li>
+</ul>
+
+  </div>
+</div>
+
+<script>
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
+      }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0] && elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
+    });
+  }
+
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
           
         
       </div>
@@ -300,8 +493,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/">
-      MySQL 写 sql 的21个好习惯，学习工作效率翻倍
+    <a class="post-title-link" href="http://weakcc.github.io/post/er-cha-shu-de-bian-li-ji-dai-ma-shi-xian/">
+      二叉树的遍历及代码实现
     </a>
   </h1>
   <div class="post-meta">
@@ -309,7 +502,7 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-11-25 09:44:20">2020-11-25</span>
+      <span class="publish-time" data-t="2021-10-07 08:54:03">2021-10-07</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
@@ -318,8 +511,8 @@
       <span class="pc-show language" data-lan="category-in">分类于</span>
       
       
-      <a href="http://weakcc.github.io/tag/VwbG72yxK/">
-        <span>MySQL</span>
+      <a href="http://weakcc.github.io/tag/LZYpGOPNm/">
+        <span>二叉树</span>
       </a>
       
       
@@ -328,20 +521,107 @@
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>1<span class="language" data-lan="minute">分钟</span></span>
+      <span>3<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>5<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>651<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <blockquote>
-<p>https://learnku.com/articles/51820</p>
-</blockquote>
+              <h1 id="遍历">遍历</h1>
+<h2 id="前序遍历">前序遍历</h2>
+<p>如果二叉树为空，则返回空，否则从根节点开始，先遍历左子树，再遍历右子树<br>
+<img src="http://weakcc.github.io/post-images/1633568114149.jpeg" alt="" loading="lazy"></p>
+<h2 id="中序遍历">中序遍历</h2>
+<p>如果是空树，返回空，否则从左子树最左侧的节点开始，然后从左到右依次遍历左子树，真正的根节点，最后是右子树（依然是从最左侧节点开始从左到右的顺序遍历）<br>
+<img src="http://weakcc.github.io/post-images/1633568152256.jpeg" alt="" loading="lazy"></p>
+<h2 id="后序遍历">后序遍历</h2>
+<p>如果是空树，返回空，否则还是从左子树最左侧的节点开始，先遍历完叶子节点，再遍历父节点，遍历完左子树后，直接从右子树最左侧节点开始，按照和左子树同样的顺序遍历完右子树，最后访问根节点<br>
+<img src="http://weakcc.github.io/post-images/1633568168107.jpeg" alt="" loading="lazy"></p>
+<!-- more -->
+<p>不同的遍历方式从不同维度将二叉树这种非线性的结构变成了某种意义上的线性序列，从而方便计算机操作。</p>
+<h1 id="代码">代码</h1>
+<p>二叉树的遍历其实就是个递归的过程，所以对应算法也采用递归来实现。</p>
+<p>我们以二叉链表的方式来存储数组，对应的前序、中序、后序实现代码如下</p>
+<pre><code class="language-php">&lt;?php
+
+// 二叉链表节点
+class Node
+{
+    public $data;
+    public $left = null;
+    public $right = null;
+
+    public function __construct($data)
+    {
+        $this-&gt;data = $data;
+    }
+}
+
+/**
+ * 前序遍历
+ * 如果二叉树为空，则返回空，否则从根节点开始，先遍历左子树，再遍历右子树
+ * @param Node $tree
+ */
+function preOrderTraverse($tree)
+{
+    if ($tree === null) {
+        return;
+    }
+    printf(&quot;%s\n&quot;, $tree-&gt;data);
+    preOrderTraverse($tree-&gt;left);
+    preOrderTraverse($tree-&gt;right);
+}
+
+/**
+ * 中序遍历
+ * 如果二叉树为空，则返回空，否则从左子树最左侧的节点开始，然后从左到右依次遍历左子树，真正的根节点，最后是右子树（依然是从最左侧节点开始从左到右的顺序遍历）
+ * @param Node $tree
+ */
+function midOrderTraverse($tree)
+{
+    if ($tree === null) {
+        return;
+    }
+    midOrderTraverse($tree-&gt;left);
+    printf(&quot;%s\n&quot;, $tree-&gt;data);
+    midOrderTraverse($tree-&gt;right);
+}
+
+/**
+ * 后序遍历
+ * 如果二叉树为空，则返回空，否则从左子树最左侧的节点开始，先遍历完叶子节点，再遍历父节点，遍历完左子树后，直接从右子树最左侧节点开始，按照和左子树同样的顺序遍历完右子树，最后访问根节点
+ * @param Node $tree
+ */
+function postOrderTraverse($tree)
+{
+    if ($tree === null) {
+        return;
+    }
+    postOrderTraverse($tree-&gt;left);
+    postOrderTraverse($tree-&gt;right);
+    printf(&quot;%s\n&quot;, $tree-&gt;data);
+}
+
+// 节点树
+$node1 = new Node('A');
+$node2 = new Node('B');
+$node3 = new Node('C');
+$node1-&gt;left = $node2;
+$node1-&gt;right = $node3;
+// 前序遍历
+preOrderTraverse($node1);
+print(&quot;========\n&quot;);
+// 中序遍历
+midOrderTraverse($node1);
+print(&quot;========\n&quot;);
+// 后序遍历
+postOrderTraverse($node1);
+</code></pre>
 
             </div>
             
@@ -358,7 +638,7 @@
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/" title="MySQL 写 sql 的21个好习惯，学习工作效率翻倍">http://weakcc.github.io/post/mysql-xie-sql-de-21-ge-hao-xi-guan-xue-xi-gong-zuo-xiao-lu-fan-bei/</a>
+      <a href="http://weakcc.github.io/post/er-cha-shu-de-bian-li-ji-dai-ma-shi-xian/" title="二叉树的遍历及代码实现">http://weakcc.github.io/post/er-cha-shu-de-bian-li-ji-dai-ma-shi-xian/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -367,21 +647,17 @@
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/VwbG72yxK/"># MySQL</a>
+      <a href="http://weakcc.github.io/tag/LZYpGOPNm/"># 二叉树</a>
     
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="优雅地实现在 Python 退出时强制运行一段代码" href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/">优雅地实现在 Python 退出时强制运行一段代码</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="优雅地实现在 Python 退出时强制运行一段代码" href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="Python 正则" href="http://weakcc.github.io/post/python-zheng-ze/">Python 正则</a>
-        <a class="nav-mobile-next" title="Python 正则" href="http://weakcc.github.io/post/python-zheng-ze/">下一篇</a>
+        <a class="nav-pc-next" title="Laravel 搭建自己的 WebSocket 服务器" href="http://weakcc.github.io/post/laravel-da-jian-zi-ji-de-websocket-fu-wu-qi/">Laravel 搭建自己的 WebSocket 服务器</a>
+        <a class="nav-mobile-next" title="Laravel 搭建自己的 WebSocket 服务器" href="http://weakcc.github.io/post/laravel-da-jian-zi-ji-de-websocket-fu-wu-qi/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
