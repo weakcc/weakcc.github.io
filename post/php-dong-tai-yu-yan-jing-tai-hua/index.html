@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>GitLab Server 的搭建 | 腰盐醋</title>
+<title>PHP 动态语言静态化 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1635215232142">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="GitLab Server 的搭建" />
-  <meta name="keywords" content="" />
+  <meta name="description" content="PHP 动态语言静态化" />
+  <meta name="keywords" content="缓存,PHP" />
 </head>
 
 <body>
@@ -300,8 +300,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/gitlab-server-de-da-jian/">
-      GitLab Server 的搭建
+    <a class="post-title-link" href="http://weakcc.github.io/post/php-dong-tai-yu-yan-jing-tai-hua/">
+      PHP 动态语言静态化
     </a>
   </h1>
   <div class="post-meta">
@@ -309,37 +309,132 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-10-20 08:30:06">2020-10-20</span>
+      <span class="publish-time" data-t="2021-10-26 10:26:40">2021-10-26</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
     <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show language" data-lan="category-in">分类于</span>
+      
+      
+      <a href="http://weakcc.github.io/tag/YMcg8MJ00/">
+        <span>缓存</span>
+      </a>、
+      
+      
+      
+      <a href="http://weakcc.github.io/tag/IuY5uV6ll/">
+        <span>PHP</span>
+      </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>1<span class="language" data-lan="minute">分钟</span></span>
+      <span>3<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>76<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>537<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <p>sudo yum install -y git vim gcc glibc-static telnet<br>
-sudo yum install -y curl policycoreutils-python openssh-server<br>
-sudo systemctl enable sshd<br>
-sudo systemctl start sshd<br>
-sudo yum install postfix<br>
-sudo systemctl enable postfix<br>
-sudo systemctl start postfix</p>
-<p>touch /etc/yum.repos.d/gitlab-ce.repo</p>
-<p>[gitlab-ce]<br>
-name=Gitlab CE Repository<br>
-baseurl=https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el$releasever<br>
-gpgcheck=0<br>
-enabled=1<br>
-gpgkey=https://packages.gitlab.com/gpg.key</p>
+              <p>新建文件 <code>demo.php</code><br>
+正常输出</p>
+<pre><code class="language-php">&lt;p&gt;在 demo.php 文件下输出 html 文本&lt;/p&gt;
+</code></pre>
+<p>开启输出控制缓冲 <code>ob_start</code></p>
+<pre><code class="language-php">&lt;?php
+    ob_start(); // 打开输出控制缓冲
+?&gt;
+&lt;p&gt;在 demo.php 文件下输出 html 文本&lt;/p&gt;
+&lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+    var_dump($content);
+</code></pre>
+<!--more-->
+<p>把缓存写入文件</p>
+<pre><code class="language-php">&lt;?php
+    $cache_name = md5(__FILE__) . '.html';
+
+    ob_start(); // 打开输出控制缓冲
+?&gt;
+&lt;p&gt;在 demo.php 文件下输出 html 文本&lt;/p&gt;
+&lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+
+    $handle = fopen($cache_name, 'w');
+    fwrite($handle, $content);
+    fclose($handle);
+</code></pre>
+<pre><code>var_dump($cache_name);
+</code></pre>
+<p>运行后生成临时文件 <code>xxxx.html</code> 缓存</p>
+<p>关键缓存判断</p>
+<pre><code class="language-php">&lt;?php
+    $cache_name = md5(__FILE__) . '.html';
+    $cache_lifetime = 3600;
+    // filectime() 函数返回指定文件的上次修改时间
+    if (file_exists($cache_name)
+        &amp;&amp; filectime(__FILE__) &lt;= filectime($cache_name)
+        &amp;&amp; filectime($cache_name) + $cache_lifetime &gt; time()) {
+        // 缓存文件存在
+        // 当前文件是否有修改（文件的修改时间小于缓存文件的修改问）
+        // 缓存文件是否已经过期
+        include $cache_name;
+        exit;
+    }
+
+    ob_start(); // 打开输出控制缓冲
+?&gt;
+&lt;p&gt;在 demo.php 文件下输出 html 文本&lt;/p&gt;
+&lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+
+    $handle = fopen($cache_name, 'w');
+    fwrite($handle, $content);
+    fclose($handle);
+</code></pre>
+<p>根据不同的用户 <code>id</code> 做不同的缓存</p>
+<pre><code class="language-php">&lt;?php
+    $id = intval($_GET['id']);
+    if (empty($id)) {
+        $id = '';
+    }
+
+    $cache_name = md5(__FILE__) . '-' . $id .'.html';
+    $cache_lifetime = 3600;
+    // filectime() 函数返回指定文件的上次修改时间
+    if (file_exists($cache_name)
+        &amp;&amp; filectime(__FILE__) &lt;= filectime($cache_name)
+        &amp;&amp; filectime($cache_name) + $cache_lifetime &gt; time()) {
+        // 缓存文件存在
+        // 当前文件是否有修改（文件的修改时间小于缓存文件的修改问）
+        // 缓存文件是否已经过期
+        include $cache_name;
+        exit;
+    }
+
+    ob_start(); // 打开输出控制缓冲
+?&gt;
+&lt;p&gt;在 demo.php 文件下输出 html 文本. &lt;?php echo $id?&gt;&lt;/p&gt;
+&lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+
+    $handle = fopen($cache_name, 'w');
+    fwrite($handle, $content);
+    fclose($handle);
+</code></pre>
 
             </div>
             
@@ -356,7 +451,7 @@ gpgkey=https://packages.gitlab.com/gpg.key</p>
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/gitlab-server-de-da-jian/" title="GitLab Server 的搭建">http://weakcc.github.io/post/gitlab-server-de-da-jian/</a>
+      <a href="http://weakcc.github.io/post/php-dong-tai-yu-yan-jing-tai-hua/" title="PHP 动态语言静态化">http://weakcc.github.io/post/php-dong-tai-yu-yan-jing-tai-hua/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -365,19 +460,19 @@ gpgkey=https://packages.gitlab.com/gpg.key</p>
   </ul>
   <div class="tags">
     
+      <a href="http://weakcc.github.io/tag/YMcg8MJ00/"># 缓存</a>
+    
+      <a href="http://weakcc.github.io/tag/IuY5uV6ll/"># PHP</a>
+    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="Python 类多继承" href="http://weakcc.github.io/post/python-lei-duo-ji-cheng/">Python 类多继承</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="Python 类多继承" href="http://weakcc.github.io/post/python-lei-duo-ji-cheng/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="Scrapy" href="http://weakcc.github.io/post/scrapy/">Scrapy</a>
-        <a class="nav-mobile-next" title="Scrapy" href="http://weakcc.github.io/post/scrapy/">下一篇</a>
+        <a class="nav-pc-next" title="API 防篡改和防重放" href="http://weakcc.github.io/post/api-fang-cuan-gai-he-fang-chong-fang/">API 防篡改和防重放</a>
+        <a class="nav-mobile-next" title="API 防篡改和防重放" href="http://weakcc.github.io/post/api-fang-cuan-gai-he-fang-chong-fang/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>

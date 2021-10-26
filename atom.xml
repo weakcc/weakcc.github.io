@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-10-26T00:59:30.957Z</updated>
+    <updated>2021-10-26T02:27:15.456Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,149 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[PHP 动态语言静态化]]></title>
+        <id>http://weakcc.github.io/post/php-dong-tai-yu-yan-jing-tai-hua/</id>
+        <link href="http://weakcc.github.io/post/php-dong-tai-yu-yan-jing-tai-hua/">
+        </link>
+        <updated>2021-10-26T02:26:40.000Z</updated>
+        <summary type="html"><![CDATA[<p>新建文件 <code>demo.php</code><br>
+正常输出</p>
+<pre><code class="language-php">&lt;p&gt;在 demo.php 文件下输出 html 文本&lt;/p&gt;
+</code></pre>
+<p>开启输出控制缓冲 <code>ob_start</code></p>
+<pre><code class="language-php">&lt;?php
+    ob_start(); // 打开输出控制缓冲
+?&gt;
+&lt;p&gt;在 demo.php 文件下输出 html 文本&lt;/p&gt;
+&lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+    var_dump($content);
+</code></pre>
+]]></summary>
+        <content type="html"><![CDATA[<p>新建文件 <code>demo.php</code><br>
+正常输出</p>
+<pre><code class="language-php">&lt;p&gt;在 demo.php 文件下输出 html 文本&lt;/p&gt;
+</code></pre>
+<p>开启输出控制缓冲 <code>ob_start</code></p>
+<pre><code class="language-php">&lt;?php
+    ob_start(); // 打开输出控制缓冲
+?&gt;
+&lt;p&gt;在 demo.php 文件下输出 html 文本&lt;/p&gt;
+&lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+    var_dump($content);
+</code></pre>
+<!--more-->
+<p>把缓存写入文件</p>
+<pre><code class="language-php">&lt;?php
+    $cache_name = md5(__FILE__) . '.html';
+
+    ob_start(); // 打开输出控制缓冲
+?&gt;
+&lt;p&gt;在 demo.php 文件下输出 html 文本&lt;/p&gt;
+&lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+
+    $handle = fopen($cache_name, 'w');
+    fwrite($handle, $content);
+    fclose($handle);
+</code></pre>
+<pre><code>var_dump($cache_name);
+</code></pre>
+<p>运行后生成临时文件 <code>xxxx.html</code> 缓存</p>
+<p>关键缓存判断</p>
+<pre><code class="language-php">&lt;?php
+    $cache_name = md5(__FILE__) . '.html';
+    $cache_lifetime = 3600;
+    // filectime() 函数返回指定文件的上次修改时间
+    if (file_exists($cache_name)
+        &amp;&amp; filectime(__FILE__) &lt;= filectime($cache_name)
+        &amp;&amp; filectime($cache_name) + $cache_lifetime &gt; time()) {
+        // 缓存文件存在
+        // 当前文件是否有修改（文件的修改时间小于缓存文件的修改问）
+        // 缓存文件是否已经过期
+        include $cache_name;
+        exit;
+    }
+
+    ob_start(); // 打开输出控制缓冲
+?&gt;
+&lt;p&gt;在 demo.php 文件下输出 html 文本&lt;/p&gt;
+&lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+
+    $handle = fopen($cache_name, 'w');
+    fwrite($handle, $content);
+    fclose($handle);
+</code></pre>
+<p>根据不同的用户 <code>id</code> 做不同的缓存</p>
+<pre><code class="language-php">&lt;?php
+    $id = intval($_GET['id']);
+    if (empty($id)) {
+        $id = '';
+    }
+
+    $cache_name = md5(__FILE__) . '-' . $id .'.html';
+    $cache_lifetime = 3600;
+    // filectime() 函数返回指定文件的上次修改时间
+    if (file_exists($cache_name)
+        &amp;&amp; filectime(__FILE__) &lt;= filectime($cache_name)
+        &amp;&amp; filectime($cache_name) + $cache_lifetime &gt; time()) {
+        // 缓存文件存在
+        // 当前文件是否有修改（文件的修改时间小于缓存文件的修改问）
+        // 缓存文件是否已经过期
+        include $cache_name;
+        exit;
+    }
+
+    ob_start(); // 打开输出控制缓冲
+?&gt;
+&lt;p&gt;在 demo.php 文件下输出 html 文本. &lt;?php echo $id?&gt;&lt;/p&gt;
+&lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+
+    $handle = fopen($cache_name, 'w');
+    fwrite($handle, $content);
+    fclose($handle);
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[API 防篡改和防重放]]></title>
+        <id>http://weakcc.github.io/post/api-fang-cuan-gai-he-fang-chong-fang/</id>
+        <link href="http://weakcc.github.io/post/api-fang-cuan-gai-he-fang-chong-fang/">
+        </link>
+        <updated>2021-10-26T01:00:36.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="防篡改">防篡改</h1>
+<p>签名校验</p>
+]]></summary>
+        <content type="html"><![CDATA[<h1 id="防篡改">防篡改</h1>
+<p>签名校验</p>
+<!-- more -->
+<h1 id="防重防">防重防</h1>
+<h2 id="timestampnonce">timestamp+nonce</h2>
+<p>我们常用的防止重放的机制是使用 timestamp 和 nonce 来做的重放机制。</p>
+<!-- more -->
+<p>timestamp 用来表示请求的当前时间戳，这个时间戳当然要和服务器时间戳进行校正过的。我们预期正常请求带的 timestamp 参数会是不同的（预期是正常的人每秒至多只会做一个操作）。每个请求带的时间戳不能和当前时间超过一定规定的时间。比如 60s。这样，这个请求即使被截取了，你也只能在 60s 内进行重放攻击。过期失效。</p>
+<p>但是这样也是不够的，还有给攻击者 60s 的时间。所以我们就需要使用一个 nonce，随机数。</p>
+<p>nonce 是由客户端根据足够随机的情况生成的，比如 md5 (timestamp+rand (0, 1000)); 它就有一个要求，正常情况下，在短时间内（比如 60s）连续生成两个相同 nonce 的情况几乎为 0。</p>
+<h2 id="服务端">服务端</h2>
+<p>服务端第一次在接收到这个 nonce 的时候做下面行为：<br>
+1 去 redis 中查找是否有 key 为 nonce:{nonce} 的 string<br>
+2 如果没有，则创建这个 key，把这个 key 失效的时间和验证 timestamp 失效的时间一致，比如是 60s。<br>
+3 如果有，说明这个 key 在 60s 内已经被使用了，那么这个请求就可以判断为重放请求。</p>
+<blockquote>
+<p>https://www.jianshu.com/p/de9295087560<br>
+https://learnku.com/articles/4196/talk-about-the-anti-replay-mechanism-of-api</p>
+</blockquote>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[PHP cURL]]></title>
         <id>http://weakcc.github.io/post/php-curl/</id>
@@ -230,200 +373,6 @@ if (!function_exists('make_avatar')) {
 $src  = make_avatar('111111@qq.com');
 var_dump($src);
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[二叉树的遍历及代码实现]]></title>
-        <id>http://weakcc.github.io/post/er-cha-shu-de-bian-li-ji-dai-ma-shi-xian/</id>
-        <link href="http://weakcc.github.io/post/er-cha-shu-de-bian-li-ji-dai-ma-shi-xian/">
-        </link>
-        <updated>2021-10-07T00:54:03.000Z</updated>
-        <summary type="html"><![CDATA[<h1 id="遍历">遍历</h1>
-<h2 id="前序遍历">前序遍历</h2>
-<p>如果二叉树为空，则返回空，否则从根节点开始，先遍历左子树，再遍历右子树<br>
-<img src="http://weakcc.github.io/post-images/1633568114149.jpeg" alt="" loading="lazy"></p>
-<h2 id="中序遍历">中序遍历</h2>
-<p>如果是空树，返回空，否则从左子树最左侧的节点开始，然后从左到右依次遍历左子树，真正的根节点，最后是右子树（依然是从最左侧节点开始从左到右的顺序遍历）<br>
-<img src="http://weakcc.github.io/post-images/1633568152256.jpeg" alt="" loading="lazy"></p>
-<h2 id="后序遍历">后序遍历</h2>
-<p>如果是空树，返回空，否则还是从左子树最左侧的节点开始，先遍历完叶子节点，再遍历父节点，遍历完左子树后，直接从右子树最左侧节点开始，按照和左子树同样的顺序遍历完右子树，最后访问根节点<br>
-<img src="http://weakcc.github.io/post-images/1633568168107.jpeg" alt="" loading="lazy"></p>
-]]></summary>
-        <content type="html"><![CDATA[<h1 id="遍历">遍历</h1>
-<h2 id="前序遍历">前序遍历</h2>
-<p>如果二叉树为空，则返回空，否则从根节点开始，先遍历左子树，再遍历右子树<br>
-<img src="http://weakcc.github.io/post-images/1633568114149.jpeg" alt="" loading="lazy"></p>
-<h2 id="中序遍历">中序遍历</h2>
-<p>如果是空树，返回空，否则从左子树最左侧的节点开始，然后从左到右依次遍历左子树，真正的根节点，最后是右子树（依然是从最左侧节点开始从左到右的顺序遍历）<br>
-<img src="http://weakcc.github.io/post-images/1633568152256.jpeg" alt="" loading="lazy"></p>
-<h2 id="后序遍历">后序遍历</h2>
-<p>如果是空树，返回空，否则还是从左子树最左侧的节点开始，先遍历完叶子节点，再遍历父节点，遍历完左子树后，直接从右子树最左侧节点开始，按照和左子树同样的顺序遍历完右子树，最后访问根节点<br>
-<img src="http://weakcc.github.io/post-images/1633568168107.jpeg" alt="" loading="lazy"></p>
-<!-- more -->
-<p>不同的遍历方式从不同维度将二叉树这种非线性的结构变成了某种意义上的线性序列，从而方便计算机操作。</p>
-<h1 id="代码">代码</h1>
-<p>二叉树的遍历其实就是个递归的过程，所以对应算法也采用递归来实现。</p>
-<p>我们以二叉链表的方式来存储数组，对应的前序、中序、后序实现代码如下</p>
-<pre><code class="language-php">&lt;?php
-
-// 二叉链表节点
-class Node
-{
-    public $data;
-    public $left = null;
-    public $right = null;
-
-    public function __construct($data)
-    {
-        $this-&gt;data = $data;
-    }
-}
-
-/**
- * 前序遍历
- * 如果二叉树为空，则返回空，否则从根节点开始，先遍历左子树，再遍历右子树
- * @param Node $tree
- */
-function preOrderTraverse($tree)
-{
-    if ($tree === null) {
-        return;
-    }
-    printf(&quot;%s\n&quot;, $tree-&gt;data);
-    preOrderTraverse($tree-&gt;left);
-    preOrderTraverse($tree-&gt;right);
-}
-
-/**
- * 中序遍历
- * 如果二叉树为空，则返回空，否则从左子树最左侧的节点开始，然后从左到右依次遍历左子树，真正的根节点，最后是右子树（依然是从最左侧节点开始从左到右的顺序遍历）
- * @param Node $tree
- */
-function midOrderTraverse($tree)
-{
-    if ($tree === null) {
-        return;
-    }
-    midOrderTraverse($tree-&gt;left);
-    printf(&quot;%s\n&quot;, $tree-&gt;data);
-    midOrderTraverse($tree-&gt;right);
-}
-
-/**
- * 后序遍历
- * 如果二叉树为空，则返回空，否则从左子树最左侧的节点开始，先遍历完叶子节点，再遍历父节点，遍历完左子树后，直接从右子树最左侧节点开始，按照和左子树同样的顺序遍历完右子树，最后访问根节点
- * @param Node $tree
- */
-function postOrderTraverse($tree)
-{
-    if ($tree === null) {
-        return;
-    }
-    postOrderTraverse($tree-&gt;left);
-    postOrderTraverse($tree-&gt;right);
-    printf(&quot;%s\n&quot;, $tree-&gt;data);
-}
-
-// 节点树
-$node1 = new Node('A');
-$node2 = new Node('B');
-$node3 = new Node('C');
-$node1-&gt;left = $node2;
-$node1-&gt;right = $node3;
-// 前序遍历
-preOrderTraverse($node1);
-print(&quot;========\n&quot;);
-// 中序遍历
-midOrderTraverse($node1);
-print(&quot;========\n&quot;);
-// 后序遍历
-postOrderTraverse($node1);
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Laravel 搭建自己的 WebSocket 服务器]]></title>
-        <id>http://weakcc.github.io/post/laravel-da-jian-zi-ji-de-websocket-fu-wu-qi/</id>
-        <link href="http://weakcc.github.io/post/laravel-da-jian-zi-ji-de-websocket-fu-wu-qi/">
-        </link>
-        <updated>2021-10-06T09:51:25.000Z</updated>
-        <summary type="html"><![CDATA[<h4 id="准备">准备</h4>
-<pre><code>laravel new weakcc
-cd weakcc/
-valet link weakcc
-composer require laravel/ui
-php artisan ui vue --auth
-npm install &amp;&amp; npm run dev
-</code></pre>
-]]></summary>
-        <content type="html"><![CDATA[<h4 id="准备">准备</h4>
-<pre><code>laravel new weakcc
-cd weakcc/
-valet link weakcc
-composer require laravel/ui
-php artisan ui vue --auth
-npm install &amp;&amp; npm run dev
-</code></pre>
-<!-- more -->
-<p>更新.env</p>
-<pre><code>APP_NAME=weakcc
-APP_URL=http://weakcc.test/
-DB_DATABASE=weakcc
-DB_USERNAME=root
-DB_PASSWORD=123456
-
-BROADCAST_DRIVER=pusher
-
-// 因为自己搭建的随意添加，唯一注意的就是 APP_KEY 前后端要保持一致 
-PUSHER_APP_ID=123456789
-PUSHER_APP_KEY=123
-PUSHER_APP_SECRET=123456
-</code></pre>
-<p>数据迁移</p>
-<pre><code>php artisan migrate
-</code></pre>
-<blockquote>
-<p>如果需要使用 <code>PrivateChannel</code> 或 <code>PresenceChannel</code> ，需要解除 <code>config/app.php</code> 下 <code>App\Providers\BroadcastServiceProvider::class</code> 注释</p>
-</blockquote>
-<p>安装扩展</p>
-<pre><code>composer require beyondcode/laravel-websockets
-</code></pre>
-<p>加载配置</p>
-<pre><code>php artisan vendor:publish --provider=&quot;BeyondCode\LaravelWebSockets\WebSocketsServiceProvider&quot; --tag=&quot;migrations&quot;
-php artisan migrate
-php artisan vendor:publish --provider=&quot;BeyondCode\LaravelWebSockets\WebSocketsServiceProvider&quot; --tag=&quot;config&quot;
-</code></pre>
-<p>调试仪表板，浏览器打开 <code>http://weakcc.test/laravel-websockets</code><br>
-更新 <code>config/broadcasting.php</code> 下 <code>pusher</code> 配置</p>
-<pre><code>'options' =&gt; [
-    'cluster' =&gt; env('PUSHER_APP_CLUSTER'),
-    'host' =&gt; '127.0.0.1',
-    'port' =&gt; 6001,
-    'scheme' =&gt; 'http'
-],
-</code></pre>
-<p>解除 <code>resources/js/bootstrap.js</code> 注释并更新如下</p>
-<pre><code>import Echo from 'laravel-echo';
-
-window.Pusher = require('pusher-js');
-
-window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: '123', // 要跟后台保持一致
-    wsHost: window.location.hostname,
-    wsPort: 6001,
-    disableStats: true,
-});
-</code></pre>
-<p>安装前端依赖包</p>
-<pre><code>npm install --save laravel-echo pusher-js
-</code></pre>
-<p>运行服务</p>
-<pre><code>php artisan websockets:serve
-</code></pre>
-<blockquote>
-<p>.env 里的 APP_URL 一定要修改，不然寻址会出现问题</p>
-</blockquote>
 ]]></content>
     </entry>
 </feed>

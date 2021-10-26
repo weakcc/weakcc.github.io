@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1635209966642">
+<link rel="shortcut icon" href="/favicon.ico?v=1635215232142">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -171,19 +171,19 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">37</span>
+        <span class="site-item-stat-count">39</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="">
-        <span class="site-item-stat-count">21</span>
+        <span class="site-item-stat-count">23</span>
         <span class="site-item-stat-name language" data-lan="category">分类</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="/tags/">
-        <span class="site-item-stat-count">21</span>
+        <span class="site-item-stat-count">23</span>
         <span class="site-item-stat-name language" data-lan="tag">标签</span>
       </a>
     </div>
@@ -222,6 +222,16 @@
           <small class="language" data-lan="tag">标签</small>
         </h2>
       </div>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       
       
       
@@ -657,6 +667,125 @@
       <hr>
     </div>
     <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/php-dong-tai-yu-yan-jing-tai-hua/"" data-c="
+          &lt;p&gt;新建文件 &lt;code&gt;demo.php&lt;/code&gt;&lt;br&gt;
+正常输出&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;&amp;lt;p&amp;gt;在 demo.php 文件下输出 html 文本&amp;lt;/p&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;开启输出控制缓冲 &lt;code&gt;ob_start&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;&amp;lt;?php
+    ob_start(); // 打开输出控制缓冲
+?&amp;gt;
+&amp;lt;p&amp;gt;在 demo.php 文件下输出 html 文本&amp;lt;/p&amp;gt;
+&amp;lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+    var_dump($content);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!--more--&gt;
+&lt;p&gt;把缓存写入文件&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;&amp;lt;?php
+    $cache_name = md5(__FILE__) . &#39;.html&#39;;
+
+    ob_start(); // 打开输出控制缓冲
+?&amp;gt;
+&amp;lt;p&amp;gt;在 demo.php 文件下输出 html 文本&amp;lt;/p&amp;gt;
+&amp;lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+
+    $handle = fopen($cache_name, &#39;w&#39;);
+    fwrite($handle, $content);
+    fclose($handle);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;var_dump($cache_name);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;运行后生成临时文件 &lt;code&gt;xxxx.html&lt;/code&gt; 缓存&lt;/p&gt;
+&lt;p&gt;关键缓存判断&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;&amp;lt;?php
+    $cache_name = md5(__FILE__) . &#39;.html&#39;;
+    $cache_lifetime = 3600;
+    // filectime() 函数返回指定文件的上次修改时间
+    if (file_exists($cache_name)
+        &amp;amp;&amp;amp; filectime(__FILE__) &amp;lt;= filectime($cache_name)
+        &amp;amp;&amp;amp; filectime($cache_name) + $cache_lifetime &amp;gt; time()) {
+        // 缓存文件存在
+        // 当前文件是否有修改（文件的修改时间小于缓存文件的修改问）
+        // 缓存文件是否已经过期
+        include $cache_name;
+        exit;
+    }
+
+    ob_start(); // 打开输出控制缓冲
+?&amp;gt;
+&amp;lt;p&amp;gt;在 demo.php 文件下输出 html 文本&amp;lt;/p&amp;gt;
+&amp;lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+
+    $handle = fopen($cache_name, &#39;w&#39;);
+    fwrite($handle, $content);
+    fclose($handle);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;根据不同的用户 &lt;code&gt;id&lt;/code&gt; 做不同的缓存&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;&amp;lt;?php
+    $id = intval($_GET[&#39;id&#39;]);
+    if (empty($id)) {
+        $id = &#39;&#39;;
+    }
+
+    $cache_name = md5(__FILE__) . &#39;-&#39; . $id .&#39;.html&#39;;
+    $cache_lifetime = 3600;
+    // filectime() 函数返回指定文件的上次修改时间
+    if (file_exists($cache_name)
+        &amp;amp;&amp;amp; filectime(__FILE__) &amp;lt;= filectime($cache_name)
+        &amp;amp;&amp;amp; filectime($cache_name) + $cache_lifetime &amp;gt; time()) {
+        // 缓存文件存在
+        // 当前文件是否有修改（文件的修改时间小于缓存文件的修改问）
+        // 缓存文件是否已经过期
+        include $cache_name;
+        exit;
+    }
+
+    ob_start(); // 打开输出控制缓冲
+?&amp;gt;
+&amp;lt;p&amp;gt;在 demo.php 文件下输出 html 文本. &amp;lt;?php echo $id?&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;?php
+    $content = ob_get_contents(); // 返回输出缓冲区的内容
+    ob_end_flush(); // 冲刷出（送出）输出缓冲区内容并关闭缓冲
+
+    $handle = fopen($cache_name, &#39;w&#39;);
+    fwrite($handle, $content);
+    fclose($handle);
+&lt;/code&gt;&lt;/pre&gt;
+">PHP 动态语言静态化</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/api-fang-cuan-gai-he-fang-chong-fang/"" data-c="
+          &lt;h1 id=&#34;防篡改&#34;&gt;防篡改&lt;/h1&gt;
+&lt;p&gt;签名校验&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h1 id=&#34;防重防&#34;&gt;防重防&lt;/h1&gt;
+&lt;h2 id=&#34;timestampnonce&#34;&gt;timestamp+nonce&lt;/h2&gt;
+&lt;p&gt;我们常用的防止重放的机制是使用 timestamp 和 nonce 来做的重放机制。&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;timestamp 用来表示请求的当前时间戳，这个时间戳当然要和服务器时间戳进行校正过的。我们预期正常请求带的 timestamp 参数会是不同的（预期是正常的人每秒至多只会做一个操作）。每个请求带的时间戳不能和当前时间超过一定规定的时间。比如 60s。这样，这个请求即使被截取了，你也只能在 60s 内进行重放攻击。过期失效。&lt;/p&gt;
+&lt;p&gt;但是这样也是不够的，还有给攻击者 60s 的时间。所以我们就需要使用一个 nonce，随机数。&lt;/p&gt;
+&lt;p&gt;nonce 是由客户端根据足够随机的情况生成的，比如 md5 (timestamp+rand (0, 1000)); 它就有一个要求，正常情况下，在短时间内（比如 60s）连续生成两个相同 nonce 的情况几乎为 0。&lt;/p&gt;
+&lt;h2 id=&#34;服务端&#34;&gt;服务端&lt;/h2&gt;
+&lt;p&gt;服务端第一次在接收到这个 nonce 的时候做下面行为：&lt;br&gt;
+1 去 redis 中查找是否有 key 为 nonce:{nonce} 的 string&lt;br&gt;
+2 如果没有，则创建这个 key，把这个 key 失效的时间和验证 timestamp 失效的时间一致，比如是 60s。&lt;br&gt;
+3 如果有，说明这个 key 在 60s 内已经被使用了，那么这个请求就可以判断为重放请求。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;https://www.jianshu.com/p/de9295087560&lt;br&gt;
+https://learnku.com/articles/4196/talk-about-the-anti-replay-mechanism-of-api&lt;/p&gt;
+&lt;/blockquote&gt;
+">API 防篡改和防重放</a>
+      </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/php-curl/"" data-c="

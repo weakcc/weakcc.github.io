@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>GitLab Server 的搭建 | 腰盐醋</title>
+<title>API 防篡改和防重放 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1635215232142">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="GitLab Server 的搭建" />
-  <meta name="keywords" content="" />
+  <meta name="description" content="API 防篡改和防重放" />
+  <meta name="keywords" content="API" />
 </head>
 
 <body>
@@ -177,7 +177,8 @@
       <div class="sidebar-body pisces" id="sidebar_body">
         
           
-            
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -213,6 +214,197 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li><a href="#%E9%98%B2%E7%AF%A1%E6%94%B9">防篡改</a></li>
+<li><a href="#%E9%98%B2%E9%87%8D%E9%98%B2">防重防</a>
+<ul>
+<li><a href="#timestampnonce">timestamp+nonce</a></li>
+<li><a href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF">服务端</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</div>
+
+<script>
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
+      }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0] && elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
+    });
+  }
+
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
           
         
       </div>
@@ -300,8 +492,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/gitlab-server-de-da-jian/">
-      GitLab Server 的搭建
+    <a class="post-title-link" href="http://weakcc.github.io/post/api-fang-cuan-gai-he-fang-chong-fang/">
+      API 防篡改和防重放
     </a>
   </h1>
   <div class="post-meta">
@@ -309,37 +501,55 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-10-20 08:30:06">2020-10-20</span>
+      <span class="publish-time" data-t="2021-10-26 09:00:36">2021-10-26</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
     <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show language" data-lan="category-in">分类于</span>
+      
+      
+      <a href="http://weakcc.github.io/tag/rEaSR5v1k/">
+        <span>API</span>
+      </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>1<span class="language" data-lan="minute">分钟</span></span>
+      <span>2<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>76<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>386<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <p>sudo yum install -y git vim gcc glibc-static telnet<br>
-sudo yum install -y curl policycoreutils-python openssh-server<br>
-sudo systemctl enable sshd<br>
-sudo systemctl start sshd<br>
-sudo yum install postfix<br>
-sudo systemctl enable postfix<br>
-sudo systemctl start postfix</p>
-<p>touch /etc/yum.repos.d/gitlab-ce.repo</p>
-<p>[gitlab-ce]<br>
-name=Gitlab CE Repository<br>
-baseurl=https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el$releasever<br>
-gpgcheck=0<br>
-enabled=1<br>
-gpgkey=https://packages.gitlab.com/gpg.key</p>
+              <h1 id="防篡改">防篡改</h1>
+<p>签名校验</p>
+<!-- more -->
+<h1 id="防重防">防重防</h1>
+<h2 id="timestampnonce">timestamp+nonce</h2>
+<p>我们常用的防止重放的机制是使用 timestamp 和 nonce 来做的重放机制。</p>
+<!-- more -->
+<p>timestamp 用来表示请求的当前时间戳，这个时间戳当然要和服务器时间戳进行校正过的。我们预期正常请求带的 timestamp 参数会是不同的（预期是正常的人每秒至多只会做一个操作）。每个请求带的时间戳不能和当前时间超过一定规定的时间。比如 60s。这样，这个请求即使被截取了，你也只能在 60s 内进行重放攻击。过期失效。</p>
+<p>但是这样也是不够的，还有给攻击者 60s 的时间。所以我们就需要使用一个 nonce，随机数。</p>
+<p>nonce 是由客户端根据足够随机的情况生成的，比如 md5 (timestamp+rand (0, 1000)); 它就有一个要求，正常情况下，在短时间内（比如 60s）连续生成两个相同 nonce 的情况几乎为 0。</p>
+<h2 id="服务端">服务端</h2>
+<p>服务端第一次在接收到这个 nonce 的时候做下面行为：<br>
+1 去 redis 中查找是否有 key 为 nonce:{nonce} 的 string<br>
+2 如果没有，则创建这个 key，把这个 key 失效的时间和验证 timestamp 失效的时间一致，比如是 60s。<br>
+3 如果有，说明这个 key 在 60s 内已经被使用了，那么这个请求就可以判断为重放请求。</p>
+<blockquote>
+<p>https://www.jianshu.com/p/de9295087560<br>
+https://learnku.com/articles/4196/talk-about-the-anti-replay-mechanism-of-api</p>
+</blockquote>
 
             </div>
             
@@ -356,7 +566,7 @@ gpgkey=https://packages.gitlab.com/gpg.key</p>
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/gitlab-server-de-da-jian/" title="GitLab Server 的搭建">http://weakcc.github.io/post/gitlab-server-de-da-jian/</a>
+      <a href="http://weakcc.github.io/post/api-fang-cuan-gai-he-fang-chong-fang/" title="API 防篡改和防重放">http://weakcc.github.io/post/api-fang-cuan-gai-he-fang-chong-fang/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -365,19 +575,21 @@ gpgkey=https://packages.gitlab.com/gpg.key</p>
   </ul>
   <div class="tags">
     
+      <a href="http://weakcc.github.io/tag/rEaSR5v1k/"># API</a>
+    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
         <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="Python 类多继承" href="http://weakcc.github.io/post/python-lei-duo-ji-cheng/">Python 类多继承</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="Python 类多继承" href="http://weakcc.github.io/post/python-lei-duo-ji-cheng/">上一篇</a>
+        <a class="nav-pc-next" title="PHP 动态语言静态化" href="http://weakcc.github.io/post/php-dong-tai-yu-yan-jing-tai-hua/">PHP 动态语言静态化</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="PHP 动态语言静态化" href="http://weakcc.github.io/post/php-dong-tai-yu-yan-jing-tai-hua/">上一篇</a>
       
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="Scrapy" href="http://weakcc.github.io/post/scrapy/">Scrapy</a>
-        <a class="nav-mobile-next" title="Scrapy" href="http://weakcc.github.io/post/scrapy/">下一篇</a>
+        <a class="nav-pc-next" title="PHP cURL" href="http://weakcc.github.io/post/php-curl/">PHP cURL</a>
+        <a class="nav-mobile-next" title="PHP cURL" href="http://weakcc.github.io/post/php-curl/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
