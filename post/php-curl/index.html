@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>Ngrok 实现内网穿透教程 | 腰盐醋</title>
+<title>PHP cURL | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1635209966642">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="Ngrok 实现内网穿透教程" />
-  <meta name="keywords" content="Ngrok,内网,内网穿透" />
+  <meta name="description" content="PHP cURL" />
+  <meta name="keywords" content="cURL" />
 </head>
 
 <body>
@@ -220,8 +220,14 @@
   <div class="toc-wrapper auto-number auto"
     id="toc_wrapper">
     <ul class="markdownIt-TOC">
-<li><a href="#ngrok-authtoken-%E4%BD%A0%E7%9A%84-token">ngrok authtoken {你的 Token}</a></li>
-<li><a href="#%E5%90%AF%E5%8A%A8-ngrok-%E5%AE%A2%E6%88%B7%E7%AB%AF">启动 Ngrok 客户端</a></li>
+<li><a href="#curl">cURL</a>
+<ul>
+<li><a href="#get">GET</a></li>
+<li><a href="#post">POST</a></li>
+<li><a href="#raw">Raw</a></li>
+<li><a href="#%E5%8F%AF%E4%BB%A5%E8%AE%BF%E9%97%AE%E8%AF%B7%E6%B1%82%E7%9A%84%E5%8E%9F%E5%A7%8B%E6%95%B0%E6%8D%AE%E7%9A%84%E5%8F%AA%E8%AF%BB%E6%B5%81">可以访问请求的原始数据的只读流</a></li>
+</ul>
+</li>
 </ul>
 
   </div>
@@ -487,8 +493,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/ngrok-shi-xian-nei-wang-chuan-tou-jiao-cheng/">
-      Ngrok 实现内网穿透教程
+    <a class="post-title-link" href="http://weakcc.github.io/post/php-curl/">
+      PHP cURL
     </a>
   </h1>
   <div class="post-meta">
@@ -496,7 +502,7 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2021-09-06 10:04:37">2021-09-06</span>
+      <span class="publish-time" data-t="2021-10-26 08:54:38">2021-10-26</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
@@ -505,20 +511,8 @@
       <span class="pc-show language" data-lan="category-in">分类于</span>
       
       
-      <a href="http://weakcc.github.io/tag/mXX4CclWI/">
-        <span>Ngrok</span>
-      </a>、
-      
-      
-      
-      <a href="http://weakcc.github.io/tag/vCpIvdgiTo/">
-        <span>内网</span>
-      </a>、
-      
-      
-      
-      <a href="http://weakcc.github.io/tag/4EovlZ9dnF/">
-        <span>内网穿透</span>
+      <a href="http://weakcc.github.io/tag/UZYg_IEqi/">
+        <span>cURL</span>
       </a>
       
       
@@ -527,36 +521,137 @@
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>2<span class="language" data-lan="minute">分钟</span></span>
+      <span>4<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>265<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>762<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <p>https://ngrok.com/</p>
-<h1 id="ngrok-authtoken-你的-token">ngrok authtoken {你的 Token}</h1>
-<p>Ngrok 注册完成之后会进入这个页面：<br>
-<img src="http://weakcc.github.io/post-images/1630894686441.png" alt="" loading="lazy"><br>
-复制这个框里的命令</p>
-<pre><code class="language-shell">ngrok authtoken {你的 Token}
+              <h1 id="curl">cURL</h1>
+<h2 id="get">GET</h2>
+<pre><code class="language-php">/**
+ * @param string $url 请求 url
+ * @param int $httpCode 状态码
+ * @return mixed
+ */
+function curl_get($url, &amp;$httpCode = 404)
+{
+    // 初始化一个curl会话
+    $ch = curl_init();
+
+    // 需要获取的url地址
+    curl_setopt($ch, CURLOPT_URL, $url);
+    // 启用 返回原生的(raw)输出
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+    //不做证书校验,部署在linux环境下请改为true
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    // 在发起连接前等待的时间，如果设置为0，则无限等待
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+
+    // 	执行一个curl会话
+    $fileContents = curl_exec($ch);
+    // 获取一个curl连接资源句柄的信息
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    // 关闭一个curl会话
+    curl_close($ch);
+    return $fileContents;
+}
+
+$statusCode = 0;
+var_dump(curl_get('http://www.baidu.com/', $statusCode));
+var_dump($statusCode);
 </code></pre>
 <!-- more -->
-<h1 id="启动-ngrok-客户端">启动 Ngrok 客户端</h1>
-<pre><code class="language-shell">ngrok http -host-header=zbcrm.com -region us 80
+<h2 id="post">POST</h2>
+<pre><code class="language-php">/**
+ * @param string $url 请求 url
+ * @param array $params 参数
+ * @return mixed
+ */
+function curl_post(string $url, array $params = [])
+{
+    // 初始化一个curl会话
+    $ch = curl_init();
+
+    // 需要获取的url地址
+    curl_setopt($ch, CURLOPT_URL, $url);
+    // 启用时会将头文件的信息作为数据流输出
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    // 启用 返回原生的(raw)输出
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    //不做证书校验,部署在linux环境下请改为true
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    // 在发起连接前等待的时间，如果设置为0，则无限等待
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    // 启用时会发送一个常规的POST请求，类型为：application/x-www-form-urlencoded，就像表单提交的一样
+    curl_setopt($ch, CURLOPT_POST, 1);
+    // 全部数据使用HTTP协议中的&quot;POST&quot;操作来发送。要发送文件，在文件名前面加上@前缀并使用完整路径。这个参数可以通过urlencoded后的字符串类似'para1=val1&amp;para2=val2&amp;...'或使用一个以字段名为键值，字段数据为值的数组。如果value是一个数组，Content-Type头将会被设置成multipart/form-data
+    // 传递一个数组到CURLOPT_POSTFIELDS，cURL会把数据编码成 multipart/form-data，而然传递一个URL-encoded字符串时，数据会被编码成 application/x-www-form-urlencoded
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+
+    /*
+    // 或者传递一个 json 类型 $params 要 json_encode() 转义
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json' // 一个用来设置HTTP头字段的数组
+    ]);
+    */
+    // 	执行一个curl会话
+    $contents = curl_exec($ch);
+    // 关闭一个curl会话
+    curl_close($ch);
+    return $contents;
+}
+
+$url = 'xxxxx'; // 提交的 url
+$data = array('name' =&gt; 'Foo', 'file' =&gt; '@/home/user/test.png');
+var_dump(curl_post($url, $data));
 </code></pre>
-<p>http 代表我们要映射的是 HTTP 协议；-host-header= 代表本地站点的域名，如果你用的不是 shop.test 请更换成对应的域名；-region us 代表我们要使用的是美国的公共节点；80 代表映射到本地的 80 端口。<br>
-<img src="http://weakcc.github.io/post-images/1630894831743.png" alt="" loading="lazy"><br>
-<code>Forwarding</code> 代表 Ngrok 分配给你的域名，<b>对于免费账号来说，每次启动 Ngrok ，都会重新分配一个随机的域名，无法固定。</b><br>
-<code>Web Interface</code> 是 Ngrok 内置的一个管理面板，它可以展示所有通过 Ngrok 进来的请求信息以及返回的数据，现在我们访问一下 http://127.0.0.1:4040/ 看看：<br>
-<img src="http://weakcc.github.io/post-images/1630894964212.png" alt="" loading="lazy"></p>
-<blockquote>
-<p>国际带宽不稳定的时候有可能出现连接超时，这个时候可以试试把启动 Ngrok 命令中的 us 改成 au 澳大利亚或者 eu 欧洲</p>
-</blockquote>
+<h2 id="raw">Raw</h2>
+<pre><code class="language-php">/**
+ * @param string $url 请求 url
+ * @param string $data 参数
+ * @return mixed
+ */
+function curl_post_raw(string $url, string $data)
+{
+    // 初始化一个curl会话
+    $ch = curl_init();
+
+    // 需要获取的url地址
+    curl_setopt($ch, CURLOPT_URL, $url);
+    // 启用时会将头文件的信息作为数据流输出
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    // 启用 返回原生的(raw)输出
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    //不做证书校验,部署在linux环境下请改为true
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    // 在发起连接前等待的时间，如果设置为0，则无限等待
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    // 启用时会发送一个常规的POST请求，类型为：application/x-www-form-urlencoded，就像表单提交的一样
+    curl_setopt($ch, CURLOPT_POST, 1);
+
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    // // 一个用来设置HTTP头字段的数组
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: text'
+    ]);
+    // 	执行一个curl会话
+    $contents = curl_exec($ch);
+    // 关闭一个curl会话
+    curl_close($ch);
+    return $contents;
+}
+</code></pre>
+<h2 id="可以访问请求的原始数据的只读流">可以访问请求的原始数据的只读流</h2>
+<pre><code class="language-php">file_get_contents(&quot;php://input&quot;)
+</code></pre>
 
             </div>
             
@@ -573,7 +668,7 @@
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/ngrok-shi-xian-nei-wang-chuan-tou-jiao-cheng/" title="Ngrok 实现内网穿透教程">http://weakcc.github.io/post/ngrok-shi-xian-nei-wang-chuan-tou-jiao-cheng/</a>
+      <a href="http://weakcc.github.io/post/php-curl/" title="PHP cURL">http://weakcc.github.io/post/php-curl/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -582,25 +677,17 @@
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/mXX4CclWI/"># Ngrok</a>
-    
-      <a href="http://weakcc.github.io/tag/vCpIvdgiTo/"># 内网</a>
-    
-      <a href="http://weakcc.github.io/tag/4EovlZ9dnF/"># 内网穿透</a>
+      <a href="http://weakcc.github.io/tag/UZYg_IEqi/"># cURL</a>
     
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="依赖注入,控制反转,反射各个概念的理解和使用" href="http://weakcc.github.io/post/yi-lai-zhu-ru-kong-zhi-fan-zhuan-fan-she-ge-ge-gai-nian-de-li-jie-he-shi-yong/">依赖注入,控制反转,反射各个概念的理解和使用</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="依赖注入,控制反转,反射各个概念的理解和使用" href="http://weakcc.github.io/post/yi-lai-zhu-ru-kong-zhi-fan-zhuan-fan-she-ge-ge-gai-nian-de-li-jie-he-shi-yong/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="实现大数据量文件的异步导出" href="http://weakcc.github.io/post/shi-xian-da-shu-ju-liang-wen-jian-de-yi-bu-dao-chu/">实现大数据量文件的异步导出</a>
-        <a class="nav-mobile-next" title="实现大数据量文件的异步导出" href="http://weakcc.github.io/post/shi-xian-da-shu-ju-liang-wen-jian-de-yi-bu-dao-chu/">下一篇</a>
+        <a class="nav-pc-next" title="死锁" href="http://weakcc.github.io/post/si-suo/">死锁</a>
+        <a class="nav-mobile-next" title="死锁" href="http://weakcc.github.io/post/si-suo/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
