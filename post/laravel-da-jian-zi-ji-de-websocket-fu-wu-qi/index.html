@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>Laravel 搭建自己的 WebSocket 服务器 | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1635215386189">
+<link rel="shortcut icon" href="/favicon.ico?v=1635400141114">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -189,7 +189,7 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">39</span>
+        <span class="site-item-stat-count">40</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
@@ -1125,6 +1125,25 @@ window.Echo = new Echo({
       <hr>
     </div>
     <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/shi-yong-safari-liu-lan-qi-dao-chu-excel-wen-jian-hou-zhui-hui-jia-yi-ge-html/"" data-c="
+          &lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;http://weakcc.github.io/post-images/1635389216714.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;p&gt;解决办法&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;header(&amp;quot;Pragma: public&amp;quot;);  
+header(&amp;quot;Expires: 0&amp;quot;);  
+header(&amp;quot;Cache-Control:must-revalidate, post-check=0, pre-check=0&amp;quot;);  
+header(&amp;quot;Content-Type:application/force-download&amp;quot;);  
+header(&amp;quot;Content-Type:application/vnd.ms-excel&amp;quot;);  
+header(&amp;quot;Content-Type:application/octet-stream&amp;quot;);  
+header(&amp;quot;Content-Type:application/download&amp;quot;);;  
+header(&#39;Content-Disposition:attachment;filename=&amp;quot;&#39;.$filename.&#39;.xls&amp;quot;&#39;);
+header(&amp;quot;Content-Transfer-Encoding:binary&amp;quot;);
+$objWriter-&amp;gt;save(&#39;php://output&#39;);
+exit;
+&lt;/code&gt;&lt;/pre&gt;
+">使用 safari 浏览器导出 Excel 文件后缀会加一个 .html</a>
+      </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/php-dong-tai-yu-yan-jing-tai-hua/"" data-c="

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-10-26T02:29:57.336Z</updated>
+    <updated>2021-10-28T05:50:01.622Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,28 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[使用 safari 浏览器导出 Excel 文件后缀会加一个 .html]]></title>
+        <id>http://weakcc.github.io/post/shi-yong-safari-liu-lan-qi-dao-chu-excel-wen-jian-hou-zhui-hui-jia-yi-ge-html/</id>
+        <link href="http://weakcc.github.io/post/shi-yong-safari-liu-lan-qi-dao-chu-excel-wen-jian-hou-zhui-hui-jia-yi-ge-html/">
+        </link>
+        <updated>2021-10-28T02:45:52.000Z</updated>
+        <content type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1635389216714.png" alt="" loading="lazy"></figure>
+<p>解决办法</p>
+<pre><code class="language-php">header(&quot;Pragma: public&quot;);  
+header(&quot;Expires: 0&quot;);  
+header(&quot;Cache-Control:must-revalidate, post-check=0, pre-check=0&quot;);  
+header(&quot;Content-Type:application/force-download&quot;);  
+header(&quot;Content-Type:application/vnd.ms-excel&quot;);  
+header(&quot;Content-Type:application/octet-stream&quot;);  
+header(&quot;Content-Type:application/download&quot;);;  
+header('Content-Disposition:attachment;filename=&quot;'.$filename.'.xls&quot;');
+header(&quot;Content-Transfer-Encoding:binary&quot;);
+$objWriter-&gt;save('php://output');
+exit;
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[PHP 动态语言静态化]]></title>
         <id>http://weakcc.github.io/post/php-dong-tai-yu-yan-jing-tai-hua/</id>
@@ -352,27 +374,6 @@ function curl_post_raw(string $url, string $data)
 <blockquote>
 <p>https://zhuanlan.zhihu.com/p/308300980</p>
 </blockquote>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[PHP生成随机头像]]></title>
-        <id>http://weakcc.github.io/post/php-sheng-cheng-sui-ji-tou-xiang/</id>
-        <link href="http://weakcc.github.io/post/php-sheng-cheng-sui-ji-tou-xiang/">
-        </link>
-        <updated>2021-10-21T02:26:41.000Z</updated>
-        <content type="html"><![CDATA[<pre><code class="language-php">&lt;?php
-
-if (!function_exists('make_avatar')) {
-    function make_avatar($email)
-    {
-        $md5_email = md5($email);
-        return &quot;https://api.multiavatar.com/{$md5_email}.png&quot;;
-    }
-}
-
-$src  = make_avatar('111111@qq.com');
-var_dump($src);
-</code></pre>
 ]]></content>
     </entry>
 </feed>
