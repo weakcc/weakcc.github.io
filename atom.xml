@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-10-28T06:31:54.772Z</updated>
+    <updated>2021-10-30T09:47:30.707Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,428 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[Selenium 从入门到放弃]]></title>
+        <id>http://weakcc.github.io/post/selenium-cong-ru-men-dao-fang-qi/</id>
+        <link href="http://weakcc.github.io/post/selenium-cong-ru-men-dao-fang-qi/">
+        </link>
+        <updated>2021-10-30T08:14:39.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="安装浏览器驱动">安装浏览器驱动</h1>
+<p><a href="https://chromedriver.storage.googleapis.com/index.html">Chrome 浏览器驱动</a><br>
+<a href="https://github.com/mozilla/geckodriver/releases">Firefox 浏览器驱动</a><br>
+<a href="http://selenium-release.storage.googleapis.com/index.html">IE 浏览器驱动</a><br>
+<a href="https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/">Edge 浏览器驱动</a><br>
+<a href="https://phantomjs.org/">PhantomJS 浏览器驱动</a><br>
+<a href="https://github.com/operasoftware/operachromiumdriver/releases">Opera 浏览器驱动</a></p>
+<p>测试</p>
+<pre><code class="language-python">from selenium import webdriver
+
+# Chrome浏览器
+driver = webdriver.Chrome()
+driver.get('https://www.baidu.com/')
+</code></pre>
+<h1 id="定位页面元素">定位页面元素</h1>
+<h2 id="id-定位">id 定位</h2>
+<pre><code class="language-html">&lt;input id=&quot;toolbar-search-input&quot; autocomplete=&quot;off&quot; type=&quot;text&quot; value=&quot;&quot; placeholder=&quot;C++难在哪里？&quot;&gt;
+</code></pre>
+<pre><code class="language-python">driver.find_element_by_id('toolbar-search-input')
+</code></pre>
+<h2 id="name-定位">name 定位</h2>
+<pre><code class="language-html">&lt;meta name=&quot;keywords&quot; content=&quot;CSDN博客,CSDN学院,CSDN论坛,CSDN直播&quot;&gt;
+</code></pre>
+<pre><code class="language-python">driver.find_element_by_name(&quot;keywords&quot;)
+</code></pre>
+<h2 id="class-定位">class 定位</h2>
+<pre><code class="language-html">&lt;div class=&quot;toolbar-search-container&quot;&gt;
+</code></pre>
+<pre><code class="language-python">driver.find_element_by_class_name(&quot;toolbar-search-container&quot;)
+</code></pre>
+<h2 id="tag-定位">tag 定位</h2>
+<pre><code class="language-html">&lt;div class=&quot;toolbar-search-container&quot;&gt;
+</code></pre>
+<pre><code class="language-python">driver.find_element_by_tag_name(&quot;div&quot;)
+</code></pre>
+<h2 id="xpath-定位">xpath 定位</h2>
+<pre><code class="language-html">&lt;html&gt;
+  &lt;head&gt;...&lt;head/&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;csdn-toolbar&quot;&gt;
+      &lt;div class=&quot;toolbar-inside&quot;&gt;
+        &lt;div class=&quot;toolbar-container&quot;&gt;
+          &lt;div class=&quot;toolbar-container-left&quot;&gt;...&lt;/div&gt;
+          &lt;div class=&quot;toolbar-container-middle&quot;&gt;
+            &lt;div class=&quot;toolbar-search onlySearch&quot;&gt;
+			&lt;div class=&quot;toolbar-search-container&quot;&gt;
+				&lt;input id=&quot;toolbar-search-input&quot; autocomplete=&quot;off&quot; type=&quot;text&quot; value=&quot;&quot; placeholder=&quot;C++难在哪里？&quot;&gt;
+</code></pre>
+<pre><code class="language-python"># 绝对路径（层级关系）定位
+driver.find_element_by_xpath(
+	&quot;/html/body/div/div/div/div[2]/div/div/input[1]&quot;)
+
+# 利用元素属性定位
+driver.find_element_by_xpath(
+	&quot;//*[@id='toolbar-search-input']&quot;))
+
+# 层级+元素属性定位
+driver.find_element_by_xpath(
+	&quot;//div[@id='csdn-toolbar']/div/div/div[2]/div/div/input[1]&quot;)
+
+# 逻辑运算符定位
+driver.find_element_by_xpath(
+	&quot;//*[@id='toolbar-search-input' and @autocomplete='off']&quot;)
+</code></pre>
+<h2 id="css-定位">css 定位</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">方法</th>
+<th style="text-align:center">例子</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">.class</td>
+<td style="text-align:center">.toolbar-search-container</td>
+<td style="text-align:center">选择 class = 'toolbar-search-container' 的所有元素</td>
+</tr>
+<tr>
+<td style="text-align:center">#id</td>
+<td style="text-align:center">#toolbar-search-input</td>
+<td style="text-align:center">选择 id = 'toolbar-search-input' 的元素</td>
+</tr>
+<tr>
+<td style="text-align:center">*</td>
+<td style="text-align:center">*</td>
+<td style="text-align:center">选择所有元素</td>
+</tr>
+<tr>
+<td style="text-align:center">element</td>
+<td style="text-align:center">input</td>
+<td style="text-align:center">选择所有 &lt;input&gt; 元素</td>
+</tr>
+<tr>
+<td style="text-align:center">element&gt;element</td>
+<td style="text-align:center">div&gt;input</td>
+<td style="text-align:center">选择父元素为 &lt;div&gt; 的所有 &lt;input&gt; 元素</td>
+</tr>
+<tr>
+<td style="text-align:center">element+element</td>
+<td style="text-align:center">div+input</td>
+<td style="text-align:center">选择同一级中在 &lt;div&gt; 之后的所有 &lt;input&gt; 元素</td>
+</tr>
+<tr>
+<td style="text-align:center">[attribute=value]</td>
+<td style="text-align:center">type='text'</td>
+<td style="text-align:center">选择 type = 'text' 的所有元素</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-python">driver.find_element_by_css_selector('#toolbar-search-input')
+driver.find_element_by_css_selector('html&gt;body&gt;div&gt;div&gt;div&gt;div&gt;div&gt;div&gt;input')
+</code></pre>
+<h2 id="link-定位">link 定位</h2>
+<p><code>link</code> 专门用来定位文本链接，假如要定位下面这一标签。</p>
+<pre><code class="language-html">&lt;div class=&quot;practice-box&quot; data-v-04f46969=&quot;&quot;&gt;加入！每日一练&lt;/div&gt;
+</code></pre>
+<pre><code class="language-python">driver.find_element_by_link_text(&quot;加入！每日一练&quot;)
+</code></pre>
+<h2 id="partial_link-定位">partial_link 定位</h2>
+<p><code>partial_link</code> 翻译过来就是“部分链接”，对于有些文本很长，这时候就可以只指定部分文本即可定位，同样使用刚才的例子。</p>
+<pre><code class="language-html">&lt;div class=&quot;practice-box&quot; data-v-04f46969=&quot;&quot;&gt;加入！每日一练&lt;/div&gt;
+</code></pre>
+<pre><code class="language-python">driver.find_element_by_partial_link_text(&quot;加入&quot;)
+</code></pre>
+<h1 id="浏览器控制">浏览器控制</h1>
+<h2 id="修改浏览器窗口大小">修改浏览器窗口大小</h2>
+<p><code>webdriver</code> 提供 <code>set_window_size()</code> 方法来修改浏览器窗口的大小。</p>
+<pre><code class="language-python">from selenium import webdriver
+
+# Chrome浏览器
+driver = webdriver.Chrome()
+driver.get('https://www.csdn.net/')
+# 设置浏览器浏览器的宽高为：600x800
+driver.set_window_size(600, 800)
+</code></pre>
+<p>也可以使用 <code>maximize_window()</code> 方法可以实现浏览器全屏显示<br>
+from selenium import webdriver</p>
+<pre><code class="language-python"># Chrome浏览器
+driver = webdriver.Chrome()
+driver.get('https://www.csdn.net/')
+# 设置浏览器浏览器的宽高为全屏
+driver.maximize_window()
+</code></pre>
+<h2 id="浏览器前进后退">浏览器前进&amp;后退</h2>
+<p><code>webdriver</code> 提供 <code>back</code> 和 <code>forward</code> 方法来实现页面的后退与前进</p>
+<pre><code class="language-python">from selenium import webdriver
+from time import sleep
+
+driver = webdriver.Chrome()
+
+# 访问CSDN首页
+driver.get('https://www.csdn.net/')
+sleep(2)
+#访问CSDN个人主页
+driver.get('https://blog.csdn.net/qq_43965708')
+sleep(2)
+#返回（后退）到CSDN首页
+driver.back()
+sleep(2)
+#前进到个人主页
+driver.forward()
+</code></pre>
+<h2 id="新的标签页打开">新的标签页打开</h2>
+<p>如果想的话也可以在新的标签页中打开新的链接，但需要更改一下代码，执行 js 语句来打开新的标签。</p>
+<pre><code class="language-python"># 在原页面打开
+driver.get('https://blog.csdn.net/qq_43965708')
+
+# 新标签中打开
+js = &quot;window.open('https://blog.csdn.net/qq_43965708')&quot;
+driver.execute_script(js)
+</code></pre>
+<h2 id="浏览器刷新">浏览器刷新</h2>
+<p>可以使用 <code>refresh()</code> 来刷新当前页面。</p>
+<pre><code class="language-python"># 刷新页面
+driver.refresh()
+</code></pre>
+<h2 id="浏览器窗口切换">浏览器窗口切换</h2>
+<p>在很多时候我们都需要用到窗口切换，比如：当我们点击注册按钮时，它一般会打开一个新的标签页，但实际上代码并没有切换到最新页面中，这时你如果要定位注册页面的标签就会发现定位不到，这时就需要将实际窗口切换到最新打开的那个窗口。我们先获取当前各个窗口的句柄，这些信息的保存顺序是按照时间来的，最新打开的窗口放在数组的末尾，这时我们就可以定位到最新打开的那个窗口了。</p>
+<pre><code class="language-python"># 获取打开的多个窗口句柄
+windows = driver.window_handles
+# 切换到当前最新打开的窗口
+driver.switch_to.window(windows[-1])
+</code></pre>
+<h2 id="常见操作">常见操作</h2>
+<p>webdriver中的常见操作有：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">方法</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">send_keys()</td>
+<td style="text-align:center">模拟输入指定内容</td>
+</tr>
+<tr>
+<td style="text-align:center">clear()</td>
+<td style="text-align:center">清除文本内容</td>
+</tr>
+<tr>
+<td style="text-align:center">is_displayed()</td>
+<td style="text-align:center">判断该元素是否可见</td>
+</tr>
+<tr>
+<td style="text-align:center">get_attribute()</td>
+<td style="text-align:center">获取标签属性值</td>
+</tr>
+<tr>
+<td style="text-align:center">size</td>
+<td style="text-align:center">返回元素的尺寸</td>
+</tr>
+<tr>
+<td style="text-align:center">text</td>
+<td style="text-align:center">返回元素文本</td>
+</tr>
+</tbody>
+</table>
+<p>🌰</p>
+<pre><code class="language-python">from selenium import webdriver
+from time import sleep
+
+driver = webdriver.Chrome()
+
+driver.get('https://www.csdn.net/')
+sleep(2)
+# 定位搜索输入框
+text_label = driver.find_element_by_xpath('//*[@id=&quot;toolbar-search-input&quot;]')
+
+# 在搜索框中输入 Dream丶Killer
+text_label.send_keys('Dream丶Killer')
+
+sleep(2)
+# 清除搜索框中的内容
+text_label.clear()
+
+# 输出搜索框元素是否可见
+print(text_label.is_displayed())
+# 输出placeholder的值
+print(text_label.get_attribute('placeholder'))
+
+# 定位搜索按钮
+button = driver.find_element_by_xpath('//*[@id=&quot;toolbar-search-button&quot;]/span')
+# 输出按钮的大小
+print(button.size)
+# 输出按钮上的文本
+print(button.text)
+
+'''输出内容
+True
+python面试100问
+{'height': 32, 'width': 28}
+搜索
+'''
+</code></pre>
+<h1 id="鼠标控制">鼠标控制</h1>
+<p>在webdriver 中，鼠标操作都封装在ActionChains类中，常见方法如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">方法</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">click()</td>
+<td style="text-align:center">单击左键</td>
+</tr>
+<tr>
+<td style="text-align:center">context_click()</td>
+<td style="text-align:center">单击右键</td>
+</tr>
+<tr>
+<td style="text-align:center">double_click()</td>
+<td style="text-align:center">双击</td>
+</tr>
+<tr>
+<td style="text-align:center">drag_and_drop()</td>
+<td style="text-align:center">拖动</td>
+</tr>
+<tr>
+<td style="text-align:center">move_to_element()</td>
+<td style="text-align:center">鼠标悬停</td>
+</tr>
+<tr>
+<td style="text-align:center">perform()</td>
+<td style="text-align:center">执行所有ActionChains中存储的动作</td>
+</tr>
+</tbody>
+</table>
+<h2 id="单击左键">单击左键</h2>
+<p>模拟完成单击鼠标左键的操作，一般点击进入子页面等会用到，左键不需要用到 <code>ActionChains</code> 。</p>
+<pre><code class="language-python"># 定位搜索按钮
+button = driver.find_element_by_xpath('//*[@id=&quot;toolbar-search-button&quot;]/span')
+# 执行单击操作
+button.click()
+</code></pre>
+<h2 id="单击右键">单击右键</h2>
+<p>鼠标右击的操作与左击有很大不同，需要使用 <code>ActionChains</code> 。</p>
+<pre><code class="language-python">from selenium.webdriver.common.action_chains import ActionChains
+
+# 定位搜索按钮
+button = driver.find_element_by_xpath('//*[@id=&quot;toolbar-search-button&quot;]/span')
+# 右键搜索按钮
+ActionChains(driver).context_click(button).perform()
+</code></pre>
+<h2 id="双击">双击</h2>
+<p>模拟鼠标双击操作</p>
+<pre><code class="language-python"># 定位搜索按钮
+button = driver.find_element_by_xpath('//*[@id=&quot;toolbar-search-button&quot;]/span')
+# 执行双击动作
+ActionChains(driver).double_click(button).perform()
+</code></pre>
+<h2 id="拖动">拖动</h2>
+<p>模拟鼠标拖动操作，该操作有两个必要参数</p>
+<ul>
+<li><strong>source</strong>：鼠标拖动的元素</li>
+<li><strong>target</strong>：鼠标拖至并释放的目标元素</li>
+</ul>
+<pre><code class="language-python"># 定位要拖动的元素
+source = driver.find_element_by_xpath('xxx')
+# 定位目标元素
+target = driver.find_element_by_xpath('xxx')
+# 执行拖动动作
+ActionChains(driver).drag_and_drop(source, target).perform()
+</code></pre>
+<h2 id="鼠标悬停">鼠标悬停</h2>
+<p>模拟悬停的作用一般是为了显示隐藏的下拉框。</p>
+<pre><code class="language-python"># 定位收藏栏
+collect  = driver.find_element_by_xpath('//*[@id=&quot;csdn-toolbar&quot;]/div/div/div[3]/div/div[3]/a')
+
+# 悬停至收藏标签处
+ActionChains(driver).move_to_element(collect).perform()
+</code></pre>
+<h1 id="键盘控制">键盘控制</h1>
+<p><code>webdriver</code> 中 <code>Keys</code> 类几乎提供了键盘上的所有按键方法，我们可以使用 <code>send_keys + Keys</code> 实现输出键盘上的组合按键如 “<strong>Ctrl + C</strong>”、“<strong>Ctrl + V</strong>” 等。</p>
+<pre><code class="language-python">from selenium.webdriver.common.keys import Keys
+
+# 定位输入框并输入文本
+driver.find_element_by_id('xxx').send_keys('Dream丶killer')
+
+# 模拟回车键进行跳转（输入内容后） 
+driver.find_element_by_id('xxx').send_keys(Keys.ENTER)
+
+# 使用 Backspace 来删除一个字符
+driver.find_element_by_id('xxx').send_keys(Keys.BACK_SPACE)
+
+# Ctrl + A 全选输入框中内容
+driver.find_element_by_id('xxx').send_keys(Keys.CONTROL, 'a')
+
+# Ctrl + C 复制输入框中内容
+driver.find_element_by_id('xxx').send_keys(Keys.CONTROL, 'c')
+
+# Ctrl + V 粘贴输入框中内容
+driver.find_element_by_id('xxx').send_keys(Keys.CONTROL, 'v')
+</code></pre>
+<p>其他常见键盘操作：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">操作</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Keys.F1</td>
+<td style="text-align:center">F1键</td>
+</tr>
+<tr>
+<td style="text-align:center">Keys.SPACE</td>
+<td style="text-align:center">空格</td>
+</tr>
+<tr>
+<td style="text-align:center">Keys.TAB</td>
+<td style="text-align:center">Tab键</td>
+</tr>
+<tr>
+<td style="text-align:center">Keys.ESCAPE</td>
+<td style="text-align:center">ESC键</td>
+</tr>
+<tr>
+<td style="text-align:center">Keys.ALT</td>
+<td style="text-align:center">Alt键</td>
+</tr>
+<tr>
+<td style="text-align:center">Keys.SHIFT</td>
+<td style="text-align:center">Shift键</td>
+</tr>
+<tr>
+<td style="text-align:center">Keys.ARROW_DOWN</td>
+<td style="text-align:center">向下箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">Keys.ARROW_LEFT</td>
+<td style="text-align:center">向左箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">Keys.ARROW_RIGHT</td>
+<td style="text-align:center">向右箭头</td>
+</tr>
+<tr>
+<td style="text-align:center">Keys.ARROW_UP</td>
+<td style="text-align:center">向上箭头</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>https://juejin.cn/post/7022925905395875847</p>
+</blockquote>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[使用 safari 浏览器导出 Excel 文件后缀会加一个 .html]]></title>
         <id>http://weakcc.github.io/post/shi-yong-safari-liu-lan-qi-dao-chu-excel-wen-jian-hou-zhui-hui-jia-yi-ge-html/</id>
@@ -338,42 +760,6 @@ function curl_post_raw(string $url, string $data)
 <h2 id="可以访问请求的原始数据的只读流">可以访问请求的原始数据的只读流</h2>
 <pre><code class="language-php">file_get_contents(&quot;php://input&quot;)
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[死锁]]></title>
-        <id>http://weakcc.github.io/post/si-suo/</id>
-        <link href="http://weakcc.github.io/post/si-suo/">
-        </link>
-        <updated>2021-10-21T02:50:25.000Z</updated>
-        <summary type="html"><![CDATA[<h1 id="什么是死锁">什么是死锁</h1>
-<p>多线程以及多进程改善了系统资源的利用率并提高了系统的处理能力，然而并发执行也带来了新的问题 一一 <strong>死锁</strong>。</p>
-<p>死锁是指两个或两个以上的进程（线程）在运行过程中因争夺资源而造成的一种僵局（Deadly-Embrace) ) ，若无外力作用，这些进程（线程）都将无法向前推进。</p>
-]]></summary>
-        <content type="html"><![CDATA[<h1 id="什么是死锁">什么是死锁</h1>
-<p>多线程以及多进程改善了系统资源的利用率并提高了系统的处理能力，然而并发执行也带来了新的问题 一一 <strong>死锁</strong>。</p>
-<p>死锁是指两个或两个以上的进程（线程）在运行过程中因争夺资源而造成的一种僵局（Deadly-Embrace) ) ，若无外力作用，这些进程（线程）都将无法向前推进。</p>
-<!-- more -->
-<p>怎么理解死锁呢？</p>
-<p>先看生活中的一个实例，2个人一起吃饭但是只有一双筷子，2人轮流吃（当每个人同时拥有2只筷子才能吃，甲吃完，已在吃）。<br>
-某一个时候，甲拿了左筷子，已拿了右筷子，2个人都同时占用一个资源，等待另一个资源，这个时候甲在等待乙吃完并释放它占有的筷子，同理，乙也在等待甲吃完并释放它占有的筷子，这样就陷入了一个死循环，谁也无法继续吃饭。</p>
-<p>计算机中也是如此，如计算机系统中只有一台打印机和一台输入设备，进程P1正占用输入设备，同时又提出使用打印机的请求，但此时打印机正被进程P2 所占用，而P2在未释放打印机之前，又提出请求使用正被P1占用着的输入设备。<br>
-这样两个进程相互无休止地等待下去，均无法继续执行，此时两个进程陷入死锁状态。</p>
-<p>关于死锁的一些结论：</p>
-<ol>
-    <li>参与死锁的进程数至少为两个</li>
-    <li>参与死锁的所有进程均等待资源</li>
-    <li>参与死锁的进程至少有两个已经占有资源</li>
-    <li>死锁进程是系统中当前进程集合的一个子集</li>
-    <li>死锁会浪费大量系统资源，甚至导致系统崩溃</li>
-</ol>
-<h1 id="死锁与饥饿">死锁与饥饿</h1>
-<p>饥饿（Starvation）指一个进程一直得不到资源。<br>
-死锁和饥饿都是由于进程竞争资源而引起的。饥饿一般不占有资源，死锁进程一定占有资源。</p>
-<h1 id="资源的类型">资源的类型</h1>
-<blockquote>
-<p>https://zhuanlan.zhihu.com/p/308300980</p>
-</blockquote>
 ]]></content>
     </entry>
 </feed>
