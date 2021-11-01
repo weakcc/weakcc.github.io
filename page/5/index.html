@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1635747149204">
+<link rel="shortcut icon" href="/favicon.ico?v=1635753445891">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -171,7 +171,7 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">42</span>
+        <span class="site-item-stat-count">43</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
@@ -214,6 +214,85 @@
         <div class="section-box pisces">
           <section class="section bg-color posts-expand slide-down-in">
             
+  <article class="post-list-box  post box-shadow-wrapper">
+    <div class="article-wrapper bg-color">
+      <section class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="http://weakcc.github.io/post/redis-gai-lan/">
+      Redis 概览
+    </a>
+  </h1>
+  <div class="post-meta">
+    
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span class="language" data-lan="publish">发布于</span>
+      <span class="publish-time" data-t="2020-08-27 08:55:29">2020-08-27</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
+    
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show language" data-lan="category-in">分类于</span>
+      
+      
+      <a href="http://weakcc.github.io/tag/tayIXOYIs/">
+        <span>Redis</span>
+      </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>0<span class="language" data-lan="minute">分钟</span></span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>0<span class="pc-show language" data-lan="words">字数</span></span>
+    </span>
+    
+  </div>
+</section>
+      <div class="post-body">
+        
+        
+          
+            <!-- 没有手动摘要切开启了自动摘要,则根据配置筛除摘要内容 -->
+            
+            
+              
+              
+              
+            
+              
+              
+            
+              <p><figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1598489746128.png" alt="" loading="lazy"></figure>
+
+                
+              <p>
+            
+          
+        
+        
+        <div class="post-button text-center">
+          <a class="btn language" data-lan="read-more" href="http://weakcc.github.io/post/redis-gai-lan/" rel="contents">
+            阅读全文 »
+          </a>
+        </div>
+        
+      </div>
+      
+        <footer class="post-footer">
+          <div class="post-eof"></div>
+        </footer>
+      
+    </div>
+  </article>
+
   <article class="post-list-box  post box-shadow-wrapper">
     <div class="article-wrapper bg-color">
       <section class="post-header">
@@ -1172,6 +1251,26 @@
     <div class="result" id="result">
       
       <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/php-sui-ji-zi-fu-chuan/"" data-c="
+          &lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;function getRandChar($length = 6)
+{
+    $charStr = &#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz&#39;;
+
+    $str = &#39;&#39;;
+    $max = strlen($charStr);
+    for ($i = 0; $i &amp;lt; $length; $i++) {
+        $str .= $charStr[rand(0, $max - 1)];
+    }
+
+    return $str;
+}
+
+var_dump(getRandChar(5));
+&lt;/code&gt;&lt;/pre&gt;
+">PHP 随机字符串</a>
+      </div>
+      
+      <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/php-wu-xian-ji-fen-lei/"" data-c="
           &lt;h1 id=&#34;递归&#34;&gt;递归&lt;/h1&gt;
 &lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;&amp;lt;?php
@@ -1751,6 +1850,293 @@ driver.find_element_by_id(&#39;xxx&#39;).send_keys(Keys.CONTROL, &#39;v&#39;)
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
+&lt;h1 id=&#34;设置元素等待&#34;&gt;设置元素等待&lt;/h1&gt;
+&lt;p&gt;很多页面都使用 &lt;code&gt;ajax&lt;/code&gt; 技术，页面的元素不是同时被加载出来的，为了防止定位这些尚在加载的元素报错，可以设置元素等来增加脚本的稳定性。&lt;code&gt;webdriver&lt;/code&gt; 中的等待分为 &lt;strong&gt;显式等待&lt;/strong&gt; 和 &lt;strong&gt;隐式等待&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;显式等待&#34;&gt;显式等待&lt;/h2&gt;
+&lt;p&gt;显式等待：设置一个超时时间，每个一段时间就去检测一次该元素是否存在，如果存在则执行后续内容，如果超过最大时间（超时时间）则抛出超时异常（&lt;code&gt;TimeoutException&lt;/code&gt;）。显示等待需要使用 &lt;code&gt;WebDriverWait&lt;/code&gt;，同时配合 &lt;code&gt;until&lt;/code&gt; 或 &lt;code&gt;not until&lt;/code&gt; 。下面详细讲解一下。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;WebDriverWait(driver, timeout, poll_frequency=0.5, ignored_exceptions=None)&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;driver&lt;/code&gt;：浏览器驱动&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;timeout&lt;/code&gt;：超时时间，单位秒&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;poll_frequency&lt;/code&gt;：每次检测的间隔时间，默认为0.5秒&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ignored_exceptions&lt;/code&gt;：指定忽略的异常，如果在调用 &lt;code&gt;until&lt;/code&gt; 或 &lt;code&gt;until_not&lt;/code&gt; 的过程中抛出指定忽略的异常，则不中断代码，默认忽略的只有 &lt;code&gt;NoSuchElementException&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;until(method, message=&#39; &#39;) until_not(method, message=&#39; &#39;)&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;method&lt;/code&gt;：指定预期条件的判断方法，在等待期间，每隔一段时间调用该方法，判断元素是否存在，直到元素出现。&lt;code&gt;until_not&lt;/code&gt; 正好相反，当元素消失或指定条件不成立，则继续执行后续代码&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;message&lt;/code&gt;: 如果超时，抛出 &lt;code&gt;TimeoutException&lt;/code&gt;，并显示 &lt;code&gt;message&lt;/code&gt; 中的内容&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;method&lt;/code&gt; 中的预期条件判断方法是由 &lt;code&gt;expected_conditions&lt;/code&gt; 提供，下面列举常用方法。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;方法&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;title_is(&#39;百度一下&#39;)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;判断当前页面的 title 是否等于预期&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;title_contains(&#39;百度&#39;)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;判断当前页面的 title 是否包含预期字符串&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;presence_of_element_located(locator)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;presence_of_element_located(locator)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;visibility_of_element_located(locator)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;判断元素是否可见，可见代表元素非隐藏，并且元素的宽和高都不等于0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;visibility_of(element)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;跟上一个方法作用相同，但传入参数为 element&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;text_to_be_present_in_element(locator , &#39;百度&#39;)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;判断元素中的 text 是否包含了预期的字符串&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;text_to_be_present_in_element_value(locator , &#39;某值&#39;)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;判断元素中的 value 属性是否包含了预期的字符串&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;frame_to_be_available_and_switch_to_it(locator)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;判断该 frame 是否可以 switch 进去，True 则 switch 进去，反之 False&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;invisibility_of_element_located(locator)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;判断元素中是否不存在于 dom 树或不可见&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;element_to_be_clickable(locator)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;判断元素中是否可见并且是可点击的&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;staleness_of(element)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;等待元素从 dom 树中移除&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;element_to_be_selected(element)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;判断元素是否被选中,一般用在下拉列表&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;element_selection_state_to_be(element, True)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;判断元素的选中状态是否符合预期，参数 element，第二个参数为 True/False&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;element_located_selection_state_to_be(locator, True)&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;跟上一个方法作用相同，但传入参数为 locator&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;alert_is_present()&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;判断页面上是否存在 alert&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;🌰&lt;/p&gt;
+&lt;h3 id=&#34;普通定位&#34;&gt;普通定位&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium.webdriver.common.by import By
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+locator = (By.ID, &#39;kw&#39;)
+element = driver.find_element_by_id(&#39;kw&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;显示定位&#34;&gt;显示定位&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
+driver = webdriver.Chrome()
+element = WebDriverWait(driver, 5, 0.5).until(
+            EC.presence_of_element_located((By.ID, &#39;kw&#39;)),
+                                           message=&#39;超时啦!&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;隐式等待&#34;&gt;隐式等待&lt;/h2&gt;
+&lt;p&gt;隐式等待也是指定一个超时时间，如果超出这个时间指定元素还没有被加载出来，就会抛出 &lt;code&gt;NoSuchElementException&lt;/code&gt; 异常。 除了抛出的异常不同外，还有一点，隐式等待是全局性的，即运行过程中，如果元素可以定位到，它不会影响代码运行，但如果定位不到，则它会以轮询的方式不断地访问元素直到元素被找到，若超过指定时间，则抛出异常。&lt;/p&gt;
+&lt;p&gt;使用 &lt;code&gt;implicitly_wait()&lt;/code&gt; 来实现隐式等待，使用难度相对于显式等待要简单很多。 示例：打开个人主页，设置一个隐式等待时间 5s，通过 &lt;code&gt;id&lt;/code&gt; 定位一个不存在的元素，最后打印 抛出的异常 与 运行时间。&lt;/p&gt;
+&lt;p&gt;🌰&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver
+from time import time
+
+driver = webdriver.Chrome()
+driver.get(&#39;https://blog.csdn.net/qq_43965708&#39;)
+
+start = time()
+driver.implicitly_wait(5)
+try:
+    driver.find_element_by_id(&#39;kw&#39;)
+except Exception as e:
+    print(e)
+    print(f&#39;耗时：{time()-start}&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;代码运行到 driver.find_element_by_id(&#39;kw&#39;) 这句之后触发隐式等待，在轮询检查 5s 后仍然没有定位到元素，抛出异常。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;强制等待&#34;&gt;强制等待&lt;/h2&gt;
+&lt;p&gt;使用 &lt;code&gt;time.sleep()&lt;/code&gt; 强制等待，设置固定的休眠时间，对于代码的运行效率会有影响。以上面的例子作为参照，将 隐式等待 改为 强制等待。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver
+from time import time, sleep
+
+driver = webdriver.Chrome()
+driver.get(&#39;https://blog.csdn.net/qq_43965708&#39;)
+
+start = time()
+sleep(5)
+try:
+    driver.find_element_by_id(&#39;kw&#39;)
+except Exception as e:
+    print(e)
+    print(f&#39;耗时：{time()-start}&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;值得一提的是，对于定位不到元素的时候，从耗时方面隐式等待和强制等待没什么区别。但如果元素经过 2s 后被加载出来，这时隐式等待就会继续执行下面的代码，但 sleep还要继续等待 3s。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&#34;定位一组元素&#34;&gt;定位一组元素&lt;/h1&gt;
+&lt;p&gt;上篇讲述了定位一个元素的 8 种方法，定位一组元素使用的方法只需要将 &lt;code&gt;element&lt;/code&gt; 改为 &lt;code&gt;elements&lt;/code&gt; 即可，它的使用场景一般是为了批量操作元素。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;find_elements_by_id()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;find_elements_by_name()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;find_elements_by_class_name()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;find_elements_by_tag_name()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;find_elements_by_xpath()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;find_elements_by_css_selector()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;find_elements_by_link_text()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;find_elements_by_partial_link_text()&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;🌰&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver
+
+# 设置无头浏览器
+option = webdriver.ChromeOptions()
+option.add_argument(&#39;--headless&#39;)
+
+driver = webdriver.Chrome(options=option)
+driver.get(&#39;https://blog.csdn.net/&#39;)
+
+p_list = driver.find_elements_by_xpath(&amp;quot;//p[@class=&#39;name&#39;]&amp;quot;)
+name = [p.text for p in p_list]
+print(name)
+&#39;&#39;&#39;
+[&#39;花生&#39;, &#39;编程&#39;, &#39;卓&#39;]
+&#39;&#39;&#39;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;切换操作&#34;&gt;切换操作&lt;/h1&gt;
+&lt;h2 id=&#34;窗口切换&#34;&gt;窗口切换&lt;/h2&gt;
+&lt;p&gt;在 &lt;code&gt;selenium&lt;/code&gt; 操作页面的时候，可能会因为点击某个链接而跳转到一个新的页面（打开了一个新标签页），这时候 &lt;code&gt;selenium&lt;/code&gt; 实际还是处于上一个页面的，需要我们进行切换才能够定位最新页面上的元素。&lt;/p&gt;
+&lt;p&gt;窗口切换需要使用 &lt;code&gt;switch_to.windows()&lt;/code&gt; 方法。&lt;/p&gt;
+&lt;p&gt;🌰&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver
+
+handles = []
+driver = webdriver.Chrome()
+driver.get(&#39;https://blog.csdn.net/&#39;)
+# 设置隐式等待
+driver.implicitly_wait(3)
+# 获取当前窗口的句柄
+handles.append(driver.current_window_handle)
+# 点击 python，进入分类页面
+driver.find_element_by_xpath(&#39;//*[@id=&amp;quot;mainContent&amp;quot;]/aside/div[1]/div&#39;).click()
+# 获取当前窗口的句柄
+handles.append(driver.current_window_handle)
+
+print(handles)
+# 获取当前所有窗口的句柄
+print(driver.window_handles)
+&#39;&#39;&#39;
+[&#39;CDwindow-D032106A36A4D596E67B6A8D9CC7DE6B&#39;, &#39;CDwindow-D032106A36A4D596E67B6A8D9CC7DE6B&#39;]
+[&#39;CDwindow-D032106A36A4D596E67B6A8D9CC7DE6B&#39;, &#39;CDwindow-DC9A05D1F67FE0AF0CEC441EB9FBD316&#39;]
+&#39;&#39;&#39;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;可以看到第一个列表 &lt;code&gt;handle&lt;/code&gt; 是相同的，说明 &lt;code&gt;selenium&lt;/code&gt; 实际操作的还是 CSDN首页 ，并未切换到新页面。 下面使用 &lt;code&gt;switch_to.windows()&lt;/code&gt; 进行切换。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver
+
+handles = []
+driver = webdriver.Chrome()
+driver.get(&#39;https://blog.csdn.net/&#39;)
+# 设置隐式等待
+driver.implicitly_wait(3)
+# 获取当前窗口的句柄
+handles.append(driver.current_window_handle)
+# 点击 python，进入分类页面
+driver.find_element_by_xpath(&#39;//*[@id=&amp;quot;mainContent&amp;quot;]/aside/div[1]/div&#39;).click()
+# 切换窗口
+driver.switch_to.window(driver.window_handles[-1])
+# 获取当前窗口的句柄
+handles.append(driver.current_window_handle)
+
+print(handles)
+print(driver.window_handles)
+&#39;&#39;&#39;
+[&#39;CDwindow-9329E73908B77E0AA52FE5EEB1AA3147&#39;, &#39;CDwindow-327C23C8937C00202FF541E843C37101&#39;]
+[&#39;CDwindow-9329E73908B77E0AA52FE5EEB1AA3147&#39;, &#39;CDwindow-327C23C8937C00202FF541E843C37101&#39;]
+&#39;&#39;&#39;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;上面代码在点击跳转后，使用 &lt;code&gt;switch_to&lt;/code&gt; 切换窗口，&lt;code&gt;window_handles&lt;/code&gt; 返回的 &lt;code&gt;handle&lt;/code&gt; 列表是按照页面出现时间进行排序的，最新打开的页面肯定是最后一个。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;那如果打开的窗口有多个，如何跳转到之前打开的窗口，如果确实有这个需求，那么打开窗口是就需要记录每一个窗口的 &lt;code&gt;key&lt;/code&gt;(别名) 与 &lt;code&gt;value&lt;/code&gt;(&lt;code&gt;handle&lt;/code&gt;)，保存到字典中，后续根据 &lt;code&gt;key&lt;/code&gt; 来取 &lt;code&gt;handle&lt;/code&gt; 。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;表单切换&#34;&gt;表单切换&lt;/h2&gt;
+&lt;p&gt;很多页面也会用带 &lt;code&gt;frame/iframe&lt;/code&gt; 表单嵌套，对于这种内嵌的页面 &lt;code&gt;selenium&lt;/code&gt; 是无法直接定位的，需要使用 &lt;code&gt;switch_to.frame()&lt;/code&gt; 方法将当前操作的对象切换成 &lt;code&gt;frame/iframe&lt;/code&gt; 内嵌的页面。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;switch_to.frame()&lt;/code&gt; 默认可以用的 &lt;code&gt;id&lt;/code&gt; 或 &lt;code&gt;name&lt;/code&gt; 属性直接定位，但如果 &lt;code&gt;iframe&lt;/code&gt; 没有 &lt;code&gt;id&lt;/code&gt; 或 &lt;code&gt;name&lt;/code&gt; ，这时就需要使用 &lt;code&gt;xpath&lt;/code&gt; 进行定位。&lt;/p&gt;
+&lt;p&gt;🌰&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;html lang=&amp;quot;en&amp;quot;&amp;gt;
+
+&amp;lt;head&amp;gt;
+    &amp;lt;meta charset=&amp;quot;UTF-8&amp;quot;&amp;gt;
+    &amp;lt;meta http-equiv=&amp;quot;X-UA-Compatible&amp;quot; content=&amp;quot;IE=edge&amp;quot;&amp;gt;
+    &amp;lt;meta name=&amp;quot;viewport&amp;quot; content=&amp;quot;width=device-width, initial-scale=1.0&amp;quot;&amp;gt;
+    &amp;lt;title&amp;gt;Document&amp;lt;/title&amp;gt;
+    &amp;lt;style&amp;gt;
+        div p {
+            color: #red;
+            animation: change 2s infinite;
+        }
+        @keyframes change {
+            from {
+                color: red;
+            }
+            to {
+                color: blue;
+            }
+        }
+    &amp;lt;/style&amp;gt;
+&amp;lt;/head&amp;gt;
+
+&amp;lt;body&amp;gt;
+    &amp;lt;div&amp;gt;
+        &amp;lt;p&amp;gt;简单的栗子&amp;lt;/p&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;iframe src=&amp;quot;https://blog.csdn.net/qq_43965708&amp;quot; width=&amp;quot;400&amp;quot; height=&amp;quot;200&amp;quot;&amp;gt;&amp;lt;/iframe&amp;gt;
+&amp;lt;!--     &amp;lt;iframe id=&amp;quot;CSDN_info&amp;quot; name=&amp;quot;lizi&amp;quot; src=&amp;quot;https://blog.csdn.net/qq_43965708&amp;quot; width=&amp;quot;400&amp;quot; height=&amp;quot;200&amp;quot;&amp;gt;&amp;lt;/iframe&amp;gt; --&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;http://weakcc.github.io/post-images/1635753252992.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver
+from pathlib import Path
+
+
+driver = webdriver.Chrome()
+# 读取本地html文件
+driver.get(&#39;file:///&#39; + str(Path(Path.cwd(), &#39;iframe测试.html&#39;)))
+
+# 1.通过id定位
+driver.switch_to.frame(&#39;CSDN_info&#39;)
+# 2.通过name定位
+# driver.switch_to.frame(&#39;lizi&#39;)
+# 3.通过xpath定位
+# iframe_label = driver.find_element_by_xpath(&#39;/html/body/iframe&#39;)
+# driver.switch_to.frame(iframe_label)
+
+driver.find_element_by_xpath(&#39;//*[@id=&amp;quot;csdn-toolbar&amp;quot;]/div/div/div[1]/div/a/img&#39;).click()
+&lt;/code&gt;&lt;/pre&gt;
 &lt;blockquote&gt;
 &lt;p&gt;https://juejin.cn/post/7022925905395875847&lt;/p&gt;
 &lt;/blockquote&gt;

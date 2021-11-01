@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-11-01T06:12:35.812Z</updated>
+    <updated>2021-11-01T07:57:46.128Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,29 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[PHP 随机字符串]]></title>
+        <id>http://weakcc.github.io/post/php-sui-ji-zi-fu-chuan/</id>
+        <link href="http://weakcc.github.io/post/php-sui-ji-zi-fu-chuan/">
+        </link>
+        <updated>2021-11-01T06:12:51.000Z</updated>
+        <content type="html"><![CDATA[<pre><code class="language-php">function getRandChar($length = 6)
+{
+    $charStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
+
+    $str = '';
+    $max = strlen($charStr);
+    for ($i = 0; $i &lt; $length; $i++) {
+        $str .= $charStr[rand(0, $max - 1)];
+    }
+
+    return $str;
+}
+
+var_dump(getRandChar(5));
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[PHP 无限极分类]]></title>
         <id>http://weakcc.github.io/post/php-wu-xian-ji-fen-lei/</id>
@@ -644,6 +667,293 @@ driver.find_element_by_id('xxx').send_keys(Keys.CONTROL, 'v')
 </tr>
 </tbody>
 </table>
+<h1 id="设置元素等待">设置元素等待</h1>
+<p>很多页面都使用 <code>ajax</code> 技术，页面的元素不是同时被加载出来的，为了防止定位这些尚在加载的元素报错，可以设置元素等来增加脚本的稳定性。<code>webdriver</code> 中的等待分为 <strong>显式等待</strong> 和 <strong>隐式等待</strong>。</p>
+<h2 id="显式等待">显式等待</h2>
+<p>显式等待：设置一个超时时间，每个一段时间就去检测一次该元素是否存在，如果存在则执行后续内容，如果超过最大时间（超时时间）则抛出超时异常（<code>TimeoutException</code>）。显示等待需要使用 <code>WebDriverWait</code>，同时配合 <code>until</code> 或 <code>not until</code> 。下面详细讲解一下。</p>
+<p><code>WebDriverWait(driver, timeout, poll_frequency=0.5, ignored_exceptions=None)</code></p>
+<ul>
+<li><code>driver</code>：浏览器驱动</li>
+<li><code>timeout</code>：超时时间，单位秒</li>
+<li><code>poll_frequency</code>：每次检测的间隔时间，默认为0.5秒</li>
+<li><code>ignored_exceptions</code>：指定忽略的异常，如果在调用 <code>until</code> 或 <code>until_not</code> 的过程中抛出指定忽略的异常，则不中断代码，默认忽略的只有 <code>NoSuchElementException</code>。</li>
+</ul>
+<p><code>until(method, message=' ') until_not(method, message=' ')</code></p>
+<ul>
+<li><code>method</code>：指定预期条件的判断方法，在等待期间，每隔一段时间调用该方法，判断元素是否存在，直到元素出现。<code>until_not</code> 正好相反，当元素消失或指定条件不成立，则继续执行后续代码</li>
+<li><code>message</code>: 如果超时，抛出 <code>TimeoutException</code>，并显示 <code>message</code> 中的内容</li>
+</ul>
+<p><code>method</code> 中的预期条件判断方法是由 <code>expected_conditions</code> 提供，下面列举常用方法。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">方法</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">title_is('百度一下')</td>
+<td style="text-align:center">判断当前页面的 title 是否等于预期</td>
+</tr>
+<tr>
+<td style="text-align:center">title_contains('百度')</td>
+<td style="text-align:center">判断当前页面的 title 是否包含预期字符串</td>
+</tr>
+<tr>
+<td style="text-align:center">presence_of_element_located(locator)</td>
+<td style="text-align:center">presence_of_element_located(locator)</td>
+</tr>
+<tr>
+<td style="text-align:center">visibility_of_element_located(locator)</td>
+<td style="text-align:center">判断元素是否可见，可见代表元素非隐藏，并且元素的宽和高都不等于0</td>
+</tr>
+<tr>
+<td style="text-align:center">visibility_of(element)</td>
+<td style="text-align:center">跟上一个方法作用相同，但传入参数为 element</td>
+</tr>
+<tr>
+<td style="text-align:center">text_to_be_present_in_element(locator , '百度')</td>
+<td style="text-align:center">判断元素中的 text 是否包含了预期的字符串</td>
+</tr>
+<tr>
+<td style="text-align:center">text_to_be_present_in_element_value(locator , '某值')</td>
+<td style="text-align:center">判断元素中的 value 属性是否包含了预期的字符串</td>
+</tr>
+<tr>
+<td style="text-align:center">frame_to_be_available_and_switch_to_it(locator)</td>
+<td style="text-align:center">判断该 frame 是否可以 switch 进去，True 则 switch 进去，反之 False</td>
+</tr>
+<tr>
+<td style="text-align:center">invisibility_of_element_located(locator)</td>
+<td style="text-align:center">判断元素中是否不存在于 dom 树或不可见</td>
+</tr>
+<tr>
+<td style="text-align:center">element_to_be_clickable(locator)</td>
+<td style="text-align:center">判断元素中是否可见并且是可点击的</td>
+</tr>
+<tr>
+<td style="text-align:center">staleness_of(element)</td>
+<td style="text-align:center">等待元素从 dom 树中移除</td>
+</tr>
+<tr>
+<td style="text-align:center">element_to_be_selected(element)</td>
+<td style="text-align:center">判断元素是否被选中,一般用在下拉列表</td>
+</tr>
+<tr>
+<td style="text-align:center">element_selection_state_to_be(element, True)</td>
+<td style="text-align:center">判断元素的选中状态是否符合预期，参数 element，第二个参数为 True/False</td>
+</tr>
+<tr>
+<td style="text-align:center">element_located_selection_state_to_be(locator, True)</td>
+<td style="text-align:center">跟上一个方法作用相同，但传入参数为 locator</td>
+</tr>
+<tr>
+<td style="text-align:center">alert_is_present()</td>
+<td style="text-align:center">判断页面上是否存在 alert</td>
+</tr>
+</tbody>
+</table>
+<p>🌰</p>
+<h3 id="普通定位">普通定位</h3>
+<pre><code class="language-python">from selenium.webdriver.common.by import By
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+locator = (By.ID, 'kw')
+element = driver.find_element_by_id('kw')
+</code></pre>
+<h3 id="显示定位">显示定位</h3>
+<pre><code class="language-python">from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
+driver = webdriver.Chrome()
+element = WebDriverWait(driver, 5, 0.5).until(
+            EC.presence_of_element_located((By.ID, 'kw')),
+                                           message='超时啦!')
+</code></pre>
+<h2 id="隐式等待">隐式等待</h2>
+<p>隐式等待也是指定一个超时时间，如果超出这个时间指定元素还没有被加载出来，就会抛出 <code>NoSuchElementException</code> 异常。 除了抛出的异常不同外，还有一点，隐式等待是全局性的，即运行过程中，如果元素可以定位到，它不会影响代码运行，但如果定位不到，则它会以轮询的方式不断地访问元素直到元素被找到，若超过指定时间，则抛出异常。</p>
+<p>使用 <code>implicitly_wait()</code> 来实现隐式等待，使用难度相对于显式等待要简单很多。 示例：打开个人主页，设置一个隐式等待时间 5s，通过 <code>id</code> 定位一个不存在的元素，最后打印 抛出的异常 与 运行时间。</p>
+<p>🌰</p>
+<pre><code class="language-python">from selenium import webdriver
+from time import time
+
+driver = webdriver.Chrome()
+driver.get('https://blog.csdn.net/qq_43965708')
+
+start = time()
+driver.implicitly_wait(5)
+try:
+    driver.find_element_by_id('kw')
+except Exception as e:
+    print(e)
+    print(f'耗时：{time()-start}')
+</code></pre>
+<blockquote>
+<p>代码运行到 driver.find_element_by_id('kw') 这句之后触发隐式等待，在轮询检查 5s 后仍然没有定位到元素，抛出异常。</p>
+</blockquote>
+<h2 id="强制等待">强制等待</h2>
+<p>使用 <code>time.sleep()</code> 强制等待，设置固定的休眠时间，对于代码的运行效率会有影响。以上面的例子作为参照，将 隐式等待 改为 强制等待。</p>
+<pre><code class="language-python">from selenium import webdriver
+from time import time, sleep
+
+driver = webdriver.Chrome()
+driver.get('https://blog.csdn.net/qq_43965708')
+
+start = time()
+sleep(5)
+try:
+    driver.find_element_by_id('kw')
+except Exception as e:
+    print(e)
+    print(f'耗时：{time()-start}')
+</code></pre>
+<blockquote>
+<p>值得一提的是，对于定位不到元素的时候，从耗时方面隐式等待和强制等待没什么区别。但如果元素经过 2s 后被加载出来，这时隐式等待就会继续执行下面的代码，但 sleep还要继续等待 3s。</p>
+</blockquote>
+<h1 id="定位一组元素">定位一组元素</h1>
+<p>上篇讲述了定位一个元素的 8 种方法，定位一组元素使用的方法只需要将 <code>element</code> 改为 <code>elements</code> 即可，它的使用场景一般是为了批量操作元素。</p>
+<ul>
+<li><code>find_elements_by_id()</code></li>
+<li><code>find_elements_by_name()</code></li>
+<li><code>find_elements_by_class_name()</code></li>
+<li><code>find_elements_by_tag_name()</code></li>
+<li><code>find_elements_by_xpath()</code></li>
+<li><code>find_elements_by_css_selector()</code></li>
+<li><code>find_elements_by_link_text()</code></li>
+<li><code>find_elements_by_partial_link_text()</code></li>
+</ul>
+<p>🌰</p>
+<pre><code class="language-python">from selenium import webdriver
+
+# 设置无头浏览器
+option = webdriver.ChromeOptions()
+option.add_argument('--headless')
+
+driver = webdriver.Chrome(options=option)
+driver.get('https://blog.csdn.net/')
+
+p_list = driver.find_elements_by_xpath(&quot;//p[@class='name']&quot;)
+name = [p.text for p in p_list]
+print(name)
+'''
+['花生', '编程', '卓']
+'''
+</code></pre>
+<h1 id="切换操作">切换操作</h1>
+<h2 id="窗口切换">窗口切换</h2>
+<p>在 <code>selenium</code> 操作页面的时候，可能会因为点击某个链接而跳转到一个新的页面（打开了一个新标签页），这时候 <code>selenium</code> 实际还是处于上一个页面的，需要我们进行切换才能够定位最新页面上的元素。</p>
+<p>窗口切换需要使用 <code>switch_to.windows()</code> 方法。</p>
+<p>🌰</p>
+<pre><code class="language-python">from selenium import webdriver
+
+handles = []
+driver = webdriver.Chrome()
+driver.get('https://blog.csdn.net/')
+# 设置隐式等待
+driver.implicitly_wait(3)
+# 获取当前窗口的句柄
+handles.append(driver.current_window_handle)
+# 点击 python，进入分类页面
+driver.find_element_by_xpath('//*[@id=&quot;mainContent&quot;]/aside/div[1]/div').click()
+# 获取当前窗口的句柄
+handles.append(driver.current_window_handle)
+
+print(handles)
+# 获取当前所有窗口的句柄
+print(driver.window_handles)
+'''
+['CDwindow-D032106A36A4D596E67B6A8D9CC7DE6B', 'CDwindow-D032106A36A4D596E67B6A8D9CC7DE6B']
+['CDwindow-D032106A36A4D596E67B6A8D9CC7DE6B', 'CDwindow-DC9A05D1F67FE0AF0CEC441EB9FBD316']
+'''
+</code></pre>
+<p>可以看到第一个列表 <code>handle</code> 是相同的，说明 <code>selenium</code> 实际操作的还是 CSDN首页 ，并未切换到新页面。 下面使用 <code>switch_to.windows()</code> 进行切换。</p>
+<pre><code class="language-python">from selenium import webdriver
+
+handles = []
+driver = webdriver.Chrome()
+driver.get('https://blog.csdn.net/')
+# 设置隐式等待
+driver.implicitly_wait(3)
+# 获取当前窗口的句柄
+handles.append(driver.current_window_handle)
+# 点击 python，进入分类页面
+driver.find_element_by_xpath('//*[@id=&quot;mainContent&quot;]/aside/div[1]/div').click()
+# 切换窗口
+driver.switch_to.window(driver.window_handles[-1])
+# 获取当前窗口的句柄
+handles.append(driver.current_window_handle)
+
+print(handles)
+print(driver.window_handles)
+'''
+['CDwindow-9329E73908B77E0AA52FE5EEB1AA3147', 'CDwindow-327C23C8937C00202FF541E843C37101']
+['CDwindow-9329E73908B77E0AA52FE5EEB1AA3147', 'CDwindow-327C23C8937C00202FF541E843C37101']
+'''
+</code></pre>
+<p>上面代码在点击跳转后，使用 <code>switch_to</code> 切换窗口，<code>window_handles</code> 返回的 <code>handle</code> 列表是按照页面出现时间进行排序的，最新打开的页面肯定是最后一个。</p>
+<blockquote>
+<p>那如果打开的窗口有多个，如何跳转到之前打开的窗口，如果确实有这个需求，那么打开窗口是就需要记录每一个窗口的 <code>key</code>(别名) 与 <code>value</code>(<code>handle</code>)，保存到字典中，后续根据 <code>key</code> 来取 <code>handle</code> 。</p>
+</blockquote>
+<h2 id="表单切换">表单切换</h2>
+<p>很多页面也会用带 <code>frame/iframe</code> 表单嵌套，对于这种内嵌的页面 <code>selenium</code> 是无法直接定位的，需要使用 <code>switch_to.frame()</code> 方法将当前操作的对象切换成 <code>frame/iframe</code> 内嵌的页面。</p>
+<p><code>switch_to.frame()</code> 默认可以用的 <code>id</code> 或 <code>name</code> 属性直接定位，但如果 <code>iframe</code> 没有 <code>id</code> 或 <code>name</code> ，这时就需要使用 <code>xpath</code> 进行定位。</p>
+<p>🌰</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+    &lt;style&gt;
+        div p {
+            color: #red;
+            animation: change 2s infinite;
+        }
+        @keyframes change {
+            from {
+                color: red;
+            }
+            to {
+                color: blue;
+            }
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+    &lt;div&gt;
+        &lt;p&gt;简单的栗子&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;iframe src=&quot;https://blog.csdn.net/qq_43965708&quot; width=&quot;400&quot; height=&quot;200&quot;&gt;&lt;/iframe&gt;
+&lt;!--     &lt;iframe id=&quot;CSDN_info&quot; name=&quot;lizi&quot; src=&quot;https://blog.csdn.net/qq_43965708&quot; width=&quot;400&quot; height=&quot;200&quot;&gt;&lt;/iframe&gt; --&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1635753252992.png" alt="" loading="lazy"></figure>
+<pre><code class="language-python">from selenium import webdriver
+from pathlib import Path
+
+
+driver = webdriver.Chrome()
+# 读取本地html文件
+driver.get('file:///' + str(Path(Path.cwd(), 'iframe测试.html')))
+
+# 1.通过id定位
+driver.switch_to.frame('CSDN_info')
+# 2.通过name定位
+# driver.switch_to.frame('lizi')
+# 3.通过xpath定位
+# iframe_label = driver.find_element_by_xpath('/html/body/iframe')
+# driver.switch_to.frame(iframe_label)
+
+driver.find_element_by_xpath('//*[@id=&quot;csdn-toolbar&quot;]/div/div/div[1]/div/a/img').click()
+</code></pre>
 <blockquote>
 <p>https://juejin.cn/post/7022925905395875847</p>
 </blockquote>
@@ -782,36 +1092,6 @@ exit;
     fwrite($handle, $content);
     fclose($handle);
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[API 防篡改和防重放]]></title>
-        <id>http://weakcc.github.io/post/api-fang-cuan-gai-he-fang-chong-fang/</id>
-        <link href="http://weakcc.github.io/post/api-fang-cuan-gai-he-fang-chong-fang/">
-        </link>
-        <updated>2021-10-26T01:00:36.000Z</updated>
-        <summary type="html"><![CDATA[<h1 id="防篡改">防篡改</h1>
-<p>签名校验</p>
-]]></summary>
-        <content type="html"><![CDATA[<h1 id="防篡改">防篡改</h1>
-<p>签名校验</p>
-<!-- more -->
-<h1 id="防重防">防重防</h1>
-<h2 id="timestampnonce">timestamp+nonce</h2>
-<p>我们常用的防止重放的机制是使用 timestamp 和 nonce 来做的重放机制。</p>
-<!-- more -->
-<p>timestamp 用来表示请求的当前时间戳，这个时间戳当然要和服务器时间戳进行校正过的。我们预期正常请求带的 timestamp 参数会是不同的（预期是正常的人每秒至多只会做一个操作）。每个请求带的时间戳不能和当前时间超过一定规定的时间。比如 60s。这样，这个请求即使被截取了，你也只能在 60s 内进行重放攻击。过期失效。</p>
-<p>但是这样也是不够的，还有给攻击者 60s 的时间。所以我们就需要使用一个 nonce，随机数。</p>
-<p>nonce 是由客户端根据足够随机的情况生成的，比如 md5 (timestamp+rand (0, 1000)); 它就有一个要求，正常情况下，在短时间内（比如 60s）连续生成两个相同 nonce 的情况几乎为 0。</p>
-<h2 id="服务端">服务端</h2>
-<p>服务端第一次在接收到这个 nonce 的时候做下面行为：<br>
-1 去 redis 中查找是否有 key 为 nonce:{nonce} 的 string<br>
-2 如果没有，则创建这个 key，把这个 key 失效的时间和验证 timestamp 失效的时间一致，比如是 60s。<br>
-3 如果有，说明这个 key 在 60s 内已经被使用了，那么这个请求就可以判断为重放请求。</p>
-<blockquote>
-<p>https://www.jianshu.com/p/de9295087560<br>
-https://learnku.com/articles/4196/talk-about-the-anti-replay-mechanism-of-api</p>
-</blockquote>
 ]]></content>
     </entry>
 </feed>
