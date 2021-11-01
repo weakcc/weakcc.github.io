@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1635587466031">
+<link rel="shortcut icon" href="/favicon.ico?v=1635747149204">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -171,19 +171,19 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">41</span>
+        <span class="site-item-stat-count">42</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="">
-        <span class="site-item-stat-count">24</span>
+        <span class="site-item-stat-count">25</span>
         <span class="site-item-stat-name language" data-lan="category">分类</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="/tags/">
-        <span class="site-item-stat-count">24</span>
+        <span class="site-item-stat-count">25</span>
         <span class="site-item-stat-name language" data-lan="tag">标签</span>
       </a>
     </div>
@@ -222,6 +222,14 @@
           <small class="language" data-lan="tag">标签</small>
         </h2>
       </div>
+      
+      
+      
+      
+      
+      
+      
+      
       
       
       
@@ -1228,6 +1236,173 @@
       <hr>
     </div>
     <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/php-wu-xian-ji-fen-lei/"" data-c="
+          &lt;h1 id=&#34;递归&#34;&gt;递归&lt;/h1&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;&amp;lt;?php
+
+$array = [
+    [&#39;id&#39; =&amp;gt; 1, &#39;parent_id&#39; =&amp;gt; 0, &#39;name&#39; =&amp;gt; &#39;河北省&#39;],
+    [&#39;id&#39; =&amp;gt; 2, &#39;parent_id&#39; =&amp;gt; 0, &#39;name&#39; =&amp;gt; &#39;北京市&#39;],
+    [&#39;id&#39; =&amp;gt; 3, &#39;parent_id&#39; =&amp;gt; 1, &#39;name&#39; =&amp;gt; &#39;邯郸市&#39;],
+    [&#39;id&#39; =&amp;gt; 4, &#39;parent_id&#39; =&amp;gt; 2, &#39;name&#39; =&amp;gt; &#39;朝阳区&#39;],
+    [&#39;id&#39; =&amp;gt; 5, &#39;parent_id&#39; =&amp;gt; 2, &#39;name&#39; =&amp;gt; &#39;通州区&#39;],
+    [&#39;id&#39; =&amp;gt; 6, &#39;parent_id&#39; =&amp;gt; 4, &#39;name&#39; =&amp;gt; &#39;望京&#39;],
+    [&#39;id&#39; =&amp;gt; 7, &#39;parent_id&#39; =&amp;gt; 4, &#39;name&#39; =&amp;gt; &#39;酒仙桥&#39;],
+    [&#39;id&#39; =&amp;gt; 8, &#39;parent_id&#39; =&amp;gt; 3, &#39;name&#39; =&amp;gt; &#39;永年区&#39;],
+    [&#39;id&#39; =&amp;gt; 9, &#39;parent_id&#39; =&amp;gt; 1, &#39;name&#39; =&amp;gt; &#39;武安市&#39;],
+];
+
+function getTree($array, $parent_id = 0, $level = 0)
+{
+    static $list = [];
+    foreach ($array as $key =&amp;gt; $value) {
+        if ($value[&#39;parent_id&#39;] == $parent_id) {
+            $value[&#39;level&#39;] = $level;
+            $list[] = $value;
+            unset($array[$key]);
+            getTree($array, $value[&#39;id&#39;], $level + 1);
+        }
+    }
+    return $list;
+}
+
+$list = getTree($array);
+
+foreach ($list as $value) {
+    echo str_repeat(&#39;--&#39;, $value[&#39;level&#39;]) . $value[&#39;name&#39;] . PHP_EOL;
+}
+/**
+河北省
+--邯郸市
+----永年区
+--武安市
+北京市
+--朝阳区
+----望京
+----酒仙桥
+--通州区
+ **/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!-- more --&gt;
+&lt;h1 id=&#34;引用&#34;&gt;引用&lt;/h1&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;&amp;lt;?php
+
+$array = [
+    1 =&amp;gt; [&#39;id&#39; =&amp;gt; 1, &#39;parent_id&#39; =&amp;gt; 0, &#39;name&#39; =&amp;gt; &#39;河北省&#39;],
+    2 =&amp;gt; [&#39;id&#39; =&amp;gt; 2, &#39;parent_id&#39; =&amp;gt; 0, &#39;name&#39; =&amp;gt; &#39;北京市&#39;],
+    3 =&amp;gt; [&#39;id&#39; =&amp;gt; 3, &#39;parent_id&#39; =&amp;gt; 1, &#39;name&#39; =&amp;gt; &#39;邯郸市&#39;],
+    4 =&amp;gt; [&#39;id&#39; =&amp;gt; 4, &#39;parent_id&#39; =&amp;gt; 2, &#39;name&#39; =&amp;gt; &#39;朝阳区&#39;],
+    5 =&amp;gt; [&#39;id&#39; =&amp;gt; 5, &#39;parent_id&#39; =&amp;gt; 2, &#39;name&#39; =&amp;gt; &#39;通州区&#39;],
+    6 =&amp;gt; [&#39;id&#39; =&amp;gt; 6, &#39;parent_id&#39; =&amp;gt; 4, &#39;name&#39; =&amp;gt; &#39;望京&#39;],
+    7 =&amp;gt; [&#39;id&#39; =&amp;gt; 7, &#39;parent_id&#39; =&amp;gt; 4, &#39;name&#39; =&amp;gt; &#39;酒仙桥&#39;],
+    8 =&amp;gt; [&#39;id&#39; =&amp;gt; 8, &#39;parent_id&#39; =&amp;gt; 3, &#39;name&#39; =&amp;gt; &#39;永年区&#39;],
+    9 =&amp;gt; [&#39;id&#39; =&amp;gt; 9, &#39;parent_id&#39; =&amp;gt; 1, &#39;name&#39; =&amp;gt; &#39;武安市&#39;],
+];
+
+function getTree($list)
+{
+    $tree = [];
+    foreach ($list as &amp;amp;$item) {
+        $parent_id = $item[&#39;parent_id&#39;];
+
+        if (isset($list[$parent_id]) &amp;amp;&amp;amp; !empty($list[$parent_id])) {
+            $list[$parent_id][&#39;list&#39;][] = &amp;amp;$item;
+        } else {
+            $tree[] = &amp;amp;$item;
+        }
+    }
+    unset($item);
+
+    return $tree;
+}
+
+$list = getTree($array);
+print_r($list);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;laravel-orm-模型&#34;&gt;Laravel ORM 模型&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;字段名称&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;描述&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;类型&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;id&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;自增长 ID&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;unsigned big int&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;name&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;类目名称&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;varchar&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;parent_id&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;父类目 ID&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;unsigned big int, null&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;is_directory&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;是否拥有子类目&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;tinyint&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;level&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;当前类目层级&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;unsigned int&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;path&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;该类目所有父类目 id&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;varchar&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;&amp;lt;?php
+namespace App\Services;
+
+use App\Models\Category;
+
+class CategoryService
+{
+    // 这是一个递归方法
+    // $parentId 参数代表要获取子类目的父类目 ID，null 代表获取所有根类目
+    // $allCategories 参数代表数据库中所有的类目，如果是 null 代表需要从数据库中查询
+    public function getCategoryTree($parentId = null, $allCategories = null)
+    {
+        if (is_null($allCategories)) {
+            // 从数据库中一次性取出所有类目
+            $allCategories = Category::all();
+        }
+
+        return $allCategories
+            // 从所有类目中挑选出父类目 ID 为 $parentId 的类目
+            -&amp;gt;where(&#39;parent_id&#39;, $parentId)
+            // 遍历这些类目，并用返回值构建一个新的集合
+            -&amp;gt;map(function (Category $category) use ($allCategories) {
+                $data = [&#39;id&#39; =&amp;gt; $category-&amp;gt;id, &#39;name&#39; =&amp;gt; $category-&amp;gt;name];
+                // 如果当前类目不是父类目，则直接返回
+                if (!$category-&amp;gt;is_directory) {
+                    return $data;
+                }
+                // 否则递归调用本方法，将返回值放入 children 字段中
+                $data[&#39;children&#39;] = $this-&amp;gt;getCategoryTree($category-&amp;gt;id, $allCategories);
+
+                return $data;
+            });
+    }
+}
+
+// 调用
+app(App\Services\CategoryService::class)-&amp;gt;getCategoryTree()
+&lt;/code&gt;&lt;/pre&gt;
+">PHP 无限极分类</a>
+      </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/selenium-cong-ru-men-dao-fang-qi/"" data-c="

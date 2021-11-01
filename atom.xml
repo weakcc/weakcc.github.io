@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-10-30T09:51:56.031Z</updated>
+    <updated>2021-11-01T06:12:35.812Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,223 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[PHP 无限极分类]]></title>
+        <id>http://weakcc.github.io/post/php-wu-xian-ji-fen-lei/</id>
+        <link href="http://weakcc.github.io/post/php-wu-xian-ji-fen-lei/">
+        </link>
+        <updated>2021-11-01T06:10:47.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="递归">递归</h1>
+<pre><code class="language-php">&lt;?php
+
+$array = [
+    ['id' =&gt; 1, 'parent_id' =&gt; 0, 'name' =&gt; '河北省'],
+    ['id' =&gt; 2, 'parent_id' =&gt; 0, 'name' =&gt; '北京市'],
+    ['id' =&gt; 3, 'parent_id' =&gt; 1, 'name' =&gt; '邯郸市'],
+    ['id' =&gt; 4, 'parent_id' =&gt; 2, 'name' =&gt; '朝阳区'],
+    ['id' =&gt; 5, 'parent_id' =&gt; 2, 'name' =&gt; '通州区'],
+    ['id' =&gt; 6, 'parent_id' =&gt; 4, 'name' =&gt; '望京'],
+    ['id' =&gt; 7, 'parent_id' =&gt; 4, 'name' =&gt; '酒仙桥'],
+    ['id' =&gt; 8, 'parent_id' =&gt; 3, 'name' =&gt; '永年区'],
+    ['id' =&gt; 9, 'parent_id' =&gt; 1, 'name' =&gt; '武安市'],
+];
+
+function getTree($array, $parent_id = 0, $level = 0)
+{
+    static $list = [];
+    foreach ($array as $key =&gt; $value) {
+        if ($value['parent_id'] == $parent_id) {
+            $value['level'] = $level;
+            $list[] = $value;
+            unset($array[$key]);
+            getTree($array, $value['id'], $level + 1);
+        }
+    }
+    return $list;
+}
+
+$list = getTree($array);
+
+foreach ($list as $value) {
+    echo str_repeat('--', $value['level']) . $value['name'] . PHP_EOL;
+}
+/**
+河北省
+--邯郸市
+----永年区
+--武安市
+北京市
+--朝阳区
+----望京
+----酒仙桥
+--通州区
+ **/
+</code></pre>
+]]></summary>
+        <content type="html"><![CDATA[<h1 id="递归">递归</h1>
+<pre><code class="language-php">&lt;?php
+
+$array = [
+    ['id' =&gt; 1, 'parent_id' =&gt; 0, 'name' =&gt; '河北省'],
+    ['id' =&gt; 2, 'parent_id' =&gt; 0, 'name' =&gt; '北京市'],
+    ['id' =&gt; 3, 'parent_id' =&gt; 1, 'name' =&gt; '邯郸市'],
+    ['id' =&gt; 4, 'parent_id' =&gt; 2, 'name' =&gt; '朝阳区'],
+    ['id' =&gt; 5, 'parent_id' =&gt; 2, 'name' =&gt; '通州区'],
+    ['id' =&gt; 6, 'parent_id' =&gt; 4, 'name' =&gt; '望京'],
+    ['id' =&gt; 7, 'parent_id' =&gt; 4, 'name' =&gt; '酒仙桥'],
+    ['id' =&gt; 8, 'parent_id' =&gt; 3, 'name' =&gt; '永年区'],
+    ['id' =&gt; 9, 'parent_id' =&gt; 1, 'name' =&gt; '武安市'],
+];
+
+function getTree($array, $parent_id = 0, $level = 0)
+{
+    static $list = [];
+    foreach ($array as $key =&gt; $value) {
+        if ($value['parent_id'] == $parent_id) {
+            $value['level'] = $level;
+            $list[] = $value;
+            unset($array[$key]);
+            getTree($array, $value['id'], $level + 1);
+        }
+    }
+    return $list;
+}
+
+$list = getTree($array);
+
+foreach ($list as $value) {
+    echo str_repeat('--', $value['level']) . $value['name'] . PHP_EOL;
+}
+/**
+河北省
+--邯郸市
+----永年区
+--武安市
+北京市
+--朝阳区
+----望京
+----酒仙桥
+--通州区
+ **/
+</code></pre>
+<!-- more -->
+<h1 id="引用">引用</h1>
+<pre><code class="language-php">&lt;?php
+
+$array = [
+    1 =&gt; ['id' =&gt; 1, 'parent_id' =&gt; 0, 'name' =&gt; '河北省'],
+    2 =&gt; ['id' =&gt; 2, 'parent_id' =&gt; 0, 'name' =&gt; '北京市'],
+    3 =&gt; ['id' =&gt; 3, 'parent_id' =&gt; 1, 'name' =&gt; '邯郸市'],
+    4 =&gt; ['id' =&gt; 4, 'parent_id' =&gt; 2, 'name' =&gt; '朝阳区'],
+    5 =&gt; ['id' =&gt; 5, 'parent_id' =&gt; 2, 'name' =&gt; '通州区'],
+    6 =&gt; ['id' =&gt; 6, 'parent_id' =&gt; 4, 'name' =&gt; '望京'],
+    7 =&gt; ['id' =&gt; 7, 'parent_id' =&gt; 4, 'name' =&gt; '酒仙桥'],
+    8 =&gt; ['id' =&gt; 8, 'parent_id' =&gt; 3, 'name' =&gt; '永年区'],
+    9 =&gt; ['id' =&gt; 9, 'parent_id' =&gt; 1, 'name' =&gt; '武安市'],
+];
+
+function getTree($list)
+{
+    $tree = [];
+    foreach ($list as &amp;$item) {
+        $parent_id = $item['parent_id'];
+
+        if (isset($list[$parent_id]) &amp;&amp; !empty($list[$parent_id])) {
+            $list[$parent_id]['list'][] = &amp;$item;
+        } else {
+            $tree[] = &amp;$item;
+        }
+    }
+    unset($item);
+
+    return $tree;
+}
+
+$list = getTree($array);
+print_r($list);
+</code></pre>
+<h1 id="laravel-orm-模型">Laravel ORM 模型</h1>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">字段名称</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">id</td>
+<td style="text-align:center">自增长 ID</td>
+<td style="text-align:center">unsigned big int</td>
+</tr>
+<tr>
+<td style="text-align:center">name</td>
+<td style="text-align:center">类目名称</td>
+<td style="text-align:center">varchar</td>
+</tr>
+<tr>
+<td style="text-align:center">parent_id</td>
+<td style="text-align:center">父类目 ID</td>
+<td style="text-align:center">unsigned big int, null</td>
+</tr>
+<tr>
+<td style="text-align:center">is_directory</td>
+<td style="text-align:center">是否拥有子类目</td>
+<td style="text-align:center">tinyint</td>
+</tr>
+<tr>
+<td style="text-align:center">level</td>
+<td style="text-align:center">当前类目层级</td>
+<td style="text-align:center">unsigned int</td>
+</tr>
+<tr>
+<td style="text-align:center">path</td>
+<td style="text-align:center">该类目所有父类目 id</td>
+<td style="text-align:center">varchar</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-php">&lt;?php
+namespace App\Services;
+
+use App\Models\Category;
+
+class CategoryService
+{
+    // 这是一个递归方法
+    // $parentId 参数代表要获取子类目的父类目 ID，null 代表获取所有根类目
+    // $allCategories 参数代表数据库中所有的类目，如果是 null 代表需要从数据库中查询
+    public function getCategoryTree($parentId = null, $allCategories = null)
+    {
+        if (is_null($allCategories)) {
+            // 从数据库中一次性取出所有类目
+            $allCategories = Category::all();
+        }
+
+        return $allCategories
+            // 从所有类目中挑选出父类目 ID 为 $parentId 的类目
+            -&gt;where('parent_id', $parentId)
+            // 遍历这些类目，并用返回值构建一个新的集合
+            -&gt;map(function (Category $category) use ($allCategories) {
+                $data = ['id' =&gt; $category-&gt;id, 'name' =&gt; $category-&gt;name];
+                // 如果当前类目不是父类目，则直接返回
+                if (!$category-&gt;is_directory) {
+                    return $data;
+                }
+                // 否则递归调用本方法，将返回值放入 children 字段中
+                $data['children'] = $this-&gt;getCategoryTree($category-&gt;id, $allCategories);
+
+                return $data;
+            });
+    }
+}
+
+// 调用
+app(App\Services\CategoryService::class)-&gt;getCategoryTree()
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Selenium 从入门到放弃]]></title>
         <id>http://weakcc.github.io/post/selenium-cong-ru-men-dao-fang-qi/</id>
@@ -595,171 +812,6 @@ exit;
 <p>https://www.jianshu.com/p/de9295087560<br>
 https://learnku.com/articles/4196/talk-about-the-anti-replay-mechanism-of-api</p>
 </blockquote>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[PHP cURL]]></title>
-        <id>http://weakcc.github.io/post/php-curl/</id>
-        <link href="http://weakcc.github.io/post/php-curl/">
-        </link>
-        <updated>2021-10-26T00:54:38.000Z</updated>
-        <summary type="html"><![CDATA[<h1 id="curl">cURL</h1>
-<h2 id="get">GET</h2>
-<pre><code class="language-php">/**
- * @param string $url 请求 url
- * @param int $httpCode 状态码
- * @return mixed
- */
-function curl_get($url, &amp;$httpCode = 404)
-{
-    // 初始化一个curl会话
-    $ch = curl_init();
-
-    // 需要获取的url地址
-    curl_setopt($ch, CURLOPT_URL, $url);
-    // 启用 返回原生的(raw)输出
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-    //不做证书校验,部署在linux环境下请改为true
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    // 在发起连接前等待的时间，如果设置为0，则无限等待
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-
-    // 	执行一个curl会话
-    $fileContents = curl_exec($ch);
-    // 获取一个curl连接资源句柄的信息
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    // 关闭一个curl会话
-    curl_close($ch);
-    return $fileContents;
-}
-
-$statusCode = 0;
-var_dump(curl_get('http://www.baidu.com/', $statusCode));
-var_dump($statusCode);
-</code></pre>
-]]></summary>
-        <content type="html"><![CDATA[<h1 id="curl">cURL</h1>
-<h2 id="get">GET</h2>
-<pre><code class="language-php">/**
- * @param string $url 请求 url
- * @param int $httpCode 状态码
- * @return mixed
- */
-function curl_get($url, &amp;$httpCode = 404)
-{
-    // 初始化一个curl会话
-    $ch = curl_init();
-
-    // 需要获取的url地址
-    curl_setopt($ch, CURLOPT_URL, $url);
-    // 启用 返回原生的(raw)输出
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-    //不做证书校验,部署在linux环境下请改为true
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    // 在发起连接前等待的时间，如果设置为0，则无限等待
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-
-    // 	执行一个curl会话
-    $fileContents = curl_exec($ch);
-    // 获取一个curl连接资源句柄的信息
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    // 关闭一个curl会话
-    curl_close($ch);
-    return $fileContents;
-}
-
-$statusCode = 0;
-var_dump(curl_get('http://www.baidu.com/', $statusCode));
-var_dump($statusCode);
-</code></pre>
-<!-- more -->
-<h2 id="post">POST</h2>
-<pre><code class="language-php">/**
- * @param string $url 请求 url
- * @param array $params 参数
- * @return mixed
- */
-function curl_post(string $url, array $params = [])
-{
-    // 初始化一个curl会话
-    $ch = curl_init();
-
-    // 需要获取的url地址
-    curl_setopt($ch, CURLOPT_URL, $url);
-    // 启用时会将头文件的信息作为数据流输出
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    // 启用 返回原生的(raw)输出
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    //不做证书校验,部署在linux环境下请改为true
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    // 在发起连接前等待的时间，如果设置为0，则无限等待
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-    // 启用时会发送一个常规的POST请求，类型为：application/x-www-form-urlencoded，就像表单提交的一样
-    curl_setopt($ch, CURLOPT_POST, 1);
-    // 全部数据使用HTTP协议中的&quot;POST&quot;操作来发送。要发送文件，在文件名前面加上@前缀并使用完整路径。这个参数可以通过urlencoded后的字符串类似'para1=val1&amp;para2=val2&amp;...'或使用一个以字段名为键值，字段数据为值的数组。如果value是一个数组，Content-Type头将会被设置成multipart/form-data
-    // 传递一个数组到CURLOPT_POSTFIELDS，cURL会把数据编码成 multipart/form-data，而然传递一个URL-encoded字符串时，数据会被编码成 application/x-www-form-urlencoded
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-
-    /*
-    // 或者传递一个 json 类型 $params 要 json_encode() 转义
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json' // 一个用来设置HTTP头字段的数组
-    ]);
-    */
-    // 	执行一个curl会话
-    $contents = curl_exec($ch);
-    // 关闭一个curl会话
-    curl_close($ch);
-    return $contents;
-}
-
-$url = 'xxxxx'; // 提交的 url
-$data = array('name' =&gt; 'Foo', 'file' =&gt; '@/home/user/test.png');
-var_dump(curl_post($url, $data));
-</code></pre>
-<h2 id="raw">Raw</h2>
-<pre><code class="language-php">/**
- * @param string $url 请求 url
- * @param string $data 参数
- * @return mixed
- */
-function curl_post_raw(string $url, string $data)
-{
-    // 初始化一个curl会话
-    $ch = curl_init();
-
-    // 需要获取的url地址
-    curl_setopt($ch, CURLOPT_URL, $url);
-    // 启用时会将头文件的信息作为数据流输出
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    // 启用 返回原生的(raw)输出
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    //不做证书校验,部署在linux环境下请改为true
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    // 在发起连接前等待的时间，如果设置为0，则无限等待
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-    // 启用时会发送一个常规的POST请求，类型为：application/x-www-form-urlencoded，就像表单提交的一样
-    curl_setopt($ch, CURLOPT_POST, 1);
-
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    // // 一个用来设置HTTP头字段的数组
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: text'
-    ]);
-    // 	执行一个curl会话
-    $contents = curl_exec($ch);
-    // 关闭一个curl会话
-    curl_close($ch);
-    return $contents;
-}
-</code></pre>
-<h2 id="可以访问请求的原始数据的只读流">可以访问请求的原始数据的只读流</h2>
-<pre><code class="language-php">file_get_contents(&quot;php://input&quot;)
-</code></pre>
 ]]></content>
     </entry>
 </feed>
