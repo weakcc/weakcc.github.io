@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1635753445891">
+<link rel="shortcut icon" href="/favicon.ico?v=1635931278262">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -171,7 +171,7 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">43</span>
+        <span class="site-item-stat-count">44</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
@@ -222,6 +222,12 @@
           <small class="language" data-lan="tag">标签</small>
         </h2>
       </div>
+      
+      
+      
+      
+      
+      
       
       
       
@@ -1308,6 +1314,229 @@
     <div class="result" id="result">
       
       <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/go-cao-zuo-mysql/"" data-c="
+          &lt;h2 id=&#34;下载依赖&#34;&gt;下载依赖&lt;/h2&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;go get -u github.com/go-sql-driver/mysql
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!-- more --&gt;
+&lt;h2 id=&#34;连接&#34;&gt;连接&lt;/h2&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
+
+import (
+	&amp;quot;database/sql&amp;quot;
+	&amp;quot;fmt&amp;quot;
+
+	_ &amp;quot;github.com/go-sql-driver/mysql&amp;quot;
+)
+
+var db *sql.DB
+
+func initDB() (err error) {
+	// 用户名:密码@tcp(ip:端口)/数据库名
+	dsn := &amp;quot;root:123456@tcp(127.0.0.1:3306)/go_test&amp;quot;
+	// Open 不会校验账号密码是否正确
+	db, err = sql.Open(&amp;quot;mysql&amp;quot;, dsn)
+	if err != nil {
+		return
+	}
+	// 尝试与数据库建立连接（校验dsn是否正确）
+	err = db.Ping()
+	if err != nil {
+		return
+    }
+	return nil
+}
+
+func main()  {
+	err:= initDB()
+	if err!= nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(&amp;quot;连接成功！&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;其中 &lt;code&gt;sql.DB&lt;/code&gt; 是表示连接的数据库对象（结构体实例），它保存了连接数据库相关的所有信息。它内部维护着一个具有零到多个底层连接的连接池，它可以安全地被多个 goroutine 同时使用&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;curd&#34;&gt;CURD&lt;/h2&gt;
+&lt;h3 id=&#34;插入&#34;&gt;插入&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func insertRow()  {
+	sqlStr := &amp;quot;insert into user (name, age) values (?, ?)&amp;quot;
+	result, err := db.Exec(sqlStr, &amp;quot;小晓&amp;quot;, 11)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(id)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;查询&#34;&gt;查询&lt;/h3&gt;
+&lt;h4 id=&#34;单行查询&#34;&gt;单行查询&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func queryRow()  {
+	sqlStr := &amp;quot;select id, name, age from user where id = ?&amp;quot;
+    var u user
+    // 确保 QueryRow 之后调用 Scan 方法，否则持有的数据库链接不会被释放
+	err := db.QueryRow(sqlStr, 1).Scan(&amp;amp;u.id, &amp;amp;u.name, &amp;amp;u.age)
+	if err != nil {
+		fmt.Println(&amp;quot;错误：&amp;quot;, err)
+		return
+	}
+	fmt.Println(u)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;多行查询&#34;&gt;多行查询&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func queryRows()  {
+	sqlStr := &amp;quot;select id, name, age from user where id &amp;gt;= ?&amp;quot;
+	rows, err := db.Query(sqlStr, 1)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// 关闭 rows 释放持有的数据库链接
+	defer rows.Close()
+
+	// 循环读取结果集中的数据
+	for rows.Next() {
+		var u user
+		err := rows.Scan(&amp;amp;u.id, &amp;amp;u.name, &amp;amp;u.age)
+		if err != nil {
+			fmt.Println(&amp;quot;错误：&amp;quot;, err)
+			return
+		}
+		fmt.Println(u)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;更新&#34;&gt;更新&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func updateRow()  {
+	sqlStr := &amp;quot;update user set age = ? where id &amp;gt; ?&amp;quot;
+	result, err := db.Exec(sqlStr, 12, 2)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	n, err := result.RowsAffected() // 操作受影响的行数
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(n)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;删除数据&#34;&gt;删除数据&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func deleteRow()  {
+	sqlStr := &amp;quot;delete from user where id = ?&amp;quot;
+	result, err := db.Exec(sqlStr, 4)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	n, err := result.RowsAffected()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(n)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;预处理&#34;&gt;预处理&lt;/h2&gt;
+&lt;p&gt;防止 &lt;code&gt;SQL 注入&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;查询-2&#34;&gt;查询&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func prepareQuery()  {
+	sqlStr := &amp;quot;select id, name, age from user where id &amp;gt;= ?&amp;quot;
+	stmt, err := db.Prepare(sqlStr)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer stmt.Close()
+	rows, err := stmt.Query(1)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var u user
+		err := rows.Scan(&amp;amp;u.id, &amp;amp;u.name, &amp;amp;u.age)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println(u)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;插入更新删除类似&#34;&gt;插入，更新，删除类似&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func prepareInsert() {
+	sqlStr := &amp;quot;insert into user(name, age) values (?, ?)&amp;quot;
+	stmt, err := db.Prepare(sqlStr)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(&amp;quot;小爱&amp;quot;, 5)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(&amp;quot;success&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;事务&#34;&gt;事务&lt;/h2&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func transactionDemo()  {
+	tx, err := db.Begin() // 开启事务
+	if err != nil {
+		if tx != nil {
+			tx.Rollback() // 回滚
+		}
+		fmt.Println(err)
+		return
+	}
+	sqlStr1 := &amp;quot;update user set age = 18 where id = ?&amp;quot;
+	result1, err := tx.Exec(sqlStr1, 2)
+	if err != nil {
+		tx.Rollback()
+		fmt.Println(err)
+		return
+	}
+	n1, err := result1.RowsAffected()
+	if err != nil {
+		tx.Rollback()
+		fmt.Println(err)
+		return
+	}
+	sqlStr2 := &amp;quot;update user set age = 18 where id = ?&amp;quot;
+	result2, err := tx.Exec(sqlStr2, 1)
+	if err != nil {
+		tx.Rollback()
+		fmt.Println(err)
+		return
+	}
+	n2, err := result2.RowsAffected()
+	if err != nil {
+		tx.Rollback()
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(n1, n2)
+	if 1 == n1 &amp;amp;&amp;amp; 1 == n2 {
+		tx.Commit() // 提交
+	} else {
+		tx.Rollback()
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+">Go 操作MySQL</a>
+      </div>
+      
+      <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/php-sui-ji-zi-fu-chuan/"" data-c="
           &lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;function getRandChar($length = 6)
 {
@@ -2193,6 +2422,276 @@ driver.switch_to.frame(&#39;CSDN_info&#39;)
 # driver.switch_to.frame(iframe_label)
 
 driver.find_element_by_xpath(&#39;//*[@id=&amp;quot;csdn-toolbar&amp;quot;]/div/div/div[1]/div/a/img&#39;).click()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;弹窗处理&#34;&gt;弹窗处理&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;JavaScript&lt;/code&gt; 有三种弹窗 &lt;code&gt;alert&lt;/code&gt;（确认）、&lt;code&gt;confirm&lt;/code&gt;（确认、取消）、&lt;code&gt;prompt&lt;/code&gt;（文本框、确认、取消）。&lt;/p&gt;
+&lt;p&gt;处理方式：先定位（switch_to.alert自动获取当前弹窗），再使用 text、accept、dismiss、send_keys 等方法进行操作&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;方法&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;text&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;获取弹窗中的文字&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;accept&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;接受（确认）弹窗内容&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;dismiss&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;解除（取消）弹窗&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;send_keys&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;发送文本至警告框&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;🌰&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;html lang=&amp;quot;en&amp;quot;&amp;gt;
+​
+&amp;lt;head&amp;gt;
+&amp;lt;/head&amp;gt;
+​
+&amp;lt;body&amp;gt;
+    &amp;lt;button id=&amp;quot;alert&amp;quot;&amp;gt;alert&amp;lt;/button&amp;gt;
+    &amp;lt;button id=&amp;quot;confirm&amp;quot;&amp;gt;confirm&amp;lt;/button&amp;gt;
+    &amp;lt;button id=&amp;quot;prompt&amp;quot;&amp;gt;prompt&amp;lt;/button&amp;gt;
+​
+    &amp;lt;script type=&amp;quot;text/javascript&amp;quot;&amp;gt;
+        const dom1 = document.getElementById(&amp;quot;alert&amp;quot;)
+        dom1.addEventListener(&#39;click&#39;, function(){
+           alert(&amp;quot;alert hello&amp;quot;)
+        })
+​
+                const dom2 = document.getElementById(&amp;quot;confirm&amp;quot;)
+        dom2.addEventListener(&#39;click&#39;, function(){
+            confirm(&amp;quot;confirm hello&amp;quot;)
+        })
+​
+                const dom3 = document.getElementById(&amp;quot;prompt&amp;quot;)
+        dom3.addEventListener(&#39;click&#39;, function(){
+            prompt(&amp;quot;prompt hello&amp;quot;)
+        })
+    &amp;lt;/script&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;测试&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver
+from pathlib import Path
+from time import sleep
+​
+​
+driver = webdriver.Firefox()
+driver.get(&#39;file:///&#39; + str(Path(Path.cwd(), &#39;弹窗.html&#39;)))
+​
+sleep(2)
+​
+# 点击alert按钮
+driver.find_element_by_xpath(&#39;//*[@id=&amp;quot;alert&amp;quot;]&#39;).click()
+sleep(1)
+alert = driver.switch_to.alert
+# 打印alert弹窗的文本
+print(alert.text)
+# 确认
+alert.accept()
+​
+sleep(2)
+​
+# 点击confirm按钮
+driver.find_element_by_xpath(&#39;//*[@id=&amp;quot;confirm&amp;quot;]&#39;).click()
+sleep(1)
+confirm = driver.switch_to.alert
+print(confirm.text)
+# 取消
+confirm.dismiss()
+​
+sleep(2)
+​
+# 点击confirm按钮
+driver.find_element_by_xpath(&#39;//*[@id=&amp;quot;prompt&amp;quot;]&#39;).click()
+sleep(1)
+prompt = driver.switch_to.alert
+print(prompt.text)
+# 向prompt的输入框中传入文本
+prompt.send_keys(&amp;quot;Dream丶Killer&amp;quot;)
+sleep(2)
+prompt.accept()
+​
+&#39;&#39;&#39;输出
+alert hello
+confirm hello
+prompt hello
+&#39;&#39;&#39;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;上传-下载文件&#34;&gt;上传 &amp;amp; 下载文件&lt;/h1&gt;
+&lt;h2 id=&#34;上传文件&#34;&gt;上传文件&lt;/h2&gt;
+&lt;p&gt;常见的 web 页面的上传，一般使用 &lt;code&gt;input&lt;/code&gt; 标签或是插件（&lt;code&gt;JavaScript&lt;/code&gt;、&lt;code&gt;Ajax&lt;/code&gt;），对于 &lt;code&gt;input&lt;/code&gt; 标签的上传，可以直接使用 &lt;code&gt;send_keys(路径)&lt;/code&gt; 来进行上传。 先写一个测试用的页面。&lt;/p&gt;
+&lt;p&gt;🌰&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;html lang=&amp;quot;en&amp;quot;&amp;gt;
+​
+&amp;lt;head&amp;gt;
+    &amp;lt;meta charset=&amp;quot;UTF-8&amp;quot;&amp;gt;
+    &amp;lt;meta http-equiv=&amp;quot;X-UA-Compatible&amp;quot; content=&amp;quot;IE=edge&amp;quot;&amp;gt;
+    &amp;lt;meta name=&amp;quot;viewport&amp;quot; content=&amp;quot;width=device-width, initial-scale=1.0&amp;quot;&amp;gt;
+    &amp;lt;title&amp;gt;Document&amp;lt;/title&amp;gt;
+&amp;lt;/head&amp;gt;
+​
+&amp;lt;body&amp;gt;
+    &amp;lt;input type=&amp;quot;file&amp;quot; name=&amp;quot;&amp;quot;&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;下面通过 &lt;code&gt;xpath&lt;/code&gt; 定位 &lt;code&gt;input&lt;/code&gt; 标签，然后使用 &lt;code&gt;send_keys(str(file_path)&lt;/code&gt; 上传文件。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver
+from pathlib import Path
+from time import sleep
+​
+​
+driver = webdriver.Chrome()
+file_path = Path(Path.cwd(), &#39;上传下载.html&#39;)
+driver.get(&#39;file:///&#39; + str(file_path))
+​
+driver.find_element_by_xpath(&#39;//*[@name=&amp;quot;upload&amp;quot;]&#39;).send_keys(str(file_path))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;下载文件&#34;&gt;下载文件&lt;/h2&gt;
+&lt;h3 id=&#34;chrome浏览器&#34;&gt;Chrome浏览器&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;Chrome&lt;/code&gt; 浏览器要想实现文件下载，需要通过 &lt;code&gt;add_experimental_option&lt;/code&gt; 添加 &lt;code&gt;prefs&lt;/code&gt; 参数。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;download.default_directory&lt;/code&gt;：设置下载路径。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;profile.default_content_settings.popups&lt;/code&gt;：0 禁止弹出窗口。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;🌰&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver 
+​
+prefs = {&#39;profile.default_content_settings.popups&#39;: 0,
+         &#39;download.default_directory&#39;: str(Path.cwd())}
+option = webdriver.ChromeOptions() 
+option.add_experimental_option(&#39;prefs&#39;, prefs)
+driver = webdriver.Chrome(options=option)
+driver.get(&amp;quot;https://pic.sogou.com/d?query=%E7%83%9F%E8%8A%B1&amp;amp;did=4&amp;amp;category_from=copyright&amp;quot;)
+driver.find_element_by_xpath(&#39;/html/body/div/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/a&#39;).click()
+​
+driver.switch_to.window(driver.window_handles[-1])
+driver.find_element_by_xpath(&#39;./html&#39;).send_keys(&#39;thisisunsafe&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;代码最后两句猜测有理解什么意思的吗~，哈哈，实际作用是当你弹出像下面的页面 “您的连接不是私密连接” 时，可以直接键盘输入 “thisisunsafe” 直接访问链接。那么这个键盘输入字符串的操作就是之间讲到的 send_keys，但由于该标签页是新打开的，所以要通过 switch_to.window() 将窗口切换到最新的标签页。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;firefox浏览器&#34;&gt;Firefox浏览器&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;Firefox&lt;/code&gt; 浏览器要想实现文件下载，需要通过 &lt;code&gt;set_preference&lt;/code&gt; 设置 &lt;code&gt;FirefoxProfile()&lt;/code&gt; 的一些属性。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;browser.download.foladerList&lt;/code&gt;：0 代表按浏览器默认下载路径；2 保存到指定的目录。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;browser.download.dir&lt;/code&gt;：指定下载目录。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;browser.download.manager.showWhenStarting&lt;/code&gt;：是否显示开始，&lt;code&gt;boolean&lt;/code&gt; 类型。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;browser.helperApps.neverAsk.saveToDisk&lt;/code&gt;：对指定文件类型不再弹出框进行询问。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;HTTP Content-type对照表&lt;/strong&gt;: &lt;a href=&#34;https://www.runoob.com/http/http-content-type.html&#34;&gt;https://www.runoob.com/http/http-content-type.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;cookies操作&#34;&gt;cookies操作&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;cookies&lt;/code&gt; 是识别用户登录与否的关键，爬虫中常常使用 &lt;code&gt;selenium&lt;/code&gt; + &lt;code&gt;requests&lt;/code&gt; 实现 &lt;code&gt;cookie&lt;/code&gt; 持久化，即先用 &lt;code&gt;selenium&lt;/code&gt; 模拟登陆获取 &lt;code&gt;cookie&lt;/code&gt; ，再通过 &lt;code&gt;requests&lt;/code&gt; 携带 &lt;code&gt;cookie&lt;/code&gt; 进行请求。&lt;br&gt;
+&lt;code&gt;webdriver&lt;/code&gt; 提供 &lt;code&gt;cookies&lt;/code&gt; 的几种操作：读取、添加删除。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;get_cookies&lt;/code&gt;：以字典的形式返回当前会话中可见的 &lt;code&gt;cookie&lt;/code&gt; 信息。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;get_cookie(name)&lt;/code&gt;：返回 &lt;code&gt;cookie&lt;/code&gt; 字典中 &lt;code&gt;key == name&lt;/code&gt; 的 &lt;code&gt;cookie&lt;/code&gt; 信息。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;add_cookie(cookie_dict)&lt;/code&gt;：将 &lt;code&gt;cookie&lt;/code&gt; 添加到当前会话中。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;delete_cookie(name)&lt;/code&gt;：删除指定名称的单个 &lt;code&gt;cookie&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;delete_all_cookies()&lt;/code&gt;：删除会话范围内的所有 &lt;code&gt;cookie&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;🌰&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver 
+​
+driver = webdriver.Chrome()
+driver.get(&amp;quot;https://blog.csdn.net/&amp;quot;)
+​
+# 输出所有cookie信息
+print(driver.get_cookies())
+​
+cookie_dict = {
+    &#39;domain&#39;: &#39;.csdn.net&#39;,
+     &#39;expiry&#39;: 1664765502,
+     &#39;httpOnly&#39;: False,
+     &#39;name&#39;: &#39;test&#39;,
+     &#39;path&#39;: &#39;/&#39;,
+     &#39;secure&#39;: True,
+     &#39;value&#39;: &#39;null&#39;}
+​
+# 添加cookie
+driver.add_cookie(cookie_dict)
+# 显示 name = &#39;test&#39; 的cookie信息
+print(driver.get_cookie(&#39;test&#39;))
+# 删除 name = &#39;test&#39; 的cookie信息
+driver.delete_cookie(&#39;test&#39;)
+# 删除当前会话中的所有cookie
+driver.delete_all_cookies()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;调用javascript&#34;&gt;调用JavaScript&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;webdriver&lt;/code&gt; 对于滚动条的处理需要用到 &lt;code&gt;JavaScript&lt;/code&gt;，同时也可以向 &lt;code&gt;textarea&lt;/code&gt; 文本框中输入文本（&lt;code&gt;webdriver&lt;/code&gt; 只能定位，不能输入文本），&lt;code&gt;webdriver&lt;/code&gt; 中使用 &lt;code&gt;execute_script&lt;/code&gt; 方法实现 &lt;code&gt;JavaScript&lt;/code&gt; 的执行。&lt;/p&gt;
+&lt;h2 id=&#34;滑动滚动条&#34;&gt;滑动滚动条&lt;/h2&gt;
+&lt;h3 id=&#34;通过-x-y-坐标滑动&#34;&gt;通过 x ,y 坐标滑动&lt;/h3&gt;
+&lt;p&gt;对于这种通过坐标滑动的方法，我们需要知道做表的起始位置在页面左上角（0,0)。&lt;br&gt;
+🌰&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver 
+from time import sleep
+​
+driver = webdriver.Chrome()
+driver.get(&amp;quot;https://blog.csdn.net/&amp;quot;)
+sleep(1)
+​
+js = &amp;quot;window.scrollTo(0,500);&amp;quot;
+driver.execute_script(js)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;通过参照标签滑动&#34;&gt;通过参照标签滑动&lt;/h3&gt;
+&lt;p&gt;这种方式需要先找一个参照标签，然后将滚动条滑动至该标签的位置。下面还是用 CSDN 首页做示例，我们用循环来实现重复滑动。该 &lt;code&gt;li&lt;/code&gt; 标签实际是一种&lt;strong&gt;懒加载&lt;/strong&gt;，当用户滑动至最后标签时，才会加载后面的数据。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-pyhton&#34;&gt;from selenium import webdriver 
+from time import sleep
+​
+driver = webdriver.Chrome()
+driver.get(&amp;quot;https://blog.csdn.net/&amp;quot;)
+sleep(1)
+driver.implicitly_wait(3)
+​
+for i in range(31, 102, 10):
+    sleep(1)
+    target = driver.find_element_by_xpath(f&#39;//*[@id=&amp;quot;feedlist_id&amp;quot;]/li[{i}]&#39;)
+    driver.execute_script(&amp;quot;arguments[0].scrollIntoView();&amp;quot;, target)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;其他操作&#34;&gt;其他操作&lt;/h1&gt;
+&lt;h2 id=&#34;关闭所有页面&#34;&gt;关闭所有页面&lt;/h2&gt;
+&lt;p&gt;使用 &lt;code&gt;quit()&lt;/code&gt; 方法可以关闭所有窗口并退出驱动程序。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;driver.quit()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;关闭当前页面&#34;&gt;关闭当前页面&lt;/h2&gt;
+&lt;p&gt;使用 &lt;code&gt;close()&lt;/code&gt; 方法可以关闭当前页面，使用时要注意 “当前页面” 这四个字，当你关闭新打开的页面时，需要切换窗口才能操作新窗口并将它关闭。，下面看一个简单的例子，这里不切换窗口，看一下是否能够关闭新打开的页面。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from selenium import webdriver
+from time import sleep
+​
+driver = webdriver.Chrome()
+driver.get(&#39;https://blog.csdn.net/&#39;)
+driver.implicitly_wait(3)
+​
+# 点击进入新页面
+driver.find_element_by_xpath(&#39;//*[@id=&amp;quot;mainContent&amp;quot;]/aside/div[1]/div&#39;).click()
+# 切换窗口
+# driver.switch_to.window(driver.window_handles[-1])
+​
+sleep(3)
+driver.close()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;可以看到，在不切换窗口时，&lt;code&gt;driver&lt;/code&gt; 对象还是操作最开始的页面。&lt;/p&gt;
+&lt;h2 id=&#34;对当前页面进行截图&#34;&gt;对当前页面进行截图&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;webdriver&lt;/code&gt; 中使用 &lt;code&gt;get_screenshot_as_file()&lt;/code&gt; 对 “当前页面” 进行截图，这里和上面的 &lt;code&gt;close()&lt;/code&gt; 方法一样，对于新窗口的操作，一定要切换窗口，不然截的还是原页面的图。对页面截图这一功能，主要用在我们测试时记录报错页面的，我们可以将 &lt;code&gt;try except&lt;/code&gt; 结合 &lt;code&gt;get_screenshot_as_file()&lt;/code&gt; 一起使用来实现这一效果。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;try:
+    driver.find_element_by_xpath(&#39;//*[@id=&amp;quot;mainContent&amp;quot;]/aside/div[1]/div&#39;).click()
+except:
+    driver.get_screenshot_as_file(r&#39;C:\Users\pc\Desktop\screenshot.png&#39;)
 &lt;/code&gt;&lt;/pre&gt;
 &lt;blockquote&gt;
 &lt;p&gt;https://juejin.cn/post/7022925905395875847&lt;/p&gt;
