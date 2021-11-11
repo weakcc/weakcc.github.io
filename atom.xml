@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-11-03T09:22:07.918Z</updated>
+    <updated>2021-11-11T06:10:50.147Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,617 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[Laravel 速查表]]></title>
+        <id>http://weakcc.github.io/post/laravel-su-cha-biao/</id>
+        <link href="http://weakcc.github.io/post/laravel-su-cha-biao/">
+        </link>
+        <updated>2021-11-11T06:09:21.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://learnku.com/docs/laravel-cheatsheet/8.x">Laravel速查表</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[PHP 速查表]]></title>
+        <id>http://weakcc.github.io/post/php-su-cha-biao/</id>
+        <link href="http://weakcc.github.io/post/php-su-cha-biao/">
+        </link>
+        <updated>2021-11-10T10:03:53.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="本地服务器">本地服务器</h1>
+<pre><code class="language-php">php -S localhost:3000
+</code></pre>
+<h1 id="注释">注释</h1>
+<pre><code class="language-php">// 单行注释
+
+/*
+这是一个多行注释块
+跨越多行
+*/
+</code></pre>
+]]></summary>
+        <content type="html"><![CDATA[<h1 id="本地服务器">本地服务器</h1>
+<pre><code class="language-php">php -S localhost:3000
+</code></pre>
+<h1 id="注释">注释</h1>
+<pre><code class="language-php">// 单行注释
+
+/*
+这是一个多行注释块
+跨越多行
+*/
+</code></pre>
+<!-- more -->
+<h1 id="命名约定">命名约定</h1>
+<h2 id="开始结束-标记">开始/结束 标记</h2>
+<pre><code class="language-php">&lt;?php
+  echo &quot;Hello World&quot;;
+?&gt;
+</code></pre>
+<h2 id="如果没有结束标记文件的其余部分将被视为-php-代码">如果没有结束标记，文件的其余部分将被视为 PHP 代码</h2>
+<pre><code class="language-php">&lt;?php
+  echo &quot;Hello World&quot;;
+</code></pre>
+<h2 id="简短的-php-语法输出">简短的 PHP 语法输出</h2>
+<pre><code class="language-php">&lt;?= &quot;Hello World&quot; ?&gt;
+</code></pre>
+<h2 id="启用严格模式-它必须在-php-文件的第一行">启用严格模式 (它必须在 PHP 文件的第一行)</h2>
+<pre><code class="language-php">&lt;? declare(strict_types=1);
+</code></pre>
+<h2 id="包括一个-php-文件">包括一个 PHP 文件</h2>
+<pre><code class="language-php">require 'app/Product.php'
+</code></pre>
+<h2 id="创建命名空间">创建命名空间</h2>
+<pre><code class="language-php">namespace App;
+</code></pre>
+<h2 id="使用命名空间">使用命名空间</h2>
+<pre><code class="language-php">use App\Product;
+</code></pre>
+<h2 id="小驼峰命名">小驼峰命名</h2>
+<pre><code class="language-php">$firstName = 'Mike'
+
+function updateProduct()
+</code></pre>
+<h2 id="大驼峰命名">大驼峰命名</h2>
+<pre><code class="language-php">class ProductItem
+</code></pre>
+<h2 id="所有大写字母用下划线分隔">所有大写字母用下划线分隔</h2>
+<pre><code class="language-php">const ACCESS_KEY = '123abc';
+</code></pre>
+<h1 id="输出-输入">输出 &amp; 输入</h1>
+<h2 id="输出">输出</h2>
+<pre><code class="language-php">echo 'Hello World';
+</code></pre>
+<h2 id="调式输出">调式输出</h2>
+<pre><code class="language-php">var_dump($names);
+print_r($products);
+</code></pre>
+<h2 id="从控制台输入">从控制台输入</h2>
+<pre><code class="language-php">$name = readline('What is your name : ');
+</code></pre>
+<h1 id="变量声明">变量声明</h1>
+<h2 id="字符串">字符串</h2>
+<pre><code class="language-php">$name = 'Mike';
+</code></pre>
+<h2 id="布尔型">布尔型</h2>
+<pre><code class="language-php">$isActive = true;
+</code></pre>
+<h2 id="整型">整型</h2>
+<pre><code class="language-php">$number = 25;
+</code></pre>
+<h2 id="浮点型">浮点型</h2>
+<pre><code class="language-php">$amount = 99.95;
+</code></pre>
+<h2 id="数组">数组</h2>
+<pre><code class="language-php">$fruits = ['orange', 'apple', 'banana'];
+</code></pre>
+<h2 id="常量">常量</h2>
+<pre><code class="language-php">const MAX_USERS = 50;
+
+define('MAX_USERS', 50);
+</code></pre>
+<h2 id="赋值-引用-是通过-关键字">赋值 '引用' 是通过 &amp; 关键字</h2>
+<pre><code class="language-php">$name_2 = &amp;$name_1;
+</code></pre>
+<h2 id="类型转换">类型转换</h2>
+<pre><code class="language-php">$age = (int)readline('Your age: ');
+
+echo 'Your age is' . (string)$age;
+</code></pre>
+<h2 id="获取变量类型">获取变量类型</h2>
+<pre><code class="language-php">echo gettype($age); // int
+</code></pre>
+<h2 id="判断是否整形">判断是否整形</h2>
+<pre><code class="language-php">echo is_int($age)
+</code></pre>
+<h2 id="判断是否浮点型">判断是否浮点型</h2>
+<pre><code class="language-php">echo is_float($age)
+</code></pre>
+<h2 id="判断是否字符串">判断是否字符串</h2>
+<pre><code class="language-php">echo is_string($age)
+</code></pre>
+<h1 id="字符串-2">字符串</h1>
+<h2 id="单引号">单引号</h2>
+<pre><code class="language-php">$name = 'Mike';
+</code></pre>
+<h2 id="双引号">双引号</h2>
+<pre><code class="language-php">$name = &quot;Mike&quot;;
+</code></pre>
+<h2 id="双引号字符串能够使用转义字符-n-new-line-t-tab-backslash">双引号字符串能够使用转义字符 \n = new line  \t = tab  \ = backslash</h2>
+<pre><code class="language-php">echo &quot;Hello Mike\nHello David&quot;;
+</code></pre>
+<h2 id="双引号字符串能够插入变量">双引号字符串能够插入变量</h2>
+<pre><code class="language-php">echo &quot;Hello $name&quot;;
+</code></pre>
+<h2 id="字符串拼接">字符串拼接</h2>
+<pre><code class="language-php">echo 'Hello ' . $name;
+</code></pre>
+<h2 id="字符串长度">字符串长度</h2>
+<pre><code class="language-php">echo strlen($name);
+</code></pre>
+<h2 id="删除首部和尾部的空格">删除首部和尾部的空格</h2>
+<pre><code class="language-php">echo trim($text);
+</code></pre>
+<h2 id="转换为小写">转换为小写</h2>
+<pre><code class="language-php">echo strtolower($email);
+</code></pre>
+<h2 id="转换为大写">转换为大写</h2>
+<pre><code class="language-php">echo strtoupper($email);
+</code></pre>
+<h2 id="将首字符转换为大写">将首字符转换为大写</h2>
+<pre><code class="language-php">echo ucfirst($name);  // 'Mike' 
+</code></pre>
+<h2 id="替换-将-text-中的文本-a-替换成文本-b">替换 将 $text 中的文本 a 替换成文本 b</h2>
+<pre><code class="language-php">echo str_replace('a', 'b', $text);
+</code></pre>
+<h2 id="字符串包含-php-8">字符串包含 (PHP 8)</h2>
+<pre><code class="language-php">echo str_contains($name, 'ke')  # true
+</code></pre>
+<h2 id="查找-k-在字符串中第一次出现的位置">查找 &quot;k&quot; 在字符串中第一次出现的位置</h2>
+<pre><code class="language-php">$pos = strpos($name, 'k');
+</code></pre>
+<h2 id="返回字符串的一部分-偏移量-长度">返回字符串的一部分 (偏移量 / 长度)</h2>
+<pre><code class="language-php">echo substr($name, 0, $pos); # Mi
+</code></pre>
+<h1 id="数字">数字</h1>
+<h2 id="快捷增加并赋值">快捷增加并赋值</h2>
+<pre><code class="language-php">$value = 10;
+$value++;
+// or 
+$value += 1;
+</code></pre>
+<h2 id="快捷减少并赋值">快捷减少并赋值</h2>
+<pre><code class="language-php">$value = 10;
+$value--;
+// or 
+$value -= 1;
+</code></pre>
+<h2 id="检查是否是数字">检查是否是数字</h2>
+<pre><code class="language-php">echo is_numeric('59.99'); # true
+</code></pre>
+<h2 id="四舍五入">四舍五入</h2>
+<pre><code class="language-php">echo round(0.80);  // returns 1
+</code></pre>
+<h2 id="精确地对数字进行四舍五入">精确地对数字进行四舍五入</h2>
+<pre><code class="language-php">echo round(1.49356, 2));  // returns 1.49
+</code></pre>
+<h2 id="随机数">随机数</h2>
+<pre><code class="language-php">echo(rand(10, 100)); # 89
+</code></pre>
+<h1 id="条件语句">条件语句</h1>
+<h2 id="if-elseif-else">If / elseif / else</h2>
+<pre><code class="language-php">if ($condition == 10) {
+    echo 'condition 10'
+} elseif  ($condition == 5) {
+    echo 'condition 5'
+} else {
+    echo 'all other conditions'
+}
+</code></pre>
+<h2 id="and-等于">And 等于 &amp;&amp;</h2>
+<pre><code class="language-php">if ($condition === 10 &amp;&amp; $condition2 === 5) {
+    echo '10 and 5'
+}
+</code></pre>
+<h2 id="or-等于">Or 等于 ||</h2>
+<pre><code class="language-php">if ($condition === 10 || $condition2 === 5) {
+    echo '10 or 5'
+}
+</code></pre>
+<h2 id="单行">单行</h2>
+<pre><code class="language-php">if ($isActive) return true;
+</code></pre>
+<h2 id="检查-null-值">检查 null 值</h2>
+<pre><code class="language-php">if (is_null($name)) {
+    
+}
+</code></pre>
+<h2 id="比较操作符">比较操作符</h2>
+<pre><code class="language-php">== // 松散比较
+=== // 严格比较
+!= // 不等于
+|| // 或
+&amp;&amp; // 且
+&gt; // 大于
+&lt; // 小于
+</code></pre>
+<h2 id="三元运算-true-false">三元运算 (true : false)</h2>
+<pre><code class="language-php">echo $isValid ? 'user valid' : 'user not valid';
+</code></pre>
+<h2 id="null-合并运算">null 合并运算</h2>
+<pre><code class="language-php">echo $name ?? 'Mike';  //output 'Mike' if $name is null
+</code></pre>
+<h2 id="null-合并赋值">null 合并赋值</h2>
+<pre><code class="language-php">$name ??= 'Mike';
+</code></pre>
+<h2 id="null-安全运算符php-8如果有一个为-null将返回-null">null 安全运算符（PHP 8）如果有一个？为 null，将返回 null</h2>
+<pre><code class="language-php">echo $user?-&gt;profile?-&gt;activate();
+</code></pre>
+<h2 id="null-安全-null-合并-如果为-null-将返回-no-user-profile">null 安全 + null 合并 (如果为 null 将返回 『No user profile』)</h2>
+<pre><code class="language-php">echo $user?-&gt;profile?-&gt;activate() ?? 'Not applicable';
+</code></pre>
+<h2 id="飞船符号-返回-1-0-1">飞船符号 返回 -1 0 1</h2>
+<pre><code class="language-php">$names = ['Mike', 'Paul', 'John']
+usort($names, function($a, $b) {
+    return $a &lt;=&gt; $b;
+}
+// ['John', 'Mike', 'Paul']
+</code></pre>
+<h2 id="转换为布尔值时返回-false">转换为布尔值时返回 false</h2>
+<pre><code class="language-php">false, 0, 0.0, null, unset, '0', '', []
+</code></pre>
+<h2 id="将同一变量与多个值进行比较">将同一变量与多个值进行比较</h2>
+<pre><code class="language-php">switch ($color) {
+    case 'red':
+        echo 'The color is red';
+         break;
+    case 'yellow':
+        echo 'The color is yellow';
+        break;
+    case 'red':
+        echo 'The color is red';
+        break;
+    default:
+        echo 'The color is unknown';
+}
+</code></pre>
+<h2 id="match-表达式php-8">Match 表达式（PHP 8）</h2>
+<pre><code class="language-php">$type = match($color) {
+    'red' =&gt; 'danger',
+    'yellow', 'orange' =&gt; 'warning',
+    'green' =&gt; 'success',
+    default =&gt; 'Unknown'
+};
+</code></pre>
+<h2 id="检查变量是否声明">检查变量是否声明</h2>
+<pre><code class="language-php">isset($color['red']);  # true
+</code></pre>
+<h1 id="循环和迭代">循环和迭代</h1>
+<h2 id="for-循环">for 循环</h2>
+<pre><code class="language-php">for ($i = 0; $i &lt; 20; $i++) {
+    echo &quot;i value = &quot; . i;
+}
+</code></pre>
+<h2 id="while-循环">while 循环</h2>
+<pre><code class="language-php">$number = 1;
+while ($number &lt; 10) {
+    echo 'value : ' . $number ;
+    $number += 1;
+}
+</code></pre>
+<h2 id="do-while">do while</h2>
+<pre><code class="language-php">$number = 1;
+do {
+    echo 'value : ' . $number ;
+    $number += 1;
+} while ($number &lt; 10);
+</code></pre>
+<h2 id="foreach-带有-break-continue-的示例">foreach 带有 break / continue 的示例</h2>
+<pre><code class="language-php">$values = ['one', 'two', 'three'];
+foreach ($values as $value) {
+    if ($value === 'two') {
+        break; // 退出循环
+    } elseif ($value === 'three') {
+        continue; // 下一个循环迭代
+    }
+}
+</code></pre>
+<h1 id="数组-2">数组</h1>
+<h2 id="数组声明可以包含任何类型">数组声明可以包含任何类型</h2>
+<pre><code class="language-php">$example = ['Mike', 50.2, true, ['10', '20'];
+</code></pre>
+<h2 id="数组声明">数组声明</h2>
+<pre><code class="language-php">$names = ['Mike', 'Peter', 'Shawn', 'John'];
+</code></pre>
+<h2 id="直接访问特定元素">直接访问特定元素</h2>
+<pre><code class="language-php">$name[1]
+</code></pre>
+<h2 id="如何访问数组中的数组元素">如何访问数组中的数组元素</h2>
+<pre><code class="language-php">$example[3][1]
+</code></pre>
+<h2 id="将元素添加到数组">将元素添加到数组</h2>
+<pre><code class="language-php">$names[] = 'Micheal';
+</code></pre>
+<h2 id="数组合并">数组合并</h2>
+<pre><code class="language-php">$array3 = array_merge($array1, $array2);
+</code></pre>
+<h2 id="使用扩展运算符来进行数组合并">使用扩展运算符来进行数组合并</h2>
+<pre><code class="language-php">$names = ['Mike', 'Peter', 'Paul'];
+$people = ['John', ...$names]; // ['John', 'Mike', 'Peter', 'Paul']
+</code></pre>
+<h2 id="删除数组元素">删除数组元素</h2>
+<pre><code class="language-php">unset($names['Peter']);
+</code></pre>
+<h2 id="数组转字符串">数组转字符串</h2>
+<pre><code class="language-php">echo implode(', ', $names); // 输出 Mike, Shawn, John, Micheal
+</code></pre>
+<h2 id="字符串转数组">字符串转数组</h2>
+<pre><code class="language-php">echo explode(',', $text); // ['Mike', 'Shawn', 'John']
+</code></pre>
+<h2 id="遍历数组元素">遍历数组元素</h2>
+<pre><code class="language-php">foreach($names as $name) { 
+   echo 'Hello ' . $name;
+}
+</code></pre>
+<h2 id="数组中元素的个数">数组中元素的个数</h2>
+<pre><code class="language-php">echo count($names);
+</code></pre>
+<h2 id="关联数组声明-key-value">关联数组声明 (key =&gt; value):</h2>
+<pre><code class="language-php">$person = ['age' =&gt; 45, 'genre' =&gt; 'men'];
+</code></pre>
+<h2 id="添加到末尾-数组">添加到末尾. 数组:</h2>
+<pre><code class="language-php">$person['name'] = 'Mike';
+</code></pre>
+<h2 id="循环数组-key-value">循环数组 key =&gt; value:</h2>
+<pre><code class="language-php">foreach($names as $key =&gt; $value) { 
+   echo $key . ' : ' . $value
+}
+</code></pre>
+<h2 id="检查是否存在某个特定键">检查是否存在某个特定键</h2>
+<pre><code class="language-php">echo array_key_exists('age', $person);
+</code></pre>
+<h2 id="返回键">返回键</h2>
+<pre><code class="language-php">echo array_keys($person); // ['age', 'genre']
+</code></pre>
+<h2 id="返回值">返回值</h2>
+<pre><code class="language-php">echo array_values($person) // [45, 'men']
+</code></pre>
+<h2 id="数组过滤器-返回过滤后的数组">数组过滤器 (返回过滤后的数组)</h2>
+<pre><code class="language-php">$filteredPeople = array_filter($people, function ($person) {
+    return $names-&gt;active;
+})
+</code></pre>
+<h2 id="数组映射-返回变换后的数组">数组映射 (返回变换后的数组)</h2>
+<pre><code class="language-php">$onlyNames = array_map(function($person) {
+    return ['name' =&gt; $person-&gt;name];
+}, $people)
+</code></pre>
+<h2 id="搜索关联数组">搜索关联数组</h2>
+<pre><code class="language-php">$items = [
+        ['id' =&gt; '100', 'name' =&gt; 'product 1'],
+        ['id' =&gt; '200', 'name' =&gt; 'product 2'],
+        ['id' =&gt; '300', 'name' =&gt; 'product 3'],
+        ['id' =&gt; '400', 'name' =&gt; 'product 4'],
+    ];
+</code></pre>
+<h2 id="在-name-列中搜索所有值">在 'name' 列中搜索所有值</h2>
+<pre><code class="language-php">$found_key = array_search('product 3', array_column($items, 'name'));
+</code></pre>
+<h1 id="函数">函数</h1>
+<h2 id="函数声明">函数声明</h2>
+<pre><code class="language-php">function name($firstName, $lastName = 'defaultvalue') {
+    return &quot;$firstName $lastName&quot;
+}
+</code></pre>
+<h2 id="函数调用">函数调用</h2>
+<pre><code class="language-php">name('Mike', 'Taylor');
+</code></pre>
+<h2 id="带命名参数的函数调用-php-8">带命名参数的函数调用 (PHP 8)</h2>
+<pre><code class="language-php">name(firstName: 'Mike', lastName: 'Taylor'); // 排序能够改变
+</code></pre>
+<h2 id="函数可变数量参数">函数可变数量参数</h2>
+<pre><code class="language-php">function name(...$params) {
+    return $params[0] . “ “ . params[1];
+}
+</code></pre>
+<h2 id="闭包函数">闭包函数</h2>
+<pre><code class="language-php">Route::get('/', function () {
+     return view('welcome');
+});
+</code></pre>
+<h2 id="箭头函数">箭头函数</h2>
+<pre><code class="language-php">Route::get('/', fn () =&gt; view('welcome');
+</code></pre>
+<h2 id="参数类型和返回类型">参数类型和返回类型</h2>
+<pre><code class="language-php">function display(string $first, string $last) : string {
+    return &quot;$first $last&quot;;
+}
+</code></pre>
+<h2 id="类型或空值">类型或空值</h2>
+<pre><code class="language-php">function display(?string $name) {
+   
+}
+</code></pre>
+<h1 id="文件">文件</h1>
+<h2 id="获取当前目录">获取当前目录</h2>
+<pre><code class="language-php">$current_dir = __DIR__;
+</code></pre>
+<h2 id="检查文件是否存在">检查文件是否存在</h2>
+<pre><code class="language-php">if (file_exists('/posts/first.txt')) {
+ 
+}
+</code></pre>
+<h2 id="读取文件内容到一个变量中">读取文件内容到一个变量中</h2>
+<pre><code class="language-php">$post = file_get_contents($file);
+</code></pre>
+<h2 id="文件读取">文件读取</h2>
+<pre><code class="language-php">$file = fopen(&quot;test.txt&quot;, &quot;r&quot;);
+</code></pre>
+<h2 id="输出行-直到-eof-结束">输出行, 直到 EOF 结束</h2>
+<pre><code class="language-php">while(! feof($file)) {
+  $line = fgets($file);
+  echo $line. &quot;&lt;br&gt;&quot;;
+}
+fclose($file);
+</code></pre>
+<h2 id="文件写入">文件写入</h2>
+<pre><code class="language-php">$file = fopen('export.csv', 'a');
+$array = ['name' =&gt; 'Mike', 'age' =&gt; 45];
+</code></pre>
+<h2 id="将键名写为-csv-标题">将键名写为 CSV 标题</h2>
+<pre><code class="language-php">fputcsv($file, array_keys($array[0]));
+</code></pre>
+<h2 id="写入行-格式为-csv">写入行 (格式为 csv)</h2>
+<pre><code class="language-php">foreach ($array as $row) {
+    fputcsv($file, $row); 
+}
+fclose($file);
+</code></pre>
+<h1 id="errors">Errors</h1>
+<h2 id="抛出错误">抛出错误</h2>
+<pre><code class="language-php">if (someCondition) {
+    throw new Exception('Data format error');
+}
+</code></pre>
+<h2 id="捕获错误">捕获错误</h2>
+<pre><code class="language-php">try {
+  $db-&gt;checkData($data);
+} catch (Exception $e) {
+    echo $e-&gt;getMessage();
+}
+</code></pre>
+<pre><code class="language-php">// 如果try catch都有return，按照正常执行，然后执行finally的逻辑，再返回对应的try 或者catch里执行return
+// 如果try catch finally都有return，执行完finally的逻辑后，会调用finally的return
+try {
+  $db-&gt;checkData($data);
+} catch (Exception $e) {
+    echo $e-&gt;getMessage();
+} finally {
+
+}
+</code></pre>
+<h1 id="oop">OOP</h1>
+<h2 id="类声明">类声明</h2>
+<pre><code class="language-php">class Person 
+{
+}
+</code></pre>
+<h2 id="对象实例">对象实例</h2>
+<pre><code class="language-php">$person = new Person
+</code></pre>
+<h2 id="类属性和构造方法">类属性和构造方法</h2>
+<pre><code class="language-php">class Person 
+{
+   protected $firstName;
+   protected $lastName;
+   public function __construct($firstName, $lastName) {
+        $this-&gt;firstName = $firstName;
+        $this-&gt;lastName = $lastName
+   }
+}
+</code></pre>
+<h2 id="构造器属性提升php-8">构造器属性提升（PHP 8）</h2>
+<pre><code class="language-php">class Person 
+{
+    public function __construct(protected $firstName, protected $lastName) 
+    {
+
+    }
+}
+</code></pre>
+<h2 id="获取和设置">获取和设置</h2>
+<pre><code class="language-php">class Person
+{
+    private $name;
+
+    public function setName($name){
+        if(!is_string($name)){
+            throw new Exception('$name must be a string!');
+        }
+        $this-&gt;name = $name;
+    }
+
+    public function getName(){
+        return $this-&gt;name;
+    }
+}
+</code></pre>
+<h2 id="静态构造方法">静态构造方法</h2>
+<pre><code class="language-php">public static function create(...$params) {
+    return new self($params)
+}
+$person = Person::create(‘Mike’, ‘Taylor’);
+</code></pre>
+<h2 id="静态方法">静态方法</h2>
+<pre><code class="language-php">class greeting {
+  public static function welcome() {
+    echo &quot;Hello World!&quot;;
+  }
+}
+</code></pre>
+<h2 id="调用静态方法">调用静态方法</h2>
+<pre><code class="language-php">greeting::welcome();
+</code></pre>
+<h2 id="静态方法调用">静态方法调用</h2>
+<pre><code class="language-php">class greeting {
+  public static function welcome() {
+    echo &quot;Hello World!&quot;;
+  }
+
+  public function __construct() {
+    static::welcome();
+  }
+}
+new greeting();
+</code></pre>
+<h2 id="静态常量">静态常量</h2>
+<pre><code class="language-php">class Connection
+{
+  const MAX_USER = 100;
+}
+echo Connection::MAX_USER # 100
+</code></pre>
+<h2 id="类继承">类继承</h2>
+<pre><code class="language-php">class Customer extends Person
+{
+    public function name()
+    {
+        parent::name();
+        echo 'Override method';  
+    }
+}
+</code></pre>
+<h2 id="self-关键字引用当前类不会像静态那样通过继承后期绑定修改">self 关键字引用当前类（不会像静态那样通过继承后期绑定修改）</h2>
+<pre><code class="language-php">self::welcome();
+</code></pre>
+<h2 id="接口">接口</h2>
+<pre><code class="language-php">interface Animal {
+  public function makeSound();
+}
+
+class Cat implements Animal {
+  public function makeSound() {
+    echo &quot;Meow&quot;;
+  }
+}
+$animal = new Cat();
+$animal-&gt;makeSound();
+</code></pre>
+<h2 id="trait-mix-in">Trait (mix-in)</h2>
+<pre><code class="language-php">trait HelloWorld {
+    public function sayHello() {
+        echo 'Hello World!';
+    }
+}
+class Greetings {
+    use HelloWorld;
+}
+$object = new Greetings();
+$object-&gt;sayHello();
+</code></pre>
+<blockquote>
+<p>https://learnku.com/php/t/62217</p>
+</blockquote>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Go 操作MySQL]]></title>
         <id>http://weakcc.github.io/post/go-cao-zuo-mysql/</id>
@@ -477,1007 +1088,6 @@ class CategoryService
 
 // 调用
 app(App\Services\CategoryService::class)-&gt;getCategoryTree()
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Selenium 从入门到放弃]]></title>
-        <id>http://weakcc.github.io/post/selenium-cong-ru-men-dao-fang-qi/</id>
-        <link href="http://weakcc.github.io/post/selenium-cong-ru-men-dao-fang-qi/">
-        </link>
-        <updated>2021-10-30T08:14:39.000Z</updated>
-        <content type="html"><![CDATA[<h1 id="安装浏览器驱动">安装浏览器驱动</h1>
-<p><a href="https://chromedriver.storage.googleapis.com/index.html">Chrome 浏览器驱动</a><br>
-<a href="https://github.com/mozilla/geckodriver/releases">Firefox 浏览器驱动</a><br>
-<a href="http://selenium-release.storage.googleapis.com/index.html">IE 浏览器驱动</a><br>
-<a href="https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/">Edge 浏览器驱动</a><br>
-<a href="https://phantomjs.org/">PhantomJS 浏览器驱动</a><br>
-<a href="https://github.com/operasoftware/operachromiumdriver/releases">Opera 浏览器驱动</a></p>
-<p>测试</p>
-<pre><code class="language-python">from selenium import webdriver
-
-# Chrome浏览器
-driver = webdriver.Chrome()
-driver.get('https://www.baidu.com/')
-</code></pre>
-<h1 id="定位页面元素">定位页面元素</h1>
-<h2 id="id-定位">id 定位</h2>
-<pre><code class="language-html">&lt;input id=&quot;toolbar-search-input&quot; autocomplete=&quot;off&quot; type=&quot;text&quot; value=&quot;&quot; placeholder=&quot;C++难在哪里？&quot;&gt;
-</code></pre>
-<pre><code class="language-python">driver.find_element_by_id('toolbar-search-input')
-</code></pre>
-<h2 id="name-定位">name 定位</h2>
-<pre><code class="language-html">&lt;meta name=&quot;keywords&quot; content=&quot;CSDN博客,CSDN学院,CSDN论坛,CSDN直播&quot;&gt;
-</code></pre>
-<pre><code class="language-python">driver.find_element_by_name(&quot;keywords&quot;)
-</code></pre>
-<h2 id="class-定位">class 定位</h2>
-<pre><code class="language-html">&lt;div class=&quot;toolbar-search-container&quot;&gt;
-</code></pre>
-<pre><code class="language-python">driver.find_element_by_class_name(&quot;toolbar-search-container&quot;)
-</code></pre>
-<h2 id="tag-定位">tag 定位</h2>
-<pre><code class="language-html">&lt;div class=&quot;toolbar-search-container&quot;&gt;
-</code></pre>
-<pre><code class="language-python">driver.find_element_by_tag_name(&quot;div&quot;)
-</code></pre>
-<h2 id="xpath-定位">xpath 定位</h2>
-<pre><code class="language-html">&lt;html&gt;
-  &lt;head&gt;...&lt;head/&gt;
-  &lt;body&gt;
-    &lt;div id=&quot;csdn-toolbar&quot;&gt;
-      &lt;div class=&quot;toolbar-inside&quot;&gt;
-        &lt;div class=&quot;toolbar-container&quot;&gt;
-          &lt;div class=&quot;toolbar-container-left&quot;&gt;...&lt;/div&gt;
-          &lt;div class=&quot;toolbar-container-middle&quot;&gt;
-            &lt;div class=&quot;toolbar-search onlySearch&quot;&gt;
-			&lt;div class=&quot;toolbar-search-container&quot;&gt;
-				&lt;input id=&quot;toolbar-search-input&quot; autocomplete=&quot;off&quot; type=&quot;text&quot; value=&quot;&quot; placeholder=&quot;C++难在哪里？&quot;&gt;
-</code></pre>
-<pre><code class="language-python"># 绝对路径（层级关系）定位
-driver.find_element_by_xpath(
-	&quot;/html/body/div/div/div/div[2]/div/div/input[1]&quot;)
-
-# 利用元素属性定位
-driver.find_element_by_xpath(
-	&quot;//*[@id='toolbar-search-input']&quot;))
-
-# 层级+元素属性定位
-driver.find_element_by_xpath(
-	&quot;//div[@id='csdn-toolbar']/div/div/div[2]/div/div/input[1]&quot;)
-
-# 逻辑运算符定位
-driver.find_element_by_xpath(
-	&quot;//*[@id='toolbar-search-input' and @autocomplete='off']&quot;)
-</code></pre>
-<h2 id="css-定位">css 定位</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">方法</th>
-<th style="text-align:center">例子</th>
-<th style="text-align:center">描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">.class</td>
-<td style="text-align:center">.toolbar-search-container</td>
-<td style="text-align:center">选择 class = 'toolbar-search-container' 的所有元素</td>
-</tr>
-<tr>
-<td style="text-align:center">#id</td>
-<td style="text-align:center">#toolbar-search-input</td>
-<td style="text-align:center">选择 id = 'toolbar-search-input' 的元素</td>
-</tr>
-<tr>
-<td style="text-align:center">*</td>
-<td style="text-align:center">*</td>
-<td style="text-align:center">选择所有元素</td>
-</tr>
-<tr>
-<td style="text-align:center">element</td>
-<td style="text-align:center">input</td>
-<td style="text-align:center">选择所有 &lt;input&gt; 元素</td>
-</tr>
-<tr>
-<td style="text-align:center">element&gt;element</td>
-<td style="text-align:center">div&gt;input</td>
-<td style="text-align:center">选择父元素为 &lt;div&gt; 的所有 &lt;input&gt; 元素</td>
-</tr>
-<tr>
-<td style="text-align:center">element+element</td>
-<td style="text-align:center">div+input</td>
-<td style="text-align:center">选择同一级中在 &lt;div&gt; 之后的所有 &lt;input&gt; 元素</td>
-</tr>
-<tr>
-<td style="text-align:center">[attribute=value]</td>
-<td style="text-align:center">type='text'</td>
-<td style="text-align:center">选择 type = 'text' 的所有元素</td>
-</tr>
-</tbody>
-</table>
-<pre><code class="language-python">driver.find_element_by_css_selector('#toolbar-search-input')
-driver.find_element_by_css_selector('html&gt;body&gt;div&gt;div&gt;div&gt;div&gt;div&gt;div&gt;input')
-</code></pre>
-<h2 id="link-定位">link 定位</h2>
-<p><code>link</code> 专门用来定位文本链接，假如要定位下面这一标签。</p>
-<pre><code class="language-html">&lt;div class=&quot;practice-box&quot; data-v-04f46969=&quot;&quot;&gt;加入！每日一练&lt;/div&gt;
-</code></pre>
-<pre><code class="language-python">driver.find_element_by_link_text(&quot;加入！每日一练&quot;)
-</code></pre>
-<h2 id="partial_link-定位">partial_link 定位</h2>
-<p><code>partial_link</code> 翻译过来就是“部分链接”，对于有些文本很长，这时候就可以只指定部分文本即可定位，同样使用刚才的例子。</p>
-<pre><code class="language-html">&lt;div class=&quot;practice-box&quot; data-v-04f46969=&quot;&quot;&gt;加入！每日一练&lt;/div&gt;
-</code></pre>
-<pre><code class="language-python">driver.find_element_by_partial_link_text(&quot;加入&quot;)
-</code></pre>
-<h1 id="浏览器控制">浏览器控制</h1>
-<h2 id="修改浏览器窗口大小">修改浏览器窗口大小</h2>
-<p><code>webdriver</code> 提供 <code>set_window_size()</code> 方法来修改浏览器窗口的大小。</p>
-<pre><code class="language-python">from selenium import webdriver
-
-# Chrome浏览器
-driver = webdriver.Chrome()
-driver.get('https://www.csdn.net/')
-# 设置浏览器浏览器的宽高为：600x800
-driver.set_window_size(600, 800)
-</code></pre>
-<p>也可以使用 <code>maximize_window()</code> 方法可以实现浏览器全屏显示<br>
-from selenium import webdriver</p>
-<pre><code class="language-python"># Chrome浏览器
-driver = webdriver.Chrome()
-driver.get('https://www.csdn.net/')
-# 设置浏览器浏览器的宽高为全屏
-driver.maximize_window()
-</code></pre>
-<h2 id="浏览器前进后退">浏览器前进&amp;后退</h2>
-<p><code>webdriver</code> 提供 <code>back</code> 和 <code>forward</code> 方法来实现页面的后退与前进</p>
-<pre><code class="language-python">from selenium import webdriver
-from time import sleep
-
-driver = webdriver.Chrome()
-
-# 访问CSDN首页
-driver.get('https://www.csdn.net/')
-sleep(2)
-#访问CSDN个人主页
-driver.get('https://blog.csdn.net/qq_43965708')
-sleep(2)
-#返回（后退）到CSDN首页
-driver.back()
-sleep(2)
-#前进到个人主页
-driver.forward()
-</code></pre>
-<h2 id="新的标签页打开">新的标签页打开</h2>
-<p>如果想的话也可以在新的标签页中打开新的链接，但需要更改一下代码，执行 js 语句来打开新的标签。</p>
-<pre><code class="language-python"># 在原页面打开
-driver.get('https://blog.csdn.net/qq_43965708')
-
-# 新标签中打开
-js = &quot;window.open('https://blog.csdn.net/qq_43965708')&quot;
-driver.execute_script(js)
-</code></pre>
-<h2 id="浏览器刷新">浏览器刷新</h2>
-<p>可以使用 <code>refresh()</code> 来刷新当前页面。</p>
-<pre><code class="language-python"># 刷新页面
-driver.refresh()
-</code></pre>
-<h2 id="浏览器窗口切换">浏览器窗口切换</h2>
-<p>在很多时候我们都需要用到窗口切换，比如：当我们点击注册按钮时，它一般会打开一个新的标签页，但实际上代码并没有切换到最新页面中，这时你如果要定位注册页面的标签就会发现定位不到，这时就需要将实际窗口切换到最新打开的那个窗口。我们先获取当前各个窗口的句柄，这些信息的保存顺序是按照时间来的，最新打开的窗口放在数组的末尾，这时我们就可以定位到最新打开的那个窗口了。</p>
-<pre><code class="language-python"># 获取打开的多个窗口句柄
-windows = driver.window_handles
-# 切换到当前最新打开的窗口
-driver.switch_to.window(windows[-1])
-</code></pre>
-<h2 id="常见操作">常见操作</h2>
-<p>webdriver中的常见操作有：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">方法</th>
-<th style="text-align:center">描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">send_keys()</td>
-<td style="text-align:center">模拟输入指定内容</td>
-</tr>
-<tr>
-<td style="text-align:center">clear()</td>
-<td style="text-align:center">清除文本内容</td>
-</tr>
-<tr>
-<td style="text-align:center">is_displayed()</td>
-<td style="text-align:center">判断该元素是否可见</td>
-</tr>
-<tr>
-<td style="text-align:center">get_attribute()</td>
-<td style="text-align:center">获取标签属性值</td>
-</tr>
-<tr>
-<td style="text-align:center">size</td>
-<td style="text-align:center">返回元素的尺寸</td>
-</tr>
-<tr>
-<td style="text-align:center">text</td>
-<td style="text-align:center">返回元素文本</td>
-</tr>
-</tbody>
-</table>
-<p>🌰</p>
-<pre><code class="language-python">from selenium import webdriver
-from time import sleep
-
-driver = webdriver.Chrome()
-
-driver.get('https://www.csdn.net/')
-sleep(2)
-# 定位搜索输入框
-text_label = driver.find_element_by_xpath('//*[@id=&quot;toolbar-search-input&quot;]')
-
-# 在搜索框中输入 Dream丶Killer
-text_label.send_keys('Dream丶Killer')
-
-sleep(2)
-# 清除搜索框中的内容
-text_label.clear()
-
-# 输出搜索框元素是否可见
-print(text_label.is_displayed())
-# 输出placeholder的值
-print(text_label.get_attribute('placeholder'))
-
-# 定位搜索按钮
-button = driver.find_element_by_xpath('//*[@id=&quot;toolbar-search-button&quot;]/span')
-# 输出按钮的大小
-print(button.size)
-# 输出按钮上的文本
-print(button.text)
-
-'''输出内容
-True
-python面试100问
-{'height': 32, 'width': 28}
-搜索
-'''
-</code></pre>
-<h1 id="鼠标控制">鼠标控制</h1>
-<p>在webdriver 中，鼠标操作都封装在ActionChains类中，常见方法如下：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">方法</th>
-<th style="text-align:center">描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">click()</td>
-<td style="text-align:center">单击左键</td>
-</tr>
-<tr>
-<td style="text-align:center">context_click()</td>
-<td style="text-align:center">单击右键</td>
-</tr>
-<tr>
-<td style="text-align:center">double_click()</td>
-<td style="text-align:center">双击</td>
-</tr>
-<tr>
-<td style="text-align:center">drag_and_drop()</td>
-<td style="text-align:center">拖动</td>
-</tr>
-<tr>
-<td style="text-align:center">move_to_element()</td>
-<td style="text-align:center">鼠标悬停</td>
-</tr>
-<tr>
-<td style="text-align:center">perform()</td>
-<td style="text-align:center">执行所有ActionChains中存储的动作</td>
-</tr>
-</tbody>
-</table>
-<h2 id="单击左键">单击左键</h2>
-<p>模拟完成单击鼠标左键的操作，一般点击进入子页面等会用到，左键不需要用到 <code>ActionChains</code> 。</p>
-<pre><code class="language-python"># 定位搜索按钮
-button = driver.find_element_by_xpath('//*[@id=&quot;toolbar-search-button&quot;]/span')
-# 执行单击操作
-button.click()
-</code></pre>
-<h2 id="单击右键">单击右键</h2>
-<p>鼠标右击的操作与左击有很大不同，需要使用 <code>ActionChains</code> 。</p>
-<pre><code class="language-python">from selenium.webdriver.common.action_chains import ActionChains
-
-# 定位搜索按钮
-button = driver.find_element_by_xpath('//*[@id=&quot;toolbar-search-button&quot;]/span')
-# 右键搜索按钮
-ActionChains(driver).context_click(button).perform()
-</code></pre>
-<h2 id="双击">双击</h2>
-<p>模拟鼠标双击操作</p>
-<pre><code class="language-python"># 定位搜索按钮
-button = driver.find_element_by_xpath('//*[@id=&quot;toolbar-search-button&quot;]/span')
-# 执行双击动作
-ActionChains(driver).double_click(button).perform()
-</code></pre>
-<h2 id="拖动">拖动</h2>
-<p>模拟鼠标拖动操作，该操作有两个必要参数</p>
-<ul>
-<li><strong>source</strong>：鼠标拖动的元素</li>
-<li><strong>target</strong>：鼠标拖至并释放的目标元素</li>
-</ul>
-<pre><code class="language-python"># 定位要拖动的元素
-source = driver.find_element_by_xpath('xxx')
-# 定位目标元素
-target = driver.find_element_by_xpath('xxx')
-# 执行拖动动作
-ActionChains(driver).drag_and_drop(source, target).perform()
-</code></pre>
-<h2 id="鼠标悬停">鼠标悬停</h2>
-<p>模拟悬停的作用一般是为了显示隐藏的下拉框。</p>
-<pre><code class="language-python"># 定位收藏栏
-collect  = driver.find_element_by_xpath('//*[@id=&quot;csdn-toolbar&quot;]/div/div/div[3]/div/div[3]/a')
-
-# 悬停至收藏标签处
-ActionChains(driver).move_to_element(collect).perform()
-</code></pre>
-<h1 id="键盘控制">键盘控制</h1>
-<p><code>webdriver</code> 中 <code>Keys</code> 类几乎提供了键盘上的所有按键方法，我们可以使用 <code>send_keys + Keys</code> 实现输出键盘上的组合按键如 “<strong>Ctrl + C</strong>”、“<strong>Ctrl + V</strong>” 等。</p>
-<pre><code class="language-python">from selenium.webdriver.common.keys import Keys
-
-# 定位输入框并输入文本
-driver.find_element_by_id('xxx').send_keys('Dream丶killer')
-
-# 模拟回车键进行跳转（输入内容后） 
-driver.find_element_by_id('xxx').send_keys(Keys.ENTER)
-
-# 使用 Backspace 来删除一个字符
-driver.find_element_by_id('xxx').send_keys(Keys.BACK_SPACE)
-
-# Ctrl + A 全选输入框中内容
-driver.find_element_by_id('xxx').send_keys(Keys.CONTROL, 'a')
-
-# Ctrl + C 复制输入框中内容
-driver.find_element_by_id('xxx').send_keys(Keys.CONTROL, 'c')
-
-# Ctrl + V 粘贴输入框中内容
-driver.find_element_by_id('xxx').send_keys(Keys.CONTROL, 'v')
-</code></pre>
-<p>其他常见键盘操作：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">操作</th>
-<th style="text-align:center">描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">Keys.F1</td>
-<td style="text-align:center">F1键</td>
-</tr>
-<tr>
-<td style="text-align:center">Keys.SPACE</td>
-<td style="text-align:center">空格</td>
-</tr>
-<tr>
-<td style="text-align:center">Keys.TAB</td>
-<td style="text-align:center">Tab键</td>
-</tr>
-<tr>
-<td style="text-align:center">Keys.ESCAPE</td>
-<td style="text-align:center">ESC键</td>
-</tr>
-<tr>
-<td style="text-align:center">Keys.ALT</td>
-<td style="text-align:center">Alt键</td>
-</tr>
-<tr>
-<td style="text-align:center">Keys.SHIFT</td>
-<td style="text-align:center">Shift键</td>
-</tr>
-<tr>
-<td style="text-align:center">Keys.ARROW_DOWN</td>
-<td style="text-align:center">向下箭头</td>
-</tr>
-<tr>
-<td style="text-align:center">Keys.ARROW_LEFT</td>
-<td style="text-align:center">向左箭头</td>
-</tr>
-<tr>
-<td style="text-align:center">Keys.ARROW_RIGHT</td>
-<td style="text-align:center">向右箭头</td>
-</tr>
-<tr>
-<td style="text-align:center">Keys.ARROW_UP</td>
-<td style="text-align:center">向上箭头</td>
-</tr>
-</tbody>
-</table>
-<h1 id="设置元素等待">设置元素等待</h1>
-<p>很多页面都使用 <code>ajax</code> 技术，页面的元素不是同时被加载出来的，为了防止定位这些尚在加载的元素报错，可以设置元素等来增加脚本的稳定性。<code>webdriver</code> 中的等待分为 <strong>显式等待</strong> 和 <strong>隐式等待</strong>。</p>
-<h2 id="显式等待">显式等待</h2>
-<p>显式等待：设置一个超时时间，每个一段时间就去检测一次该元素是否存在，如果存在则执行后续内容，如果超过最大时间（超时时间）则抛出超时异常（<code>TimeoutException</code>）。显示等待需要使用 <code>WebDriverWait</code>，同时配合 <code>until</code> 或 <code>not until</code> 。下面详细讲解一下。</p>
-<p><code>WebDriverWait(driver, timeout, poll_frequency=0.5, ignored_exceptions=None)</code></p>
-<ul>
-<li><code>driver</code>：浏览器驱动</li>
-<li><code>timeout</code>：超时时间，单位秒</li>
-<li><code>poll_frequency</code>：每次检测的间隔时间，默认为0.5秒</li>
-<li><code>ignored_exceptions</code>：指定忽略的异常，如果在调用 <code>until</code> 或 <code>until_not</code> 的过程中抛出指定忽略的异常，则不中断代码，默认忽略的只有 <code>NoSuchElementException</code>。</li>
-</ul>
-<p><code>until(method, message=' ') until_not(method, message=' ')</code></p>
-<ul>
-<li><code>method</code>：指定预期条件的判断方法，在等待期间，每隔一段时间调用该方法，判断元素是否存在，直到元素出现。<code>until_not</code> 正好相反，当元素消失或指定条件不成立，则继续执行后续代码</li>
-<li><code>message</code>: 如果超时，抛出 <code>TimeoutException</code>，并显示 <code>message</code> 中的内容</li>
-</ul>
-<p><code>method</code> 中的预期条件判断方法是由 <code>expected_conditions</code> 提供，下面列举常用方法。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">方法</th>
-<th style="text-align:center">描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">title_is('百度一下')</td>
-<td style="text-align:center">判断当前页面的 title 是否等于预期</td>
-</tr>
-<tr>
-<td style="text-align:center">title_contains('百度')</td>
-<td style="text-align:center">判断当前页面的 title 是否包含预期字符串</td>
-</tr>
-<tr>
-<td style="text-align:center">presence_of_element_located(locator)</td>
-<td style="text-align:center">presence_of_element_located(locator)</td>
-</tr>
-<tr>
-<td style="text-align:center">visibility_of_element_located(locator)</td>
-<td style="text-align:center">判断元素是否可见，可见代表元素非隐藏，并且元素的宽和高都不等于0</td>
-</tr>
-<tr>
-<td style="text-align:center">visibility_of(element)</td>
-<td style="text-align:center">跟上一个方法作用相同，但传入参数为 element</td>
-</tr>
-<tr>
-<td style="text-align:center">text_to_be_present_in_element(locator , '百度')</td>
-<td style="text-align:center">判断元素中的 text 是否包含了预期的字符串</td>
-</tr>
-<tr>
-<td style="text-align:center">text_to_be_present_in_element_value(locator , '某值')</td>
-<td style="text-align:center">判断元素中的 value 属性是否包含了预期的字符串</td>
-</tr>
-<tr>
-<td style="text-align:center">frame_to_be_available_and_switch_to_it(locator)</td>
-<td style="text-align:center">判断该 frame 是否可以 switch 进去，True 则 switch 进去，反之 False</td>
-</tr>
-<tr>
-<td style="text-align:center">invisibility_of_element_located(locator)</td>
-<td style="text-align:center">判断元素中是否不存在于 dom 树或不可见</td>
-</tr>
-<tr>
-<td style="text-align:center">element_to_be_clickable(locator)</td>
-<td style="text-align:center">判断元素中是否可见并且是可点击的</td>
-</tr>
-<tr>
-<td style="text-align:center">staleness_of(element)</td>
-<td style="text-align:center">等待元素从 dom 树中移除</td>
-</tr>
-<tr>
-<td style="text-align:center">element_to_be_selected(element)</td>
-<td style="text-align:center">判断元素是否被选中,一般用在下拉列表</td>
-</tr>
-<tr>
-<td style="text-align:center">element_selection_state_to_be(element, True)</td>
-<td style="text-align:center">判断元素的选中状态是否符合预期，参数 element，第二个参数为 True/False</td>
-</tr>
-<tr>
-<td style="text-align:center">element_located_selection_state_to_be(locator, True)</td>
-<td style="text-align:center">跟上一个方法作用相同，但传入参数为 locator</td>
-</tr>
-<tr>
-<td style="text-align:center">alert_is_present()</td>
-<td style="text-align:center">判断页面上是否存在 alert</td>
-</tr>
-</tbody>
-</table>
-<p>🌰</p>
-<h3 id="普通定位">普通定位</h3>
-<pre><code class="language-python">from selenium.webdriver.common.by import By
-from selenium import webdriver
-
-driver = webdriver.Chrome()
-locator = (By.ID, 'kw')
-element = driver.find_element_by_id('kw')
-</code></pre>
-<h3 id="显示定位">显示定位</h3>
-<pre><code class="language-python">from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-
-driver = webdriver.Chrome()
-element = WebDriverWait(driver, 5, 0.5).until(
-            EC.presence_of_element_located((By.ID, 'kw')),
-                                           message='超时啦!')
-</code></pre>
-<h2 id="隐式等待">隐式等待</h2>
-<p>隐式等待也是指定一个超时时间，如果超出这个时间指定元素还没有被加载出来，就会抛出 <code>NoSuchElementException</code> 异常。 除了抛出的异常不同外，还有一点，隐式等待是全局性的，即运行过程中，如果元素可以定位到，它不会影响代码运行，但如果定位不到，则它会以轮询的方式不断地访问元素直到元素被找到，若超过指定时间，则抛出异常。</p>
-<p>使用 <code>implicitly_wait()</code> 来实现隐式等待，使用难度相对于显式等待要简单很多。 示例：打开个人主页，设置一个隐式等待时间 5s，通过 <code>id</code> 定位一个不存在的元素，最后打印 抛出的异常 与 运行时间。</p>
-<p>🌰</p>
-<pre><code class="language-python">from selenium import webdriver
-from time import time
-
-driver = webdriver.Chrome()
-driver.get('https://blog.csdn.net/qq_43965708')
-
-start = time()
-driver.implicitly_wait(5)
-try:
-    driver.find_element_by_id('kw')
-except Exception as e:
-    print(e)
-    print(f'耗时：{time()-start}')
-</code></pre>
-<blockquote>
-<p>代码运行到 driver.find_element_by_id('kw') 这句之后触发隐式等待，在轮询检查 5s 后仍然没有定位到元素，抛出异常。</p>
-</blockquote>
-<h2 id="强制等待">强制等待</h2>
-<p>使用 <code>time.sleep()</code> 强制等待，设置固定的休眠时间，对于代码的运行效率会有影响。以上面的例子作为参照，将 隐式等待 改为 强制等待。</p>
-<pre><code class="language-python">from selenium import webdriver
-from time import time, sleep
-
-driver = webdriver.Chrome()
-driver.get('https://blog.csdn.net/qq_43965708')
-
-start = time()
-sleep(5)
-try:
-    driver.find_element_by_id('kw')
-except Exception as e:
-    print(e)
-    print(f'耗时：{time()-start}')
-</code></pre>
-<blockquote>
-<p>值得一提的是，对于定位不到元素的时候，从耗时方面隐式等待和强制等待没什么区别。但如果元素经过 2s 后被加载出来，这时隐式等待就会继续执行下面的代码，但 sleep还要继续等待 3s。</p>
-</blockquote>
-<h1 id="定位一组元素">定位一组元素</h1>
-<p>上篇讲述了定位一个元素的 8 种方法，定位一组元素使用的方法只需要将 <code>element</code> 改为 <code>elements</code> 即可，它的使用场景一般是为了批量操作元素。</p>
-<ul>
-<li><code>find_elements_by_id()</code></li>
-<li><code>find_elements_by_name()</code></li>
-<li><code>find_elements_by_class_name()</code></li>
-<li><code>find_elements_by_tag_name()</code></li>
-<li><code>find_elements_by_xpath()</code></li>
-<li><code>find_elements_by_css_selector()</code></li>
-<li><code>find_elements_by_link_text()</code></li>
-<li><code>find_elements_by_partial_link_text()</code></li>
-</ul>
-<p>🌰</p>
-<pre><code class="language-python">from selenium import webdriver
-
-# 设置无头浏览器
-option = webdriver.ChromeOptions()
-option.add_argument('--headless')
-
-driver = webdriver.Chrome(options=option)
-driver.get('https://blog.csdn.net/')
-
-p_list = driver.find_elements_by_xpath(&quot;//p[@class='name']&quot;)
-name = [p.text for p in p_list]
-print(name)
-'''
-['花生', '编程', '卓']
-'''
-</code></pre>
-<h1 id="切换操作">切换操作</h1>
-<h2 id="窗口切换">窗口切换</h2>
-<p>在 <code>selenium</code> 操作页面的时候，可能会因为点击某个链接而跳转到一个新的页面（打开了一个新标签页），这时候 <code>selenium</code> 实际还是处于上一个页面的，需要我们进行切换才能够定位最新页面上的元素。</p>
-<p>窗口切换需要使用 <code>switch_to.windows()</code> 方法。</p>
-<p>🌰</p>
-<pre><code class="language-python">from selenium import webdriver
-
-handles = []
-driver = webdriver.Chrome()
-driver.get('https://blog.csdn.net/')
-# 设置隐式等待
-driver.implicitly_wait(3)
-# 获取当前窗口的句柄
-handles.append(driver.current_window_handle)
-# 点击 python，进入分类页面
-driver.find_element_by_xpath('//*[@id=&quot;mainContent&quot;]/aside/div[1]/div').click()
-# 获取当前窗口的句柄
-handles.append(driver.current_window_handle)
-
-print(handles)
-# 获取当前所有窗口的句柄
-print(driver.window_handles)
-'''
-['CDwindow-D032106A36A4D596E67B6A8D9CC7DE6B', 'CDwindow-D032106A36A4D596E67B6A8D9CC7DE6B']
-['CDwindow-D032106A36A4D596E67B6A8D9CC7DE6B', 'CDwindow-DC9A05D1F67FE0AF0CEC441EB9FBD316']
-'''
-</code></pre>
-<p>可以看到第一个列表 <code>handle</code> 是相同的，说明 <code>selenium</code> 实际操作的还是 CSDN首页 ，并未切换到新页面。 下面使用 <code>switch_to.windows()</code> 进行切换。</p>
-<pre><code class="language-python">from selenium import webdriver
-
-handles = []
-driver = webdriver.Chrome()
-driver.get('https://blog.csdn.net/')
-# 设置隐式等待
-driver.implicitly_wait(3)
-# 获取当前窗口的句柄
-handles.append(driver.current_window_handle)
-# 点击 python，进入分类页面
-driver.find_element_by_xpath('//*[@id=&quot;mainContent&quot;]/aside/div[1]/div').click()
-# 切换窗口
-driver.switch_to.window(driver.window_handles[-1])
-# 获取当前窗口的句柄
-handles.append(driver.current_window_handle)
-
-print(handles)
-print(driver.window_handles)
-'''
-['CDwindow-9329E73908B77E0AA52FE5EEB1AA3147', 'CDwindow-327C23C8937C00202FF541E843C37101']
-['CDwindow-9329E73908B77E0AA52FE5EEB1AA3147', 'CDwindow-327C23C8937C00202FF541E843C37101']
-'''
-</code></pre>
-<p>上面代码在点击跳转后，使用 <code>switch_to</code> 切换窗口，<code>window_handles</code> 返回的 <code>handle</code> 列表是按照页面出现时间进行排序的，最新打开的页面肯定是最后一个。</p>
-<blockquote>
-<p>那如果打开的窗口有多个，如何跳转到之前打开的窗口，如果确实有这个需求，那么打开窗口是就需要记录每一个窗口的 <code>key</code>(别名) 与 <code>value</code>(<code>handle</code>)，保存到字典中，后续根据 <code>key</code> 来取 <code>handle</code> 。</p>
-</blockquote>
-<h2 id="表单切换">表单切换</h2>
-<p>很多页面也会用带 <code>frame/iframe</code> 表单嵌套，对于这种内嵌的页面 <code>selenium</code> 是无法直接定位的，需要使用 <code>switch_to.frame()</code> 方法将当前操作的对象切换成 <code>frame/iframe</code> 内嵌的页面。</p>
-<p><code>switch_to.frame()</code> 默认可以用的 <code>id</code> 或 <code>name</code> 属性直接定位，但如果 <code>iframe</code> 没有 <code>id</code> 或 <code>name</code> ，这时就需要使用 <code>xpath</code> 进行定位。</p>
-<p>🌰</p>
-<pre><code class="language-html">&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-
-&lt;head&gt;
-    &lt;meta charset=&quot;UTF-8&quot;&gt;
-    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
-    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-    &lt;title&gt;Document&lt;/title&gt;
-    &lt;style&gt;
-        div p {
-            color: #red;
-            animation: change 2s infinite;
-        }
-        @keyframes change {
-            from {
-                color: red;
-            }
-            to {
-                color: blue;
-            }
-        }
-    &lt;/style&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-    &lt;div&gt;
-        &lt;p&gt;简单的栗子&lt;/p&gt;
-    &lt;/div&gt;
-    &lt;iframe src=&quot;https://blog.csdn.net/qq_43965708&quot; width=&quot;400&quot; height=&quot;200&quot;&gt;&lt;/iframe&gt;
-&lt;!--     &lt;iframe id=&quot;CSDN_info&quot; name=&quot;lizi&quot; src=&quot;https://blog.csdn.net/qq_43965708&quot; width=&quot;400&quot; height=&quot;200&quot;&gt;&lt;/iframe&gt; --&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1635753252992.png" alt="" loading="lazy"></figure>
-<pre><code class="language-python">from selenium import webdriver
-from pathlib import Path
-
-
-driver = webdriver.Chrome()
-# 读取本地html文件
-driver.get('file:///' + str(Path(Path.cwd(), 'iframe测试.html')))
-
-# 1.通过id定位
-driver.switch_to.frame('CSDN_info')
-# 2.通过name定位
-# driver.switch_to.frame('lizi')
-# 3.通过xpath定位
-# iframe_label = driver.find_element_by_xpath('/html/body/iframe')
-# driver.switch_to.frame(iframe_label)
-
-driver.find_element_by_xpath('//*[@id=&quot;csdn-toolbar&quot;]/div/div/div[1]/div/a/img').click()
-</code></pre>
-<h1 id="弹窗处理">弹窗处理</h1>
-<p><code>JavaScript</code> 有三种弹窗 <code>alert</code>（确认）、<code>confirm</code>（确认、取消）、<code>prompt</code>（文本框、确认、取消）。</p>
-<p>处理方式：先定位（switch_to.alert自动获取当前弹窗），再使用 text、accept、dismiss、send_keys 等方法进行操作</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">方法</th>
-<th style="text-align:center">描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">text</td>
-<td style="text-align:center">获取弹窗中的文字</td>
-</tr>
-<tr>
-<td style="text-align:center">accept</td>
-<td style="text-align:center">接受（确认）弹窗内容</td>
-</tr>
-<tr>
-<td style="text-align:center">dismiss</td>
-<td style="text-align:center">解除（取消）弹窗</td>
-</tr>
-<tr>
-<td style="text-align:center">send_keys</td>
-<td style="text-align:center">发送文本至警告框</td>
-</tr>
-</tbody>
-</table>
-<p>🌰</p>
-<pre><code class="language-html">&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-​
-&lt;head&gt;
-&lt;/head&gt;
-​
-&lt;body&gt;
-    &lt;button id=&quot;alert&quot;&gt;alert&lt;/button&gt;
-    &lt;button id=&quot;confirm&quot;&gt;confirm&lt;/button&gt;
-    &lt;button id=&quot;prompt&quot;&gt;prompt&lt;/button&gt;
-​
-    &lt;script type=&quot;text/javascript&quot;&gt;
-        const dom1 = document.getElementById(&quot;alert&quot;)
-        dom1.addEventListener('click', function(){
-           alert(&quot;alert hello&quot;)
-        })
-​
-                const dom2 = document.getElementById(&quot;confirm&quot;)
-        dom2.addEventListener('click', function(){
-            confirm(&quot;confirm hello&quot;)
-        })
-​
-                const dom3 = document.getElementById(&quot;prompt&quot;)
-        dom3.addEventListener('click', function(){
-            prompt(&quot;prompt hello&quot;)
-        })
-    &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-<p>测试</p>
-<pre><code class="language-python">from selenium import webdriver
-from pathlib import Path
-from time import sleep
-​
-​
-driver = webdriver.Firefox()
-driver.get('file:///' + str(Path(Path.cwd(), '弹窗.html')))
-​
-sleep(2)
-​
-# 点击alert按钮
-driver.find_element_by_xpath('//*[@id=&quot;alert&quot;]').click()
-sleep(1)
-alert = driver.switch_to.alert
-# 打印alert弹窗的文本
-print(alert.text)
-# 确认
-alert.accept()
-​
-sleep(2)
-​
-# 点击confirm按钮
-driver.find_element_by_xpath('//*[@id=&quot;confirm&quot;]').click()
-sleep(1)
-confirm = driver.switch_to.alert
-print(confirm.text)
-# 取消
-confirm.dismiss()
-​
-sleep(2)
-​
-# 点击confirm按钮
-driver.find_element_by_xpath('//*[@id=&quot;prompt&quot;]').click()
-sleep(1)
-prompt = driver.switch_to.alert
-print(prompt.text)
-# 向prompt的输入框中传入文本
-prompt.send_keys(&quot;Dream丶Killer&quot;)
-sleep(2)
-prompt.accept()
-​
-'''输出
-alert hello
-confirm hello
-prompt hello
-'''
-</code></pre>
-<h1 id="上传-下载文件">上传 &amp; 下载文件</h1>
-<h2 id="上传文件">上传文件</h2>
-<p>常见的 web 页面的上传，一般使用 <code>input</code> 标签或是插件（<code>JavaScript</code>、<code>Ajax</code>），对于 <code>input</code> 标签的上传，可以直接使用 <code>send_keys(路径)</code> 来进行上传。 先写一个测试用的页面。</p>
-<p>🌰</p>
-<pre><code class="language-html">&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-​
-&lt;head&gt;
-    &lt;meta charset=&quot;UTF-8&quot;&gt;
-    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
-    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-    &lt;title&gt;Document&lt;/title&gt;
-&lt;/head&gt;
-​
-&lt;body&gt;
-    &lt;input type=&quot;file&quot; name=&quot;&quot;&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-<p>下面通过 <code>xpath</code> 定位 <code>input</code> 标签，然后使用 <code>send_keys(str(file_path)</code> 上传文件。</p>
-<pre><code class="language-python">from selenium import webdriver
-from pathlib import Path
-from time import sleep
-​
-​
-driver = webdriver.Chrome()
-file_path = Path(Path.cwd(), '上传下载.html')
-driver.get('file:///' + str(file_path))
-​
-driver.find_element_by_xpath('//*[@name=&quot;upload&quot;]').send_keys(str(file_path))
-</code></pre>
-<h2 id="下载文件">下载文件</h2>
-<h3 id="chrome浏览器">Chrome浏览器</h3>
-<p><code>Chrome</code> 浏览器要想实现文件下载，需要通过 <code>add_experimental_option</code> 添加 <code>prefs</code> 参数。</p>
-<ul>
-<li><code>download.default_directory</code>：设置下载路径。</li>
-<li><code>profile.default_content_settings.popups</code>：0 禁止弹出窗口。</li>
-</ul>
-<p>🌰</p>
-<pre><code class="language-python">from selenium import webdriver 
-​
-prefs = {'profile.default_content_settings.popups': 0,
-         'download.default_directory': str(Path.cwd())}
-option = webdriver.ChromeOptions() 
-option.add_experimental_option('prefs', prefs)
-driver = webdriver.Chrome(options=option)
-driver.get(&quot;https://pic.sogou.com/d?query=%E7%83%9F%E8%8A%B1&amp;did=4&amp;category_from=copyright&quot;)
-driver.find_element_by_xpath('/html/body/div/div/div/div[2]/div[1]/div[2]/div[1]/div[2]/a').click()
-​
-driver.switch_to.window(driver.window_handles[-1])
-driver.find_element_by_xpath('./html').send_keys('thisisunsafe')
-</code></pre>
-<blockquote>
-<p>代码最后两句猜测有理解什么意思的吗~，哈哈，实际作用是当你弹出像下面的页面 “您的连接不是私密连接” 时，可以直接键盘输入 “thisisunsafe” 直接访问链接。那么这个键盘输入字符串的操作就是之间讲到的 send_keys，但由于该标签页是新打开的，所以要通过 switch_to.window() 将窗口切换到最新的标签页。</p>
-</blockquote>
-<h3 id="firefox浏览器">Firefox浏览器</h3>
-<p><code>Firefox</code> 浏览器要想实现文件下载，需要通过 <code>set_preference</code> 设置 <code>FirefoxProfile()</code> 的一些属性。</p>
-<ul>
-<li><code>browser.download.foladerList</code>：0 代表按浏览器默认下载路径；2 保存到指定的目录。</li>
-<li><code>browser.download.dir</code>：指定下载目录。</li>
-<li><code>browser.download.manager.showWhenStarting</code>：是否显示开始，<code>boolean</code> 类型。</li>
-<li><code>browser.helperApps.neverAsk.saveToDisk</code>：对指定文件类型不再弹出框进行询问。</li>
-<li><strong>HTTP Content-type对照表</strong>: <a href="https://www.runoob.com/http/http-content-type.html">https://www.runoob.com/http/http-content-type.html</a></li>
-</ul>
-<h2 id="cookies操作">cookies操作</h2>
-<p><code>cookies</code> 是识别用户登录与否的关键，爬虫中常常使用 <code>selenium</code> + <code>requests</code> 实现 <code>cookie</code> 持久化，即先用 <code>selenium</code> 模拟登陆获取 <code>cookie</code> ，再通过 <code>requests</code> 携带 <code>cookie</code> 进行请求。<br>
-<code>webdriver</code> 提供 <code>cookies</code> 的几种操作：读取、添加删除。</p>
-<ul>
-<li><code>get_cookies</code>：以字典的形式返回当前会话中可见的 <code>cookie</code> 信息。</li>
-<li><code>get_cookie(name)</code>：返回 <code>cookie</code> 字典中 <code>key == name</code> 的 <code>cookie</code> 信息。</li>
-<li><code>add_cookie(cookie_dict)</code>：将 <code>cookie</code> 添加到当前会话中。</li>
-<li><code>delete_cookie(name)</code>：删除指定名称的单个 <code>cookie</code>。</li>
-<li><code>delete_all_cookies()</code>：删除会话范围内的所有 <code>cookie</code>。</li>
-</ul>
-<p>🌰</p>
-<pre><code class="language-python">from selenium import webdriver 
-​
-driver = webdriver.Chrome()
-driver.get(&quot;https://blog.csdn.net/&quot;)
-​
-# 输出所有cookie信息
-print(driver.get_cookies())
-​
-cookie_dict = {
-    'domain': '.csdn.net',
-     'expiry': 1664765502,
-     'httpOnly': False,
-     'name': 'test',
-     'path': '/',
-     'secure': True,
-     'value': 'null'}
-​
-# 添加cookie
-driver.add_cookie(cookie_dict)
-# 显示 name = 'test' 的cookie信息
-print(driver.get_cookie('test'))
-# 删除 name = 'test' 的cookie信息
-driver.delete_cookie('test')
-# 删除当前会话中的所有cookie
-driver.delete_all_cookies()
-</code></pre>
-<h1 id="调用javascript">调用JavaScript</h1>
-<p><code>webdriver</code> 对于滚动条的处理需要用到 <code>JavaScript</code>，同时也可以向 <code>textarea</code> 文本框中输入文本（<code>webdriver</code> 只能定位，不能输入文本），<code>webdriver</code> 中使用 <code>execute_script</code> 方法实现 <code>JavaScript</code> 的执行。</p>
-<h2 id="滑动滚动条">滑动滚动条</h2>
-<h3 id="通过-x-y-坐标滑动">通过 x ,y 坐标滑动</h3>
-<p>对于这种通过坐标滑动的方法，我们需要知道做表的起始位置在页面左上角（0,0)。<br>
-🌰</p>
-<pre><code class="language-python">from selenium import webdriver 
-from time import sleep
-​
-driver = webdriver.Chrome()
-driver.get(&quot;https://blog.csdn.net/&quot;)
-sleep(1)
-​
-js = &quot;window.scrollTo(0,500);&quot;
-driver.execute_script(js)
-</code></pre>
-<h3 id="通过参照标签滑动">通过参照标签滑动</h3>
-<p>这种方式需要先找一个参照标签，然后将滚动条滑动至该标签的位置。下面还是用 CSDN 首页做示例，我们用循环来实现重复滑动。该 <code>li</code> 标签实际是一种<strong>懒加载</strong>，当用户滑动至最后标签时，才会加载后面的数据。</p>
-<pre><code class="language-pyhton">from selenium import webdriver 
-from time import sleep
-​
-driver = webdriver.Chrome()
-driver.get(&quot;https://blog.csdn.net/&quot;)
-sleep(1)
-driver.implicitly_wait(3)
-​
-for i in range(31, 102, 10):
-    sleep(1)
-    target = driver.find_element_by_xpath(f'//*[@id=&quot;feedlist_id&quot;]/li[{i}]')
-    driver.execute_script(&quot;arguments[0].scrollIntoView();&quot;, target)
-</code></pre>
-<h1 id="其他操作">其他操作</h1>
-<h2 id="关闭所有页面">关闭所有页面</h2>
-<p>使用 <code>quit()</code> 方法可以关闭所有窗口并退出驱动程序。</p>
-<pre><code class="language-python">driver.quit()
-</code></pre>
-<h2 id="关闭当前页面">关闭当前页面</h2>
-<p>使用 <code>close()</code> 方法可以关闭当前页面，使用时要注意 “当前页面” 这四个字，当你关闭新打开的页面时，需要切换窗口才能操作新窗口并将它关闭。，下面看一个简单的例子，这里不切换窗口，看一下是否能够关闭新打开的页面。</p>
-<pre><code class="language-python">from selenium import webdriver
-from time import sleep
-​
-driver = webdriver.Chrome()
-driver.get('https://blog.csdn.net/')
-driver.implicitly_wait(3)
-​
-# 点击进入新页面
-driver.find_element_by_xpath('//*[@id=&quot;mainContent&quot;]/aside/div[1]/div').click()
-# 切换窗口
-# driver.switch_to.window(driver.window_handles[-1])
-​
-sleep(3)
-driver.close()
-</code></pre>
-<p>可以看到，在不切换窗口时，<code>driver</code> 对象还是操作最开始的页面。</p>
-<h2 id="对当前页面进行截图">对当前页面进行截图</h2>
-<p><code>webdriver</code> 中使用 <code>get_screenshot_as_file()</code> 对 “当前页面” 进行截图，这里和上面的 <code>close()</code> 方法一样，对于新窗口的操作，一定要切换窗口，不然截的还是原页面的图。对页面截图这一功能，主要用在我们测试时记录报错页面的，我们可以将 <code>try except</code> 结合 <code>get_screenshot_as_file()</code> 一起使用来实现这一效果。</p>
-<pre><code class="language-python">try:
-    driver.find_element_by_xpath('//*[@id=&quot;mainContent&quot;]/aside/div[1]/div').click()
-except:
-    driver.get_screenshot_as_file(r'C:\Users\pc\Desktop\screenshot.png')
-</code></pre>
-<blockquote>
-<p>https://juejin.cn/post/7022925905395875847</p>
-</blockquote>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[使用 safari 浏览器导出 Excel 文件后缀会加一个 .html]]></title>
-        <id>http://weakcc.github.io/post/shi-yong-safari-liu-lan-qi-dao-chu-excel-wen-jian-hou-zhui-hui-jia-yi-ge-html/</id>
-        <link href="http://weakcc.github.io/post/shi-yong-safari-liu-lan-qi-dao-chu-excel-wen-jian-hou-zhui-hui-jia-yi-ge-html/">
-        </link>
-        <updated>2021-10-28T02:45:52.000Z</updated>
-        <content type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1635389216714.png" alt="" loading="lazy"></figure>
-<p>解决办法</p>
-<pre><code class="language-php">header(&quot;Pragma: public&quot;);  
-header(&quot;Expires: 0&quot;);  
-header(&quot;Cache-Control:must-revalidate, post-check=0, pre-check=0&quot;);  
-header(&quot;Content-Type:application/force-download&quot;);  
-header(&quot;Content-Type:application/vnd.ms-excel&quot;);  
-header(&quot;Content-Type:application/octet-stream&quot;);  
-header(&quot;Content-Type:application/download&quot;);;  
-header('Content-Disposition:attachment;filename=&quot;'.$filename.'.xls&quot;');
-header(&quot;Content-Transfer-Encoding:binary&quot;);
-$objWriter-&gt;save('php://output');
-exit;
 </code></pre>
 ]]></content>
     </entry>
