@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-11-11T06:17:56.131Z</updated>
+    <updated>2021-11-12T03:16:54.662Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,324 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[通过 MVCC（多版本并发控制）保证数据库事务的一致性]]></title>
+        <id>http://weakcc.github.io/post/tong-guo-mvccduo-ban-ben-bing-fa-kong-zhi-bao-zheng-shu-ju-ku-shi-wu-de-yi-zhi-xing/</id>
+        <link href="http://weakcc.github.io/post/tong-guo-mvccduo-ban-ben-bing-fa-kong-zhi-bao-zheng-shu-ju-ku-shi-wu-de-yi-zhi-xing/">
+        </link>
+        <updated>2021-11-12T00:18:09.000Z</updated>
+        <summary type="html"><![CDATA[<p><code>MVCC</code> 的英文全称是 <strong>Multiversion Concurrency Control</strong>，中文意思是多版本并发控制技术。原理是，通过数据行的多个版本管理来实现数据库的并发控制，简单来说就是保存数据的历史版本。可以通过比较版本号决定数据是否显示出来。读取数据的时候不需要加锁可以保证事务的隔离效果。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p><code>MVCC</code> 的英文全称是 <strong>Multiversion Concurrency Control</strong>，中文意思是多版本并发控制技术。原理是，通过数据行的多个版本管理来实现数据库的并发控制，简单来说就是保存数据的历史版本。可以通过比较版本号决定数据是否显示出来。读取数据的时候不需要加锁可以保证事务的隔离效果。</p>
+<!-- more -->
+<h2 id="undo-日志链表">undo 日志链表</h2>
+<p>当 InnoDB 引擎底层开启一个新事务的时候，会分配一个全局唯一的事务 ID，该事务 ID 写入 undo 日志的同时也会存储到数据表记录簇拥索引的 <code>trx_id</code> 隐藏列中。<br>
+<img src="http://weakcc.github.io/post-images/1636676416765.png" alt="" loading="lazy"><br>
+另一个隐藏列 <code>roll_pointer</code> 指针会指向该记录上一个版本的 undo 日志，发生事务回滚时我们可以通过该指针找到这条记录要回滚到的版本。<br>
+这样，每次记录更新后，上一个版本的值就会被存放到 undo 日志中，并且将当前最新记录的 <code>roll_pointer</code> 指针指向该 undo 日志，这样一来，所有的 <code>roll_pointer</code> 指针串成一个链表，该链表被称作版本链，版本链的头节点就是当前记录最新版本的值。<br>
+🌰<br>
+现在假设有一个<code>事务 A（id=50）</code>，插入了一条数据，那么此时这条数据的隐藏字段以及指向的 <code>undo log</code> 如下图所示，插入的这条数据的值是 A，因此此时<code>事务 A</code> 的 id 是 50，所以这条数据的 <code>txr_id</code> 就是 50，<code>roll_pointer</code> 指向一个空的 <code>undo log</code>，因为之前这条数据是没有的。<br>
+<img src="http://weakcc.github.io/post-images/1636681437542.png" alt="" loading="lazy"><br>
+接着有一个<code>事务 B</code> 跑来修改了一下这条数据，把值改成了值 B，<code>事务 B</code> 的 id 是 58，那么此时更新之前会生成一个 <code>undo log</code> 记录之前的值，然后会把 <code>roll pointer</code> 指向这个实际的 <code>undo log</code> 回滚日志，如下图所示<br>
+<img src="http://weakcc.github.io/post-images/1636681605467.png" alt="" loading="lazy"><br>
+接着<code>事务 C</code> 同理，如下图所示<br>
+<img src="http://weakcc.github.io/post-images/1636681701729.png" alt="" loading="lazy"><br>
+多个事务串行执行的时候，每个人修改了一行数据，都会更新隐藏字段 <code>txr_id</code> 和 <code>roll_pointer</code>，同时之前多个数据快照对应的 <code>undo log</code>，会通过 <code>roll_pointer</code> 指针串联起来，形成一个重要的版本链。</p>
+<h2 id="readview-可读视图">ReadView （可读视图）</h2>
+<p>ReadView 实际上是当前系统中所有活跃事务的列表，主要包含以下组成部分：</p>
+<ul>
+<li><code>m_ids</code>：在生成 ReadView 时当前系统中活跃的事务 ID 列表</li>
+<li><code>min_trx_id</code>：在生成 ReadView 时当前系统中活跃的事务中最小的事务 ID，也就是 m_ids 中的最小值</li>
+<li><code>max_trx_id</code>：在生成 ReadView 时系统中应该分配给下一个事务的 ID 值</li>
+<li><code>creator_trx_id</code>：生成 ReadView 的事务对应的事务 ID，也就是当前事务 ID</li>
+</ul>
+<p>有了这个 ReadView 之后，在访问某条记录时，只需要按照下边的步骤判断该记录的某个版本是否可见：</p>
+<ul>
+<li>如果被访问版本的 <code>trx_id</code> 属性值与 ReadView 中的 <code>tcreator_trx_id</code> 值相同，意味着当前事务在访问它自己修改过的记录，所以该版本记录可以被当前事务访问</li>
+<li>如果被访问版本的 <code>trx_id</code> 属性值小于 ReadView 中的 <code>min_trx_id</code> 值，表明生成该版本的事务在当前事务生成 ReadView 前已经提交，所以该版本记录可以被当前事务访问</li>
+<li>如果被访问版本的 <code>trx_id</code> 属性值大于或等于 ReadView 中的 <code>max_trx_id</code> 值，表明生成该版本的事务在当前事务生成 ReadView 后才开启，所以该版本记录不可以被当前事务访问</li>
+<li>如果被访问版本的 <code>trx_id</code> 属性值在 ReadView 的 <code>min_trx_id</code> 和 <code>max_trx_id</code> 之间，那就需要判断一下 <code>trx_id</code> 属性值是不是在 <code>m_ids</code> 列表中，如果在，说明创建 ReadView 时生成该版本的事务还是活跃的，该版本不可以被访问；如果不在，说明创建 ReadView 时生成该版本的事务已经被提交，该版本记录可以被访问</li>
+<li>如果某个版本的记录对当前事务不可见的话，那就顺着版本链找到下一个版本的数据，继续按照上边的步骤判断可见性，依此类推，直到版本链中的最后一个版本。如果最后一个版本也不可见的话，那么就意味着该条记录对该事务完全不可见，查询结果就不包含该记录</li>
+</ul>
+<p>🌰<br>
+假设原来数据库里就有一行数据，很早以前就有事务插入过了，事务 id 是 32，他的初始值，如下图<br>
+<img src="http://weakcc.github.io/post-images/1636682975510.png" alt="" loading="lazy"><br>
+接着呢，此时两个事务并发来执行了，一个<code>事务 A</code>（id=45），一个<code>事务 B</code>（id=59），<code>事务 B</code> 是要去更新这行数据的，<code>事务 A</code> 是要去读取这行数据的，此时两个事务如下<br>
+<img src="http://weakcc.github.io/post-images/1636683099964.png" alt="" loading="lazy"><br>
+现在<code>事务 A</code> 直接开启一个 <code>ReadView</code>，这刚 <code>ReadView</code> 里的 <code>m_ids</code> 就包含了<code>事务 A</code> 和<code>事务 B</code> 的两个 id，45 和 59，然后 <code>min_trx_id</code> 就是 45，<code>max_trx_id</code> 就是 60，<code>creator_trx_id 就是 45，是</code>事务 A` 自己。</p>
+<p>这刚时候<code>事务 A</code> 第一次查询这行数据，会走一个判断，就是判断一下当前这行数据的 <code>trx_id</code> 是否小于 <code>ReadView</code> 中的 <code>min_trx_id</code>，此时发现 <code>trx_id=32</code> ，是小于 <code>ReadView</code> 里的 <code>min_trx_id</code> 就是 45 的，说明你事务开启之前，修改这行数据的事务早已提交，所以此时可以查询这行数据，如下<br>
+<img src="http://weakcc.github.io/post-images/1636683428146.png" alt="" loading="lazy"><br>
+接着<code>事务 B</code> 开始动手了，他把这行数据的值改为了值 B，然后这行数据的 <code>trx_id</code> 设置为自己的 id，也就是 59，同时 <code>roll_pointer</code> 指向了修改之前生成的一个 <code>undo log</code>，接着这个<code>事务 B</code> 就提交了，如下<br>
+<img src="http://weakcc.github.io/post-images/1636683586822.png" alt="" loading="lazy"><br>
+这个时候 <code>事务 A</code> 再次查询，此时查询的时候，会发现一个问题，那就是此时数据行里的 <code>trx_id=59</code>，那么这个 <code>trx_id</code> 是大于 <code>ReadView</code> 里的 <code>min_trx_id（45）</code>，同时小于 <code>ReadView</code> 里的 <code>max_trx_id（60）</code>，说明更新这条数据的事务，很可能就跟自己差不多是同时开启的，于是会看一下这个 <code>trx_id=59</code>，是否在 <code>ReadView</code> 的 <code>m_ids</code> 列表里的？果然，在 <code>ReadView</code> 的 <code>m_ids</code> 列表里，有 45 和 59 两个事务 id，直接证实了，这个修改数据的事务是跟自己同一时段并发执行然后提交的，所以这行数据是不能查询的，如下<br>
+<img src="http://weakcc.github.io/post-images/1636683916110.png" alt="" loading="lazy"><br>
+既然这行数据不能查询，那么查询什么呢？<br>
+简单，顺着这条数据的 <code>roll_pointer</code> 顺着 <code>undo log</code> 日志链条往下找，就会找到最近一条 <code>undo log</code>，<code>trx_id</code> 是 32，此时发现 <code>trx_id=32</code>，是小于 <code>ReadView</code> 里的 <code>min_trx_id（45）</code>的，说明这个 <code>undo log</code> 版本必然是在<code>事务 A</code> 开启之前就执行且提交的。<br>
+好了，那么就查询最近的 <code>undo log</code> 里的值就好了，这就是 <code>undo log</code> 对版本链条的作用，他可以保存一个快照链条，让你可以读到之前的快照值。如下<br>
+<img src="http://weakcc.github.io/post-images/1636684163556.png" alt="" loading="lazy"><br>
+多个事务并发执行的时候，<code>事务 B</code> 更新的值，通过这套 <strong>ReadView + undo log</strong> 日志链条的机制，就可以保证<code>事务 A</code> 不会读到并发执行的<code>事务 B</code> 更新的值，只会读到之前的值。</p>
+<p>接着假设<code>事务 A</code> 自己更新了这行数据，改为值 A，<code>trxt_id</code>修好为 45，同时保存之前<code>事务 B</code> 修改值的快照，如下<br>
+<img src="http://weakcc.github.io/post-images/1636684360943.png" alt="" loading="lazy"><br>
+此时<code>事务 A</code> 来查询这条数据的值，会发现这个 <code>trx_id=45</code>，居然跟自己的 <code>ReadView</code>里的 <code>creator_trx_id（45）</code>是一样的，说明什么？</p>
+<p>说明这行数据的就是自己修改的，自己修改的值当然是可以看到的，如下<br>
+<img src="http://weakcc.github.io/post-images/1636684489534.png" alt="" loading="lazy"><br>
+接着在事务A执行的过程中，突然开启一个<code>事务 C</code>，这个事务的 id 是 78，然后他更新了那行数据的值为值 C，还提交了，如下<br>
+<img src="http://weakcc.github.io/post-images/1636684574035.png" alt="" loading="lazy"><br>
+这个时候<code>事务 A</code> 再去查询，会发现当前数据的 <code>trx_id=78</code>，大于了自己的 <code>ReadView</code> 中的 <code>max_trx_id（60）</code>，此时说明了什么？</p>
+<p>说明是这个 <code>事务 A</code> 开启之后，然后有一个事务更新了数据，自己当然是不能看到的，如下<br>
+<img src="http://weakcc.github.io/post-images/1636684712358.png" alt="" loading="lazy"><br>
+此时就会顺着 <code>undo log</code> 多版本链条往下找，先找到值 A 是自己之前修改过的版本，因为那个 <code>trx_id=45</code> 跟自己的 <code>ReadVie</code> 里的 <code>creator_trx_id</code> 是一样的，所以此时直接读取自己之前修改的那个版本，如下<br>
+<img src="http://weakcc.github.io/post-images/1636684860422.png" alt="" loading="lazy"></p>
+<blockquote>
+<p>注：在 MySQL InnoDB 引擎中，只有 READ COMMITTD 和 REPEATABLE READ 这两种隔离级别才可以使用 MVCC，应对高并发事务，MVCC 比单纯的加行锁更有效，开销更小。</p>
+</blockquote>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[RabbitMQ 从入门到放弃]]></title>
+        <id>http://weakcc.github.io/post/rabbitmq-cong-ru-men-dao-fang-qi/</id>
+        <link href="http://weakcc.github.io/post/rabbitmq-cong-ru-men-dao-fang-qi/">
+        </link>
+        <updated>2021-11-11T06:24:30.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="概念说明">概念说明</h1>
+<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1636619280369.png" alt="" loading="lazy"></figure>
+]]></summary>
+        <content type="html"><![CDATA[<h1 id="概念说明">概念说明</h1>
+<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1636619280369.png" alt="" loading="lazy"></figure>
+<!-- more -->
+<h2 id="broker">Broker</h2>
+<p>简单来说就是消息队列服务器实体。</p>
+<h2 id="exchange">Exchange</h2>
+<p>消息交换机，它指定消息按什么规则，路由到哪个队列。</p>
+<h2 id="queue">Queue</h2>
+<p>消息队列载体，每个消息都会被投入到一个或多个队列。</p>
+<h2 id="binding">Binding</h2>
+<p>绑定，它的作用就是把 <code>exchange</code> 和 <code>queue</code> 按照路由规则绑定起来。</p>
+<h2 id="routing-key">Routing Key</h2>
+<p>路由关键字，<code>exchange</code> 根据这个关键字进行消息投递。</p>
+<h2 id="vhost">vhost</h2>
+<p>虚拟主机，一个 <code>broker</code> 里可以开设多个 <code>vhost</code>，用作不同用户的权限分离。</p>
+<h2 id="producer">producer</h2>
+<p>消息生产者，就是投递消息的程序。</p>
+<h2 id="consumer">consumer</h2>
+<p>消息消费者，就是接受消息的程序。</p>
+<h2 id="channel">channel</h2>
+<p>消息通道，在客户端的每个连接里，可建立多个 <code>channel</code>，每个 <code>channel</code> 代表一个会话任务。</p>
+<h2 id="使用过程">使用过程</h2>
+<ul>
+<li>
+<ol>
+<li>客户端连接到消息队列服务器，打开一个channel</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>客户端声明一个 <code>exchange</code>，并设置相关属性</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>客户端声明一个 <code>queue</code>，并设置相关属性</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>客户端使用 <code>routing key</code>，在 <code>exchange</code> 和 <code>queue</code> 之间建立好绑定关系</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>客户端投递消息到 <code>exchange</code></li>
+</ol>
+</li>
+</ul>
+<p><code>exchange</code> 接收到消息后，就根据消息的 <code>key</code> 和已经设置的 <code>binding</code>，进行消息路由，将消息投递到一个或多个队列里。</p>
+<p><code>exchange</code> 也有几个类型，完全根据 <code>key</code> 进行投递的叫做 <strong>Direct</strong> 交换机，例如，绑定时设置了 <code>routing key</code>为 “abc”，那么客户端提交的消息，只有设置了 <code>key</code> 为 “abc” 的才会投递到队列。对 <code>key</code> 进行模式匹配后进行投递的叫做 <strong>Topic</strong> 交换机，符号 <b>#</b> 匹配一个或多个词，符号 <b>*</b> 匹配正好一个词。例如 “abc.#” 匹配 “abc.def.ghi”，“abc.*” 只匹配 “abc.def”。还有一种不需要 <code>key</code> 的，叫做 <strong>Fanout</strong> 交换机，它采取广播模式，一个消息进来时，投递到与该交换机绑定的所有队列。</p>
+<h3 id="direct">Direct</h3>
+<figure data-type="image" tabindex="2"><img src="http://weakcc.github.io/post-images/1636619505554.png" alt="" loading="lazy"></figure>
+<h3 id="fanout">Fanout</h3>
+<figure data-type="image" tabindex="3"><img src="http://weakcc.github.io/post-images/1636619513185.png" alt="" loading="lazy"></figure>
+<h3 id="topic">Topic</h3>
+<figure data-type="image" tabindex="4"><img src="http://weakcc.github.io/post-images/1636619518110.png" alt="" loading="lazy"></figure>
+<p><strong>RabbitMQ</strong> 支持消息的持久化，也就是数据写在磁盘上：</p>
+<ul>
+<li>
+<ol>
+<li><code>exchange</code> 持久化，在声明时指定 <code>durable =&gt; 1</code></li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><code>queue</code> 持久化，在声明时指定 <code>durable =&gt; 1</code></li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>消息持久化，在投递时指定 <code>delivery_mode =&gt; 2</code>（1是非持久化）</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p>如果 exchange 和 queue 都是持久化的，那么它们之间的 binding 也是持久化的。如果 exchange 和 queue 两者之间有一个持久化，一个非持久化，就不允许建立绑定。</p>
+</blockquote>
+<h1 id="mac-下搭建-php-开发环境">Mac 下搭建 PHP 开发环境</h1>
+<h2 id="安装-rabbitmq">安装 RabbitMQ</h2>
+<pre><code class="language-php">brew install rabbitmq
+
+brew install rabbitmq-c
+
+pecl install amqp
+</code></pre>
+<h2 id="php-中实现消息发送和接收">PHP 中实现消息发送和接收</h2>
+<p><code>send.php</code></p>
+<pre><code class="language-php">&lt;?php
+
+$exchangeName = 'demo';
+$routeKey = 'hello';
+$message = 'Hello World!';
+
+// 建立 TCP 连接
+$connection = new AMQPConnection(
+    [
+        'host' =&gt; 'localhost',
+        'port' =&gt; 5672,
+        'vhost' =&gt; '/',
+        'login' =&gt; 'guest',
+        'password' =&gt; 'guest',
+    ]
+);
+$connection-&gt;connect() or die('Cannot connect to the broker!\n');
+
+try {
+    $channel = new AMQPChannel($connection);
+
+    $exchange = new AMQPExchange($channel);
+    $exchange-&gt;setName($exchangeName);
+    $exchange-&gt;setType(AMQP_EX_TYPE_DIRECT);
+    $exchange-&gt;declareExchange();
+
+    echo 'Send Message: ' . $exchange-&gt;publish($message, $routeKey) . &quot;\n&quot;;
+    echo &quot;Message Is Sent: &quot; . $message . &quot;\n&quot;;
+} catch (AMQPConnectionException $e) {
+    var_dump($e-&gt;getMessage());
+} catch (Exception $e) {
+    var_dump($e-&gt;getMessage());
+}
+
+// 断开连接
+$connection-&gt;disconnect();
+</code></pre>
+<p><code>receive.php</code></p>
+<pre><code class="language-php">&lt;?php
+
+$exchangeName = 'demo';
+$queueName = 'hello';
+$routeKey = 'hello';
+
+// 建立TCP连接
+$connection = new AMQPConnection([
+    'host' =&gt; 'localhost',
+    'port' =&gt; '5672',
+    'vhost' =&gt; '/',
+    'login' =&gt; 'guest',
+    'password' =&gt; 'guest'
+]);
+$connection-&gt;connect() or die(&quot;Cannot connect to the broker!\n&quot;);
+
+$channel = new AMQPConnection($connection);
+$exchange = new AMQPExchange($channel);
+$exchange-&gt;setName($exchangeName);
+$exchange-&gt;setType(AMQP_EX_TYPE_DIRECT);
+echo 'Exchange Status: ' . $exchange-&gt;declareExchange() . &quot;\n&quot;;
+
+$queue = new AMQPQueue();
+$queue-&gt;setName($queueName);
+
+echo 'Message Total: ' . $queue-&gt;declareQueue() . &quot;\n&quot;;
+
+// 交换机和队列绑定
+echo 'Queue Bind: ' . $queue-&gt;bind($exchangeName, $routeKey) . &quot;\n&quot;;
+
+var_dump(&quot;Waiting for message...&quot;);
+while(true) {
+    $queue-&gt;consume('processMessage');
+}
+
+// 断开连接
+$connection-&gt;disconnect();
+
+function processMessage($envelope, $queue)
+{
+    $msg = $envelope-&gt;getBody();
+    var_dump(&quot;Received: &quot; . $msg);
+    // 手动发送ACK应答
+    $queue-&gt;ack($envelope-&gt;getDeliveryTag);
+}
+</code></pre>
+<h1 id="php-php-amqplib-库操作-rabbitmq">PHP php-amqplib 库操作 RabbitMQ</h1>
+<h2 id="使用-composer-进行-rabbitmq-依赖安装">使用 composer 进行 rabbitmq 依赖安装</h2>
+<pre><code class="language-shell">composer require php-amqplib/php-amqplib
+</code></pre>
+<h2 id="php-操作-rabbitmq-的简单示例">PHP 操作 RabbitMQ 的简单示例</h2>
+<h3 id="生产者">生产者</h3>
+<pre><code class="language-php">&lt;?php
+require '../vendor/autoload.php';
+
+$conf = [
+    'host' =&gt; '127.0.0.1',
+    'port' =&gt; 5672,
+    'user' =&gt; 'guest',
+    'pwd'  =&gt; 'guest',
+    'vhost' =&gt; '/',
+];
+
+$exchangeName = 'kd_sms_send_ex'; // 交换机名
+$queueName = 'kd_sms_send_q'; // 队列名称
+$routingKey = 'sms_send'; // 路由关键字(也可以省略) 一般都带上方便交换机对消息进行不同队列的推送 如果绑定的时候使用了 $routingKey,那么在 bashic_publish 的时候也要指定 $routingKey，不然交换机无法路由到指定队列，默认就推送到不使用关键字的队列了
+
+// 建立生产者与 mq 之间的连接
+$conn = new \PhpAmqpLib\Connection\AMQPStreamConnection($conf['host'], $conf['port'], $conf['user'], $conf['pwd'], $conf['vhost']);
+// 在已连接基础上建立生产者与 mq 之间的通道
+$channel = $conn-&gt;channel();
+/*
+声明初始化交换机
+参数说明：
+exchange：交换机名称
+type：交换机类型，常见的如fanout、direct、topic =》directirect 精准推送 fanout 广播 推送到绑定到此交换机下的所有队列 topic 组播 比如上面我绑定的关键字是sms_send，那么他可以推送到*.sms_send的所有队列
+passive：只查询不创建.如果为true,如果存在这个队列,则会返回队列的信息.如果不存在这个队列..则会抛异常(与交换机不同的是,如果交换机判断存在,则返回NULL,否则异常)
+durable：设置是否持久化。durable设置true表示持久化，反之是持久化。持久化可以将将换机存盘，在服务器重启时不会丢失相关信息
+autoDelete：设置是否自动删除。autoDelete设置为true则表示自动删除。自动删除的前提是至少有一个队列或者交换机与这个交换器绑定的队列或者交换器都与之解绑
+internal：设置是否内置的。如果设置为true，则表示是内置的交换器，客户端程序无法直接发送消息到这个交换器中，只能通过交换器路由到交换器这种方式
+argument：其他一些结构化参数，比如alternate-exchange
+*/
+$channel-&gt;exchange_declare($exchangeName, AMQP_EX_TYPE_DIRECT, false, false, false);
+/*
+声明初始化一条队列
+参数说明：
+queue：队列的名称
+durable：设置是否持久化。为true则设置队列为持久化。持久化的队列会存盘，在服务器重启的时候可以保证不丢失相关信息
+exclusive：设置是否排他。为true则设置对列为排他的。如果一个队列被声明为排他队列，该队列仅对首次声明它的连接可见，并在连接断开时自动删除。这里需要注意的三点：排他队列是基于连接可见，同一个连接的不同信道是可以同时访问同一个连接创建的排他队列；”首次“是指如果一个连接已经声明了一个排他队列，其他连接是不允许建立同名的排他队列的，这个与普通队列不同；即使该队列是持久华东，一旦连接关闭或者客户端退出，该排他队列都会自动被删除，这种队列适用于一个客户端同事发送和读取消息的应用场景
+autoDelete：设置是否自动删除。为true则设置队列为自动删除。自动删除的前提是：至少有一个消费者连接到这个队列，之后所有与这个队列连接的消费者都断开时，才会自动删除。不能把这个参数错误地理解为：”当连接到此队列的所有客户端断开时，这个队列自动删除“，因为生产者客户端创建这个队列，或者没有消费者客户端与这个队列连接时，都不会自动删除这个队列
+arguments：设置队列的其他一些参数，如x-message-ttl等
+*/
+$channel-&gt;queue_declare($queueName, false, true, false, false);
+// 将队列与某个交换机进行绑定，并使用路由关键字
+$channel-&gt;queue_bind($queueName, $exchangeName, $routingKey);
+
+//生成消息
+$msgBody = json_encode([&quot;name&quot; =&gt; &quot;xiaomi&quot;, &quot;age&quot; =&gt; 18]);
+// DELIVERY_MODE_PERSISTENT 2 消息持久化
+$msg = new \PhpAmqpLib\Message\AMQPMessage($msgBody, ['content_type' =&gt; 'text/plain', 'delivery_mode' =&gt; \PhpAmqpLib\Message\AMQPMessage::DELIVERY_MODE_PERSISTENT]);
+// 推送消息到某个交换机
+$r = $channel-&gt;basic_publish($msg, $exchangeName, $routingKey);
+
+// 关闭通道
+$channel-&gt;close();
+// 关闭连接
+$conn-&gt;close();
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Laravel 速查表]]></title>
         <id>http://weakcc.github.io/post/laravel-su-cha-biao/</id>
@@ -850,246 +1168,6 @@ func main()  {
 		tx.Rollback()
 	}
 }
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[PHP 随机字符串]]></title>
-        <id>http://weakcc.github.io/post/php-sui-ji-zi-fu-chuan/</id>
-        <link href="http://weakcc.github.io/post/php-sui-ji-zi-fu-chuan/">
-        </link>
-        <updated>2021-11-01T06:12:51.000Z</updated>
-        <content type="html"><![CDATA[<pre><code class="language-php">function getRandChar($length = 6)
-{
-    $charStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
-
-    $str = '';
-    $max = strlen($charStr);
-    for ($i = 0; $i &lt; $length; $i++) {
-        $str .= $charStr[rand(0, $max - 1)];
-    }
-
-    return $str;
-}
-
-var_dump(getRandChar(5));
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[PHP 无限极分类]]></title>
-        <id>http://weakcc.github.io/post/php-wu-xian-ji-fen-lei/</id>
-        <link href="http://weakcc.github.io/post/php-wu-xian-ji-fen-lei/">
-        </link>
-        <updated>2021-11-01T06:10:47.000Z</updated>
-        <summary type="html"><![CDATA[<h1 id="递归">递归</h1>
-<pre><code class="language-php">&lt;?php
-
-$array = [
-    ['id' =&gt; 1, 'parent_id' =&gt; 0, 'name' =&gt; '河北省'],
-    ['id' =&gt; 2, 'parent_id' =&gt; 0, 'name' =&gt; '北京市'],
-    ['id' =&gt; 3, 'parent_id' =&gt; 1, 'name' =&gt; '邯郸市'],
-    ['id' =&gt; 4, 'parent_id' =&gt; 2, 'name' =&gt; '朝阳区'],
-    ['id' =&gt; 5, 'parent_id' =&gt; 2, 'name' =&gt; '通州区'],
-    ['id' =&gt; 6, 'parent_id' =&gt; 4, 'name' =&gt; '望京'],
-    ['id' =&gt; 7, 'parent_id' =&gt; 4, 'name' =&gt; '酒仙桥'],
-    ['id' =&gt; 8, 'parent_id' =&gt; 3, 'name' =&gt; '永年区'],
-    ['id' =&gt; 9, 'parent_id' =&gt; 1, 'name' =&gt; '武安市'],
-];
-
-function getTree($array, $parent_id = 0, $level = 0)
-{
-    static $list = [];
-    foreach ($array as $key =&gt; $value) {
-        if ($value['parent_id'] == $parent_id) {
-            $value['level'] = $level;
-            $list[] = $value;
-            unset($array[$key]);
-            getTree($array, $value['id'], $level + 1);
-        }
-    }
-    return $list;
-}
-
-$list = getTree($array);
-
-foreach ($list as $value) {
-    echo str_repeat('--', $value['level']) . $value['name'] . PHP_EOL;
-}
-/**
-河北省
---邯郸市
-----永年区
---武安市
-北京市
---朝阳区
-----望京
-----酒仙桥
---通州区
- **/
-</code></pre>
-]]></summary>
-        <content type="html"><![CDATA[<h1 id="递归">递归</h1>
-<pre><code class="language-php">&lt;?php
-
-$array = [
-    ['id' =&gt; 1, 'parent_id' =&gt; 0, 'name' =&gt; '河北省'],
-    ['id' =&gt; 2, 'parent_id' =&gt; 0, 'name' =&gt; '北京市'],
-    ['id' =&gt; 3, 'parent_id' =&gt; 1, 'name' =&gt; '邯郸市'],
-    ['id' =&gt; 4, 'parent_id' =&gt; 2, 'name' =&gt; '朝阳区'],
-    ['id' =&gt; 5, 'parent_id' =&gt; 2, 'name' =&gt; '通州区'],
-    ['id' =&gt; 6, 'parent_id' =&gt; 4, 'name' =&gt; '望京'],
-    ['id' =&gt; 7, 'parent_id' =&gt; 4, 'name' =&gt; '酒仙桥'],
-    ['id' =&gt; 8, 'parent_id' =&gt; 3, 'name' =&gt; '永年区'],
-    ['id' =&gt; 9, 'parent_id' =&gt; 1, 'name' =&gt; '武安市'],
-];
-
-function getTree($array, $parent_id = 0, $level = 0)
-{
-    static $list = [];
-    foreach ($array as $key =&gt; $value) {
-        if ($value['parent_id'] == $parent_id) {
-            $value['level'] = $level;
-            $list[] = $value;
-            unset($array[$key]);
-            getTree($array, $value['id'], $level + 1);
-        }
-    }
-    return $list;
-}
-
-$list = getTree($array);
-
-foreach ($list as $value) {
-    echo str_repeat('--', $value['level']) . $value['name'] . PHP_EOL;
-}
-/**
-河北省
---邯郸市
-----永年区
---武安市
-北京市
---朝阳区
-----望京
-----酒仙桥
---通州区
- **/
-</code></pre>
-<!-- more -->
-<h1 id="引用">引用</h1>
-<pre><code class="language-php">&lt;?php
-
-$array = [
-    1 =&gt; ['id' =&gt; 1, 'parent_id' =&gt; 0, 'name' =&gt; '河北省'],
-    2 =&gt; ['id' =&gt; 2, 'parent_id' =&gt; 0, 'name' =&gt; '北京市'],
-    3 =&gt; ['id' =&gt; 3, 'parent_id' =&gt; 1, 'name' =&gt; '邯郸市'],
-    4 =&gt; ['id' =&gt; 4, 'parent_id' =&gt; 2, 'name' =&gt; '朝阳区'],
-    5 =&gt; ['id' =&gt; 5, 'parent_id' =&gt; 2, 'name' =&gt; '通州区'],
-    6 =&gt; ['id' =&gt; 6, 'parent_id' =&gt; 4, 'name' =&gt; '望京'],
-    7 =&gt; ['id' =&gt; 7, 'parent_id' =&gt; 4, 'name' =&gt; '酒仙桥'],
-    8 =&gt; ['id' =&gt; 8, 'parent_id' =&gt; 3, 'name' =&gt; '永年区'],
-    9 =&gt; ['id' =&gt; 9, 'parent_id' =&gt; 1, 'name' =&gt; '武安市'],
-];
-
-function getTree($list)
-{
-    $tree = [];
-    foreach ($list as &amp;$item) {
-        $parent_id = $item['parent_id'];
-
-        if (isset($list[$parent_id]) &amp;&amp; !empty($list[$parent_id])) {
-            $list[$parent_id]['list'][] = &amp;$item;
-        } else {
-            $tree[] = &amp;$item;
-        }
-    }
-    unset($item);
-
-    return $tree;
-}
-
-$list = getTree($array);
-print_r($list);
-</code></pre>
-<h1 id="laravel-orm-模型">Laravel ORM 模型</h1>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">字段名称</th>
-<th style="text-align:center">描述</th>
-<th style="text-align:center">类型</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">id</td>
-<td style="text-align:center">自增长 ID</td>
-<td style="text-align:center">unsigned big int</td>
-</tr>
-<tr>
-<td style="text-align:center">name</td>
-<td style="text-align:center">类目名称</td>
-<td style="text-align:center">varchar</td>
-</tr>
-<tr>
-<td style="text-align:center">parent_id</td>
-<td style="text-align:center">父类目 ID</td>
-<td style="text-align:center">unsigned big int, null</td>
-</tr>
-<tr>
-<td style="text-align:center">is_directory</td>
-<td style="text-align:center">是否拥有子类目</td>
-<td style="text-align:center">tinyint</td>
-</tr>
-<tr>
-<td style="text-align:center">level</td>
-<td style="text-align:center">当前类目层级</td>
-<td style="text-align:center">unsigned int</td>
-</tr>
-<tr>
-<td style="text-align:center">path</td>
-<td style="text-align:center">该类目所有父类目 id</td>
-<td style="text-align:center">varchar</td>
-</tr>
-</tbody>
-</table>
-<pre><code class="language-php">&lt;?php
-namespace App\Services;
-
-use App\Models\Category;
-
-class CategoryService
-{
-    // 这是一个递归方法
-    // $parentId 参数代表要获取子类目的父类目 ID，null 代表获取所有根类目
-    // $allCategories 参数代表数据库中所有的类目，如果是 null 代表需要从数据库中查询
-    public function getCategoryTree($parentId = null, $allCategories = null)
-    {
-        if (is_null($allCategories)) {
-            // 从数据库中一次性取出所有类目
-            $allCategories = Category::all();
-        }
-
-        return $allCategories
-            // 从所有类目中挑选出父类目 ID 为 $parentId 的类目
-            -&gt;where('parent_id', $parentId)
-            // 遍历这些类目，并用返回值构建一个新的集合
-            -&gt;map(function (Category $category) use ($allCategories) {
-                $data = ['id' =&gt; $category-&gt;id, 'name' =&gt; $category-&gt;name];
-                // 如果当前类目不是父类目，则直接返回
-                if (!$category-&gt;is_directory) {
-                    return $data;
-                }
-                // 否则递归调用本方法，将返回值放入 children 字段中
-                $data['children'] = $this-&gt;getCategoryTree($category-&gt;id, $allCategories);
-
-                return $data;
-            });
-    }
-}
-
-// 调用
-app(App\Services\CategoryService::class)-&gt;getCategoryTree()
 </code></pre>
 ]]></content>
     </entry>
