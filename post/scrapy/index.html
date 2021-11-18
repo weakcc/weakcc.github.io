@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>Scrapy | 腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1637045473816">
+<link rel="shortcut icon" href="/favicon.ico?v=1637229669779">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -189,7 +189,7 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">48</span>
+        <span class="site-item-stat-count">51</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
@@ -5262,6 +5262,174 @@ function getDependencies($paramters) {
       </div>
       
       <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/mysql-suo-yin-shi-yong-zhu-yi-shi-xiang/"" data-c="
+          &lt;h1 id=&#34;1-mysql-索引使用有哪些注意事项呢&#34;&gt;1. MySQL 索引使用有哪些注意事项呢？&lt;/h1&gt;
+&lt;p&gt;可以从两个维度回答这个问题：索引哪些情况会失效，索引不适合哪些场景&lt;/p&gt;
+&lt;h2 id=&#34;索引哪些情况会失效&#34;&gt;索引哪些情况会失效&lt;/h2&gt;
+&lt;ul&gt;
+    &lt;li&gt;查询条件包含or，会导致索引失效&lt;/li&gt;
+    &lt;li&gt;隐式类型转换，会导致索引失效，例如age字段类型是int，我们where age = &#34;1&#34;，这样就会触发隐式类型转换&lt;/li&gt;
+    &lt;li&gt;like通配符会导致索引失效&lt;/li&gt;
+    &lt;li&gt;联合索引，查询时的条件列不是联合索引中的第一个列，索引失效&lt;/li&gt;
+    &lt;li&gt;对索引字段进行函数运算&lt;/li&gt;
+    &lt;li&gt;对索引列运算（如，+、-、*、/），索引失效&lt;/li&gt;
+    &lt;li&gt;索引字段上使用（!= 或者 &lt; &gt;，not in）时，会导致索引失效&lt;/li&gt;
+    &lt;li&gt;索引字段上使用is null， is not null，可能导致索引失效&lt;/li&gt;
+    &lt;li&gt;相join的两个表的字符编码不同，不能命中索引，会导致笛卡尔积的循环计算&lt;/li&gt;
+    &lt;li&gt;mysql估计使用全表扫描要比使用索引快,则不使用索引&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- more --&gt;
+&lt;h2 id=&#34;索引不适合哪些场景&#34;&gt;索引不适合哪些场景&lt;/h2&gt;
+&lt;ul&gt;
+    &lt;li&gt;数据量少的不适合加索引&lt;/li&gt;
+    &lt;li&gt;更新比较频繁的也不适合加索引&lt;/li&gt;
+    &lt;li&gt;离散性低的字段不适合加索引（如性别）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;2-mysql-遇到过死锁问题吗你是如何解决的&#34;&gt;2. MySQL 遇到过死锁问题吗，你是如何解决的？&lt;/h1&gt;
+&lt;p&gt;排查死锁的步骤：&lt;/p&gt;
+&lt;ul&gt;
+    &lt;li&gt;查看死锁日志show engine innodb status;&lt;/li&gt;
+    &lt;li&gt;找出死锁 SQL&lt;/li&gt;
+    &lt;li&gt;分析 SQL 加锁情况&lt;/li&gt;
+    &lt;li&gt;模拟死锁案发&lt;/li&gt;
+    &lt;li&gt;分析死锁日志&lt;/li&gt;
+    &lt;li&gt;分析死锁结果&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;3-日常工作中你是怎么优化sql的&#34;&gt;3. 日常工作中你是怎么优化SQL的？&lt;/h1&gt;
+&lt;p&gt;可以从这几个维度回答这个问题：&lt;/p&gt;
+&lt;ul&gt;
+    &lt;li&gt;加索引&lt;/li&gt;
+    &lt;li&gt;避免返回不必要的数据&lt;/li&gt;
+    &lt;li&gt;适当分批量进行&lt;/li&gt;
+    &lt;li&gt;优化 SQL 结构&lt;/li&gt;
+    &lt;li&gt;主从架构，提升读性能&lt;/li&gt;
+    &lt;li&gt;分库分表&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;4-分库分表的设计&#34;&gt;4. 分库分表的设计&lt;/h1&gt;
+&lt;p&gt;分库分表方案，分库分表中间件，分库分表可能遇到的问题&lt;/p&gt;
+&lt;h2 id=&#34;分库分表方案&#34;&gt;分库分表方案&lt;/h2&gt;
+&lt;ul&gt;
+    &lt;li&gt;水平分库：以字段为依据，按照一定策略（hash、range等），将一个库中的数据拆分到多个库中&lt;/li&gt;
+    &lt;li&gt;水平分表：以字段为依据，按照一定策略（hash、range等），将一个表中的数据拆分到多个表中&lt;/li&gt;
+    &lt;li&gt;垂直分库：以表为依据，按照业务归属不同，将不同的表拆分到不同的库中&lt;/li&gt;
+    &lt;li&gt;垂直分表：以字段为依据，按照字段的活跃性，将表中字段拆到不同的表（主表和扩展表）中&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;常用的分库分表中间件&#34;&gt;常用的分库分表中间件&lt;/h2&gt;
+&lt;ul&gt;
+    &lt;li&gt;Mycat&lt;/li&gt;
+    &lt;li&gt;sharding-jdbc&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;分库分表可能遇到的问题&#34;&gt;分库分表可能遇到的问题&lt;/h2&gt;
+&lt;ul&gt;
+    &lt;li&gt;事务问题：需要用分布式事务啦&lt;/li&gt;
+    &lt;li&gt;跨节点 Join 的问题：解决这一问题可以分两次查询实现&lt;/li&gt;
+    &lt;li&gt;跨节点的 count,order by,group by 以及聚合函数问题：分别在各个节点上得到结果后在应用程序端进行合并&lt;/li&gt;
+    &lt;li&gt;数据迁移，容量规划，扩容等问题&lt;/li&gt;
+    &lt;li&gt;ID 问题：数据库被切分后，不能再依赖数据库自身的主键生成机制啦，最简单可以考虑 UUID&lt;/li&gt;
+    &lt;li&gt;跨分片的排序分页问题（后台加大 pagesize 处理？）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;5-innodb与myisam的区别&#34;&gt;5. InnoDB与MyISAM的区别&lt;/h1&gt;
+&lt;ul&gt;
+    &lt;li&gt;InnoDB 支持事务，MyISAM 不支持事务&lt;/li&gt;
+    &lt;li&gt;InnoDB 支持外键，MyISAM 不支持外键&lt;/li&gt;
+    &lt;li&gt;InnoDB 支持 MVCC (多版本并发控制)，MyISAM 不支持&lt;/li&gt;
+    &lt;li&gt;select count(*) from table 时，MyISAM 更快，因为它有一个变量保存了整个表的总行数，可以直接读取，InnoDB 就需要全表扫描&lt;/li&gt;
+    &lt;li&gt;InnoDB 不支持全文索引，而 MyISAM 支持全文索引（ 5.7 以后的 InnoDB 也支持全文索引）&lt;/li&gt;
+    &lt;li&gt;InnoDB 支持表、行级锁，而 MyISAM 支持表级锁&lt;/li&gt;
+    &lt;li&gt;InnoDB 表必须有主键，而 MyISAM 可以没有主键&lt;/li&gt;
+    &lt;li&gt;InnoDB 表需要更多的内存和存储，而 MyISAM 可被压缩，存储空间较小&lt;/li&gt;
+    &lt;li&gt;InnoDB 按主键大小有序插入，MyISAM 记录插入顺序是，按记录插入顺序保存&lt;/li&gt;
+    &lt;li&gt;InnoDB 存储引擎提供了具有提交、回滚、崩溃恢复能力的事务安全，与 MyISAM 比 InnoDB 写的效率差一些，并且会占用更多的磁盘空间以保留数据和索引&lt;/li&gt;
+    &lt;li&gt;InnoDB 属于索引组织表，使用共享表空间和多表空间储存数据，MyISAM 用 .frm 、.MYD 、.MTI 来储存表定义，数据和索引&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;6-数据库索引的原理为什么要用-b树为什么不用二叉树&#34;&gt;6. 数据库索引的原理，为什么要用 B+树，为什么不用二叉树？&lt;/h1&gt;
+&lt;p&gt;可以从几个维度去看这个问题，查询是否够快，效率是否稳定，存储数据多少，以及查找磁盘次数，为什么不是二叉树，为什么不是平衡二叉树，为什么不是B树，而偏偏是B+树呢？&lt;/p&gt;
+&lt;h2 id=&#34;为什么不是一般二叉树&#34;&gt;为什么不是一般二叉树？&lt;/h2&gt;
+&lt;ul&gt;
+    &lt;li&gt;当数据量大时，树的高度会比较高（树的高度决定着它的 IO 操作次数，IO 操作耗时大），查询会比较慢&lt;/li&gt;
+    &lt;li&gt;每个磁盘块（节点/页）保存的数据太小（ IO 本来是耗时操作，每次 IO 只能读取到一个关键字，显然不合适），没有很好的利用操作磁盘 IO 的数据交换特性，也没有利用好磁盘 IO 的预读能力（空间局部性原理），从而带来频繁的 IO 操作&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;为什么不是平衡二叉树呢&#34;&gt;为什么不是平衡二叉树呢？&lt;/h2&gt;
+&lt;p&gt;我们知道，在内存比在磁盘的数据，查询效率快得多。如果树这种数据结构作为索引，那我们每查找一次数据就需要从磁盘中读取一个节点，也就是我们说的一个磁盘块，但是平衡二叉树可是每个节点只存储一个键值和数据的，如果是 B 树，可以存储更多的节点数据，树的高度也会降低，因此读取磁盘的次数就降下来啦，查询效率就快啦。&lt;/p&gt;
+&lt;h2 id=&#34;那为什么不是b树而是b树呢&#34;&gt;那为什么不是B树而是B+树呢？&lt;/h2&gt;
+&lt;ul&gt;
+    &lt;li&gt;B+Tree 范围查找，定位 min 与 max 之后，中间叶子节点，就是结果集，不用中序回溯 &lt;/li&gt;
+    &lt;li&gt;B+Tree 磁盘读写能力更强（叶子节点不保存真实数据，因此一个磁盘块能保存的关键字更多，因此每次加载的关键字越多）&lt;/li&gt;
+    &lt;li&gt;B+Tree 扫表和扫库能力更强（ B-Tree 树需要扫描整颗树，B+Tree 树只需要扫描叶子节点）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;详细参考：&lt;a href=&#34;https://blog.csdn.net/qq_35620342/article/details/119797039&#34;&gt;索引原理&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;7-聚集索引与非聚集索引的区别&#34;&gt;7. 聚集索引与非聚集索引的区别&lt;/h1&gt;
+&lt;ul&gt;
+    &lt;li&gt;一个表中只能拥有一个聚集索引，而非聚集索引一个表可以存在多个&lt;/li&gt;
+    &lt;li&gt;聚集索引，索引中键值的逻辑顺序决定了表中相应行的物理顺序；非聚集索引，索引中索引的逻辑顺序与磁盘上行的物理存储顺序不同&lt;/li&gt;
+    &lt;li&gt;索引是通过二叉树的数据结构来描述的，我们可以这么理解聚簇索引：索引的叶节点就是数据节点；而非聚簇索引的叶节点仍然是索引节点，只不过有一个指针指向对应的数据块&lt;/li&gt;
+    &lt;li&gt;聚集索引：物理存储按照索引排序；非聚集索引：物理存储不按照索引排序&lt;/li&gt;
+&lt;/ul&gt;
+## 何时使用聚集索引或非聚集索引？
+&lt;blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;来源：https://juejin.cn/post/7001748298507747364?utm_source=gold_browser_extension&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+    &lt;li&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+">MySQL 索引使用注意事项</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/mysql/"" data-c="
+          &lt;h1 id=&#34;索引使用注意事项&#34;&gt;索引使用注意事项&lt;/h1&gt;
+&lt;h2 id=&#34;索引哪些情况会失效&#34;&gt;索引哪些情况会失效&lt;/h2&gt;
+&lt;ul&gt;
+    &lt;li&gt;查询条件包含or，会导致索引失效&lt;/li&gt;
+    &lt;li&gt;隐式类型转换，会导致索引失效，例如age字段类型是int，我们where age = &#34;1&#34;，这样就会触发隐式类型转换&lt;/li&gt;
+    &lt;li&gt;like通配符会导致索引失效&lt;/li&gt;
+    &lt;li&gt;联合索引，查询时的条件列不是联合索引中的第一个列，索引失效&lt;/li&gt;
+    &lt;li&gt;对索引字段进行函数运算&lt;/li&gt;
+    &lt;li&gt;对索引列运算（如，+、-、*、/），索引失效&lt;/li&gt;
+    &lt;li&gt;索引字段上使用（!= 或者 &lt; &gt;，not in）时，会导致索引失效&lt;/li&gt;
+    &lt;li&gt;索引字段上使用is null， is not null，可能导致索引失效&lt;/li&gt;
+    &lt;li&gt;相join的两个表的字符编码不同，不能命中索引，会导致笛卡尔积的循环计算&lt;/li&gt;
+    &lt;li&gt;mysql估计使用全表扫描要比使用索引快,则不使用索引&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- more --&gt;
+&lt;h2 id=&#34;索引不适合哪些场景&#34;&gt;索引不适合哪些场景&lt;/h2&gt;
+&lt;ul&gt;
+    &lt;li&gt;数据量少的不适合加索引&lt;/li&gt;
+    &lt;li&gt;更新比较频繁的也不适合加索引&lt;/li&gt;
+    &lt;li&gt;离散性低的字段不适合加索引（如性别）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;mysql-死锁解决方案&#34;&gt;MySQL 死锁解决方案&lt;/h1&gt;
+&lt;p&gt;排查死锁的步骤：&lt;/p&gt;
+&lt;ol&gt;
+    &lt;li&gt;查看死锁日志 show engine innodb status&lt;/li&gt;
+    &lt;li&gt;找出死锁 sql&lt;/li&gt;
+    &lt;li&gt;分析 sql 加锁情况&lt;/li&gt;
+    &lt;li&gt;模拟死锁案发&lt;/li&gt;
+    &lt;li&gt;分析死锁日志&lt;/li&gt;
+    &lt;li&gt;分析死锁结果&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;优化-sql&#34;&gt;优化 SQL&lt;/h1&gt;
+&lt;ul&gt;
+    &lt;li&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;来源：https://juejin.cn/post/7001748298507747364?utm_source=gold_browser_extension&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+">MySQL</a>
+      </div>
+      
+      <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/shi-xian-da-shu-ju-liang-wen-jian-de-yi-bu-dao-chu/"" data-c="
           &lt;ol&gt;
     &lt;li&gt;点击导出后，将筛选条件推进队列。（包括总条数）（提示正在处理）&lt;/li&gt;
@@ -5633,6 +5801,61 @@ Co\run(function() {
 });
 &lt;/code&gt;&lt;/pre&gt;
 ">连接池</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/redis-fen-bu-shi-suo-zheng-que-zi-tai/"" data-c="
+          &lt;h2 id=&#34;什么是锁&#34;&gt;什么是锁&lt;/h2&gt;
+&lt;p&gt;当两个并发运行的进程/线程要同时处理某个资源的时间，同时只能让一个进程/线程获取到这个资源，待其处理完成后，才能让另一个进程/线程开始处理这个资源，否则就会导致这个资源的状态管理出现混乱，而要保证并发运行的程序同时只有一个进程/线程处理这个资源，就需要引入锁机制 ---- 某个进程/线程获取到资源锁后，才能对其进行操作，当其他进程/线程试图获取这个资源进行处理时，发现对应的资源锁已经被占用了，就会进入阻塞状态，直到持有这个资源锁的进程/线程处理资源完毕，将锁释放。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可以类比数据库事务的并发操作来理解为什么并发处理资源的进程/线程会导致资源状态出现混乱，比如对于更新用户的账户余额的程序，一个线程将用户余额更新还未保存，另一个线程就进来将其更新，最终会导致处理结果与我们预期不一致。我们通过锁机制让并发运行的程序同时只有一个线程才能处理账户更新，才不会出现数据紊乱的问题。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;什么是分布式锁&#34;&gt;什么是分布式锁&lt;/h2&gt;
+&lt;p&gt;所谓分布式锁，指的就是这个锁可以被多个分布式部署的服务/应用/进程共享，而不仅仅局限于某个服务/应用/进程内部。&lt;br&gt;
+另外，对于所有锁而言，不同进程/线程在竞争获取锁时，要确保获取锁的操作是原子性的，否则依然存在并发安全问题，即同时有多个进程/线程获取并处理同一个资源。&lt;br&gt;
+最后，这个锁还支持在上锁的同时设置过期时间，否则万一某个进程/线程获取到锁之后，处理资源时异常退出，导致锁没有释放，那么其他进程/线程就永远处于阻塞状态，不能再处理这个资源了。&lt;/p&gt;
+&lt;h2 id=&#34;redis-实现分布式锁&#34;&gt;Redis 实现分布式锁&lt;/h2&gt;
+&lt;p&gt;Redis 作为分布式存储中间件，天然适合实现分布式锁，因为它同时满足上面这三个条件：&lt;/p&gt;
+&lt;ul&gt;
+    &lt;li&gt;以单进程模式运行的 Redis 服务可以同时被分布式部署和运行的多个服务/应用/进程共享&lt;/li&gt;
+    &lt;li&gt;Redis 的 &lt;b&gt;SET&lt;/b&gt; 指令支持在设置键值的同时设置过期时间，并且整个操作是原子性的，所以完全可以基于这个操作来实现分布式锁，待资源处理完成后，再通过  &lt;b&gt;DEL&lt;/b&gt; 指令删除键值来释放锁&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在 Laravel 中编写一个 Artisan 命令来模拟并发运行的应用：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;php artisan make:command ScheduleJob
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;先看看不使用分布式锁的运行情况：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-php&#34;&gt;class ScheduleJob extends Command
+{
+    protected $signature = &#39;schedule:job {process}&#39;;
+
+    protected $description = &#39;Mock Schedule Jobs&#39;;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    public function handle()
+    {
+        $processNo = $this-&amp;gt;argument(&#39;process&#39;);
+        for ($i = 1; $i &amp;lt;= 10; $i++) {
+            $log = &amp;quot;Running Job #{$i} In Process #{$processNo}&amp;quot;;
+            // 将运行日志记录到本地文件存储（storage/app/schedule_job_logs）
+            Storage::disk(&#39;local&#39;)-&amp;gt;append(&#39;schedule_job_logs&#39;, $log);
+            // 模拟长时间运行的任务
+            sleep(1);
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;通过 Artisan 命令参数传入模拟的进程 ID：&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1624069150743.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+打开日志文件，可以看到运行记录呈犬牙交错状：&lt;br&gt;
+&lt;img src=&#34;http://weakcc.github.io/post-images/1624069166080.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+两个进程可以并行处理这个程序，由于没有引入锁机制，所以如果把 for 循环看作一个资源处理，那么两个进程可以同时获取这个资源进行处理，进而导致并发安全问题，要解决这个问题，我们可以通过 Redis 实现一个锁，Laravel 底层已经实现了基于 Redis 的锁 Illuminate\Cache\RedisLock，所以不需要重复造轮子了，直接拿来用就好了：&lt;/p&gt;
+">Redis 分布式锁正确姿态</a>
       </div>
       
       <div class="item">

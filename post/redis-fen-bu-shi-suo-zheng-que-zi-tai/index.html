@@ -8,7 +8,7 @@
 <meta name="keywords" content="腰盐醋静态个人博客">
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
-<title>Docker 安装并配置 Redis | 腰盐醋</title>
+<title>Redis 分布式锁正确姿态 | 腰盐醋</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1637229669779">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="Docker 安装并配置 Redis" />
-  <meta name="keywords" content="Docker,Redis" />
+  <meta name="description" content="Redis 分布式锁正确姿态" />
+  <meta name="keywords" content="" />
 </head>
 
 <body>
@@ -220,12 +220,13 @@
   <div class="toc-wrapper auto-number auto"
     id="toc_wrapper">
     <ul class="markdownIt-TOC">
-<li><a href="#%E9%80%89%E6%8B%A9%E4%B8%80%E4%B8%AA%E5%90%88%E9%80%82%E7%9A%84-docker-%E7%89%88%E6%9C%AC">选择一个合适的 docker 版本</a></li>
-<li><a href="#%E4%BD%BF%E7%94%A8-docker-%E5%AE%89%E8%A3%85-redis">使用 docker 安装 redis</a></li>
-<li><a href="#%E5%87%86%E5%A4%87-redis-%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">准备 redis 的配置文件</a></li>
-<li><a href="#%E4%BF%AE%E6%94%B9-redisconf-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">修改 redis.conf 配置文件</a></li>
-<li><a href="#%E5%90%AF%E5%8A%A8-docker">启动 docker</a></li>
-<li><a href="#%E6%9F%A5%E7%9C%8B%E6%98%AF%E5%90%A6%E5%90%AF%E5%8A%A8%E6%88%90%E5%8A%9F">查看是否启动成功</a></li>
+<li>
+<ul>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%94%81">什么是锁</a></li>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81">什么是分布式锁</a></li>
+<li><a href="#redis-%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81">Redis 实现分布式锁</a></li>
+</ul>
+</li>
 </ul>
 
   </div>
@@ -491,8 +492,8 @@
           <div class="section bg-color post post-page">
             <section class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/">
-      Docker 安装并配置 Redis
+    <a class="post-title-link" href="http://weakcc.github.io/post/redis-fen-bu-shi-suo-zheng-que-zi-tai/">
+      Redis 分布式锁正确姿态
     </a>
   </h1>
   <div class="post-meta">
@@ -500,42 +501,23 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2021-03-15 12:35:01">2021-03-15</span>
+      <span class="publish-time" data-t="2021-06-19 09:36:04">2021-06-19</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
     <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/-1C81uOvV/">
-        <span>Docker</span>
-      </a>、
-      
-      
-      
-      <a href="http://weakcc.github.io/tag/tayIXOYIs/">
-        <span>Redis</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>2<span class="language" data-lan="minute">分钟</span></span>
+      <span>4<span class="language" data-lan="minute">分钟</span></span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>365<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>988<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
     
     
-    <span id="/post/docker-an-zhuang-bing-pei-zhi-redis/" data-flag-title="Docker 安装并配置 Redis" class="meta-item pc-show leancloud_visitors">
+    <span id="/post/redis-fen-bu-shi-suo-zheng-que-zi-tai/" data-flag-title="Redis 分布式锁正确姿态" class="meta-item pc-show leancloud_visitors">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-eye"></i>
       <span><span class="language" data-lan="view">浏览量</span>：<span class="leancloud-visitors-count"></span></span>
@@ -544,54 +526,56 @@
   </div>
 </section>
             <div class="post-body next-md-body" id="post_body">
-              <!-- more -->
-<h1 id="选择一个合适的-docker-版本">选择一个合适的 docker 版本</h1>
-<p><a href="https://hub.docker.com/_/redis?tab=tags&amp;page=1&amp;ordering=last_updated">https://hub.docker.com/_/redis?tab=tags&amp;page=1&amp;ordering=last_updated</a></p>
-<!-- more -->
-<h1 id="使用-docker-安装-redis">使用 docker 安装 redis</h1>
-<pre><code class="language-shell">sudo docker pull redis
-</code></pre>
-<figure data-type="image" tabindex="1"><img src="http://weakcc.github.io/post-images/1615783536958.png" alt="" loading="lazy"></figure>
-<h1 id="准备-redis-的配置文件">准备 redis 的配置文件</h1>
-<p>redis 中文官方网站：<a href="http://www.redis.cn/download.html">http://www.redis.cn/download.html</a><br>
-<img src="http://weakcc.github.io/post-images/1615783307536.png" alt="" loading="lazy"><br>
-解压<br>
-<img src="http://weakcc.github.io/post-images/1615783445135.png" alt="" loading="lazy"></p>
-<h1 id="修改-redisconf-配置文件">修改 redis.conf 配置文件</h1>
+              <h2 id="什么是锁">什么是锁</h2>
+<p>当两个并发运行的进程/线程要同时处理某个资源的时间，同时只能让一个进程/线程获取到这个资源，待其处理完成后，才能让另一个进程/线程开始处理这个资源，否则就会导致这个资源的状态管理出现混乱，而要保证并发运行的程序同时只有一个进程/线程处理这个资源，就需要引入锁机制 ---- 某个进程/线程获取到资源锁后，才能对其进行操作，当其他进程/线程试图获取这个资源进行处理时，发现对应的资源锁已经被占用了，就会进入阻塞状态，直到持有这个资源锁的进程/线程处理资源完毕，将锁释放。</p>
+<blockquote>
+<blockquote>
+<p>可以类比数据库事务的并发操作来理解为什么并发处理资源的进程/线程会导致资源状态出现混乱，比如对于更新用户的账户余额的程序，一个线程将用户余额更新还未保存，另一个线程就进来将其更新，最终会导致处理结果与我们预期不一致。我们通过锁机制让并发运行的程序同时只有一个线程才能处理账户更新，才不会出现数据紊乱的问题。</p>
+</blockquote>
+</blockquote>
+<h2 id="什么是分布式锁">什么是分布式锁</h2>
+<p>所谓分布式锁，指的就是这个锁可以被多个分布式部署的服务/应用/进程共享，而不仅仅局限于某个服务/应用/进程内部。<br>
+另外，对于所有锁而言，不同进程/线程在竞争获取锁时，要确保获取锁的操作是原子性的，否则依然存在并发安全问题，即同时有多个进程/线程获取并处理同一个资源。<br>
+最后，这个锁还支持在上锁的同时设置过期时间，否则万一某个进程/线程获取到锁之后，处理资源时异常退出，导致锁没有释放，那么其他进程/线程就永远处于阻塞状态，不能再处理这个资源了。</p>
+<h2 id="redis-实现分布式锁">Redis 实现分布式锁</h2>
+<p>Redis 作为分布式存储中间件，天然适合实现分布式锁，因为它同时满足上面这三个条件：</p>
 <ul>
-<li>bind 127.0.0.1 # 注释掉，使 redis 可以外部访问</li>
-<li>daemonize no # 用守护线程的方式启动</li>
-<li>requirepass 你的密码 # 给 redis 设置密码</li>
-<li>appendonly yes # redis 持久化开启</li>
+    <li>以单进程模式运行的 Redis 服务可以同时被分布式部署和运行的多个服务/应用/进程共享</li>
+    <li>Redis 的 <b>SET</b> 指令支持在设置键值的同时设置过期时间，并且整个操作是原子性的，所以完全可以基于这个操作来实现分布式锁，待资源处理完成后，再通过  <b>DEL</b> 指令删除键值来释放锁</li>
 </ul>
-# 创建本地与 docker 映射的目录
-```shell
-sudo mkdir /data/redis
-sudo mkdir /data/redis/data
-```
-<p>把配置文件<code>redis.conf</code>拷贝到刚才创建好的<code>/data/redis</code>目录下</p>
-<h1 id="启动-docker">启动 docker</h1>
-<pre><code class="language-shell">sudo docker run -p 6379:6379 --name redis -v /data/redis/redis.conf:/etc/redis/redis.conf  -v /data/redis/data:/data -d redis redis-server /etc/redis/redis.conf --appendonly yes
+<p>在 Laravel 中编写一个 Artisan 命令来模拟并发运行的应用：</p>
+<pre><code>php artisan make:command ScheduleJob
 </code></pre>
-<p>参数解释：</p>
-<blockquote>
-<p>-p 6379:6379:把容器内的6379端口映射到宿主机6379端口<br>
--v /data/redis/redis.conf:/etc/redis/redis.conf：把宿主机配置好的 redis.conf 放到容器内的这个位置中<br>
--v /data/redis/data:/data：把 redis 持久化的数据在宿主机内显示，做数据备份<br>
-redis-server /etc/redis/redis.conf：这个是关键配置，让 redis 不是无配置启动，而是按照这个 redis.conf 的配置启动<br>
--appendonly yes：redis 启动后数据持久化</p>
-</blockquote>
-<h1 id="查看是否启动成功">查看是否启动成功</h1>
-<p>是否启动成功</p>
-<pre><code class="language-shell">sudo docker ps
+<p>先看看不使用分布式锁的运行情况：</p>
+<pre><code class="language-php">class ScheduleJob extends Command
+{
+    protected $signature = 'schedule:job {process}';
+
+    protected $description = 'Mock Schedule Jobs';
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    public function handle()
+    {
+        $processNo = $this-&gt;argument('process');
+        for ($i = 1; $i &lt;= 10; $i++) {
+            $log = &quot;Running Job #{$i} In Process #{$processNo}&quot;;
+            // 将运行日志记录到本地文件存储（storage/app/schedule_job_logs）
+            Storage::disk('local')-&gt;append('schedule_job_logs', $log);
+            // 模拟长时间运行的任务
+            sleep(1);
+        }
+    }
+}
 </code></pre>
-<p>查看一下日志（没有启动成功也可以通过日志查看原因）</p>
-<pre><code>sudo docker logs redis
-</code></pre>
-<figure data-type="image" tabindex="2"><img src="http://weakcc.github.io/post-images/1615784431566.png" alt="" loading="lazy"></figure>
-<blockquote>
-<p>https://blog.csdn.net/qq_17623363/article/details/106418353</p>
-</blockquote>
+<p>通过 Artisan 命令参数传入模拟的进程 ID：<br>
+<img src="http://weakcc.github.io/post-images/1624069150743.png" alt="" loading="lazy"><br>
+打开日志文件，可以看到运行记录呈犬牙交错状：<br>
+<img src="http://weakcc.github.io/post-images/1624069166080.png" alt="" loading="lazy"><br>
+两个进程可以并行处理这个程序，由于没有引入锁机制，所以如果把 for 循环看作一个资源处理，那么两个进程可以同时获取这个资源进行处理，进而导致并发安全问题，要解决这个问题，我们可以通过 Redis 实现一个锁，Laravel 底层已经实现了基于 Redis 的锁 Illuminate\Cache\RedisLock，所以不需要重复造轮子了，直接拿来用就好了：</p>
 
             </div>
             
@@ -608,7 +592,7 @@ redis-server /etc/redis/redis.conf：这个是关键配置，让 redis 不是无
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/" title="Docker 安装并配置 Redis">http://weakcc.github.io/post/docker-an-zhuang-bing-pei-zhi-redis/</a>
+      <a href="http://weakcc.github.io/post/redis-fen-bu-shi-suo-zheng-que-zi-tai/" title="Redis 分布式锁正确姿态">http://weakcc.github.io/post/redis-fen-bu-shi-suo-zheng-que-zi-tai/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -617,23 +601,19 @@ redis-server /etc/redis/redis.conf：这个是关键配置，让 redis 不是无
   </ul>
   <div class="tags">
     
-      <a href="http://weakcc.github.io/tag/-1C81uOvV/"># Docker</a>
-    
-      <a href="http://weakcc.github.io/tag/tayIXOYIs/"># Redis</a>
-    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
         <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="使用 Laradock 搭建基于 Docker 的 PHP 开发环境" href="http://weakcc.github.io/post/shi-yong-laradock-da-jian-ji-yu-docker-de-php-kai-fa-huan-jing/">使用 Laradock 搭建基于 Docker 的 PHP 开发环境</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="使用 Laradock 搭建基于 Docker 的 PHP 开发环境" href="http://weakcc.github.io/post/shi-yong-laradock-da-jian-ji-yu-docker-de-php-kai-fa-huan-jing/">上一篇</a>
+        <a class="nav-pc-next" title="连接池" href="http://weakcc.github.io/post/lian-jie-chi/">连接池</a class="nav-pc-next">
+        <a class="nav-mobile-prev" title="连接池" href="http://weakcc.github.io/post/lian-jie-chi/">上一篇</a>
       
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="悲观锁和乐观锁" href="http://weakcc.github.io/post/bei-guan-suo-he-le-guan-suo/">悲观锁和乐观锁</a>
-        <a class="nav-mobile-next" title="悲观锁和乐观锁" href="http://weakcc.github.io/post/bei-guan-suo-he-le-guan-suo/">下一篇</a>
+        <a class="nav-pc-next" title="Redis 实现消息队列" href="http://weakcc.github.io/post/redis-shi-xian-xiao-xi-dui-lie/">Redis 实现消息队列</a>
+        <a class="nav-mobile-next" title="Redis 实现消息队列" href="http://weakcc.github.io/post/redis-shi-xian-xiao-xi-dui-lie/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
