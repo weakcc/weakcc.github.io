@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://weakcc.github.io</id>
     <title>腰盐醋</title>
-    <updated>2021-11-18T10:01:15.320Z</updated>
+    <updated>2021-11-19T08:47:00.120Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://weakcc.github.io"/>
     <link rel="self" href="http://weakcc.github.io/atom.xml"/>
@@ -10,6 +10,18 @@
     <logo>http://weakcc.github.io/images/avatar.png</logo>
     <icon>http://weakcc.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, 腰盐醋</rights>
+    <entry>
+        <title type="html"><![CDATA[MAMP 下指定 PHP 版本执行 composer （指定项目）]]></title>
+        <id>http://weakcc.github.io/post/mamp-xia-zhi-ding-php-ban-ben-zhi-xing-composer-zhi-ding-xiang-mu/</id>
+        <link href="http://weakcc.github.io/post/mamp-xia-zhi-ding-php-ban-ben-zhi-xing-composer-zhi-ding-xiang-mu/">
+        </link>
+        <updated>2021-11-19T02:54:09.000Z</updated>
+        <content type="html"><![CDATA[<pre><code class="language-shell">cd m7/PHP/benben/basic_crm/
+
+/Applications/MAMP/bin/php/php7.0.31/bin/php /usr/local/bin/composer require tencentcloud/tencentcloud-sdk-php
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[通过 MVCC（多版本并发控制）保证数据库事务的一致性]]></title>
         <id>http://weakcc.github.io/post/tong-guo-mvccduo-ban-ben-bing-fa-kong-zhi-bao-zheng-shu-ju-ku-shi-wu-de-yi-zhi-xing/</id>
@@ -1358,236 +1370,6 @@ $object-&gt;sayHello();
 <blockquote>
 <p>https://learnku.com/php/t/62217</p>
 </blockquote>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Go 操作MySQL]]></title>
-        <id>http://weakcc.github.io/post/go-cao-zuo-mysql/</id>
-        <link href="http://weakcc.github.io/post/go-cao-zuo-mysql/">
-        </link>
-        <updated>2021-11-03T08:44:38.000Z</updated>
-        <summary type="html"><![CDATA[<h2 id="下载依赖">下载依赖</h2>
-<pre><code class="language-go">go get -u github.com/go-sql-driver/mysql
-</code></pre>
-]]></summary>
-        <content type="html"><![CDATA[<h2 id="下载依赖">下载依赖</h2>
-<pre><code class="language-go">go get -u github.com/go-sql-driver/mysql
-</code></pre>
-<!-- more -->
-<h2 id="连接">连接</h2>
-<pre><code class="language-go">package main
-
-import (
-	&quot;database/sql&quot;
-	&quot;fmt&quot;
-
-	_ &quot;github.com/go-sql-driver/mysql&quot;
-)
-
-var db *sql.DB
-
-func initDB() (err error) {
-	// 用户名:密码@tcp(ip:端口)/数据库名
-	dsn := &quot;root:123456@tcp(127.0.0.1:3306)/go_test&quot;
-	// Open 不会校验账号密码是否正确
-	db, err = sql.Open(&quot;mysql&quot;, dsn)
-	if err != nil {
-		return
-	}
-	// 尝试与数据库建立连接（校验dsn是否正确）
-	err = db.Ping()
-	if err != nil {
-		return
-    }
-	return nil
-}
-
-func main()  {
-	err:= initDB()
-	if err!= nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(&quot;连接成功！&quot;)
-}
-</code></pre>
-<blockquote>
-<p>其中 <code>sql.DB</code> 是表示连接的数据库对象（结构体实例），它保存了连接数据库相关的所有信息。它内部维护着一个具有零到多个底层连接的连接池，它可以安全地被多个 goroutine 同时使用</p>
-</blockquote>
-<h2 id="curd">CURD</h2>
-<h3 id="插入">插入</h3>
-<pre><code class="language-go">func insertRow()  {
-	sqlStr := &quot;insert into user (name, age) values (?, ?)&quot;
-	result, err := db.Exec(sqlStr, &quot;小晓&quot;, 11)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(id)
-}
-</code></pre>
-<h3 id="查询">查询</h3>
-<h4 id="单行查询">单行查询</h4>
-<pre><code class="language-go">func queryRow()  {
-	sqlStr := &quot;select id, name, age from user where id = ?&quot;
-    var u user
-    // 确保 QueryRow 之后调用 Scan 方法，否则持有的数据库链接不会被释放
-	err := db.QueryRow(sqlStr, 1).Scan(&amp;u.id, &amp;u.name, &amp;u.age)
-	if err != nil {
-		fmt.Println(&quot;错误：&quot;, err)
-		return
-	}
-	fmt.Println(u)
-}
-</code></pre>
-<h4 id="多行查询">多行查询</h4>
-<pre><code class="language-go">func queryRows()  {
-	sqlStr := &quot;select id, name, age from user where id &gt;= ?&quot;
-	rows, err := db.Query(sqlStr, 1)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// 关闭 rows 释放持有的数据库链接
-	defer rows.Close()
-
-	// 循环读取结果集中的数据
-	for rows.Next() {
-		var u user
-		err := rows.Scan(&amp;u.id, &amp;u.name, &amp;u.age)
-		if err != nil {
-			fmt.Println(&quot;错误：&quot;, err)
-			return
-		}
-		fmt.Println(u)
-	}
-}
-</code></pre>
-<h3 id="更新">更新</h3>
-<pre><code class="language-go">func updateRow()  {
-	sqlStr := &quot;update user set age = ? where id &gt; ?&quot;
-	result, err := db.Exec(sqlStr, 12, 2)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	n, err := result.RowsAffected() // 操作受影响的行数
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(n)
-}
-</code></pre>
-<h3 id="删除数据">删除数据</h3>
-<pre><code class="language-go">func deleteRow()  {
-	sqlStr := &quot;delete from user where id = ?&quot;
-	result, err := db.Exec(sqlStr, 4)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	n, err := result.RowsAffected()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(n)
-}
-</code></pre>
-<h2 id="预处理">预处理</h2>
-<p>防止 <code>SQL 注入</code></p>
-<h3 id="查询-2">查询</h3>
-<pre><code class="language-go">func prepareQuery()  {
-	sqlStr := &quot;select id, name, age from user where id &gt;= ?&quot;
-	stmt, err := db.Prepare(sqlStr)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer stmt.Close()
-	rows, err := stmt.Query(1)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var u user
-		err := rows.Scan(&amp;u.id, &amp;u.name, &amp;u.age)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		fmt.Println(u)
-	}
-}
-</code></pre>
-<h3 id="插入更新删除类似">插入，更新，删除类似</h3>
-<pre><code class="language-go">func prepareInsert() {
-	sqlStr := &quot;insert into user(name, age) values (?, ?)&quot;
-	stmt, err := db.Prepare(sqlStr)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(&quot;小爱&quot;, 5)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(&quot;success&quot;)
-}
-</code></pre>
-<h2 id="事务">事务</h2>
-<pre><code class="language-go">func transactionDemo()  {
-	tx, err := db.Begin() // 开启事务
-	if err != nil {
-		if tx != nil {
-			tx.Rollback() // 回滚
-		}
-		fmt.Println(err)
-		return
-	}
-	sqlStr1 := &quot;update user set age = 18 where id = ?&quot;
-	result1, err := tx.Exec(sqlStr1, 2)
-	if err != nil {
-		tx.Rollback()
-		fmt.Println(err)
-		return
-	}
-	n1, err := result1.RowsAffected()
-	if err != nil {
-		tx.Rollback()
-		fmt.Println(err)
-		return
-	}
-	sqlStr2 := &quot;update user set age = 18 where id = ?&quot;
-	result2, err := tx.Exec(sqlStr2, 1)
-	if err != nil {
-		tx.Rollback()
-		fmt.Println(err)
-		return
-	}
-	n2, err := result2.RowsAffected()
-	if err != nil {
-		tx.Rollback()
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(n1, n2)
-	if 1 == n1 &amp;&amp; 1 == n2 {
-		tx.Commit() // 提交
-	} else {
-		tx.Rollback()
-	}
-}
-</code></pre>
 ]]></content>
     </entry>
 </feed>

@@ -9,7 +9,7 @@
 <meta name="description" content="温故而知新">
 <meta name="theme-color" content="#000">
 <title>腰盐醋</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1637229669779">
+<link rel="shortcut icon" href="/favicon.ico?v=1637311617466">
 <link rel="stylesheet" href="/media/css/pisces.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -171,19 +171,19 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">51</span>
+        <span class="site-item-stat-count">52</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="">
-        <span class="site-item-stat-count">27</span>
+        <span class="site-item-stat-count">28</span>
         <span class="site-item-stat-name language" data-lan="category">分类</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="/tags/">
-        <span class="site-item-stat-count">27</span>
+        <span class="site-item-stat-count">28</span>
         <span class="site-item-stat-name language" data-lan="tag">标签</span>
       </a>
     </div>
@@ -214,6 +214,84 @@
         <div class="section-box pisces">
           <section class="section bg-color posts-expand slide-down-in">
             
+  <article class="post-list-box  post box-shadow-wrapper">
+    <div class="article-wrapper bg-color">
+      <section class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="http://weakcc.github.io/post/redis-shi-xian-xiao-xi-dui-lie/">
+      Redis 实现消息队列
+    </a>
+  </h1>
+  <div class="post-meta">
+    
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span class="language" data-lan="publish">发布于</span>
+      <span class="publish-time" data-t="2021-06-18 11:44:12">2021-06-18</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
+    
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show language" data-lan="category-in">分类于</span>
+      
+      
+      <a href="http://weakcc.github.io/tag/kApwmp63t/">
+        <span>MQ</span>
+      </a>、
+      
+      
+      
+      <a href="http://weakcc.github.io/tag/tayIXOYIs/">
+        <span>Redis</span>
+      </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>13<span class="language" data-lan="minute">分钟</span></span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>3312<span class="pc-show language" data-lan="words">字数</span></span>
+    </span>
+    
+  </div>
+</section>
+      <div class="post-body">
+        
+        
+          
+            <h2 id="消息队列是什么">消息队列是什么</h2>
+<p><code>消息队列</code>：把要传输的数据放在队列中。消息是两个服务之间沟通的媒介，队列就是两个服务之间进行沟通消息的载体或容器。（把数据放到消息队列叫做<b>生产者</b>，从消息队列里面取数据叫做<b>消费者</b>）<br>
+<img src="http://weakcc.github.io/post-images/1624000927881.png" alt="" loading="lazy"></p>
+<ul>
+    <li>生产者（producer）：用于组装消息，并将组装的消息通过 lpush（左进）的方式压入队列，供消费者消费此消息</li>
+    <li>消费者（consumer）：用于将队列里面的消息按照<b>先进先出</b> rpop（右进） 的原则弹出队列容器中</li>
+    <li>队列（queue）：用于承载消息的载体，在队列里面，被生产者压入的消息按照一定顺序进行存放，保证有序性</li>
+</ul>
+          
+        
+        
+        <div class="post-button text-center">
+          <a class="btn language" data-lan="read-more" href="http://weakcc.github.io/post/redis-shi-xian-xiao-xi-dui-lie/" rel="contents">
+            阅读全文 »
+          </a>
+        </div>
+        
+      </div>
+      
+        <footer class="post-footer">
+          <div class="post-eof"></div>
+        </footer>
+      
+    </div>
+  </article>
+
   <article class="post-list-box  post box-shadow-wrapper">
     <div class="article-wrapper bg-color">
       <section class="post-header">
@@ -870,95 +948,6 @@
         
         <div class="post-button text-center">
           <a class="btn language" data-lan="read-more" href="http://weakcc.github.io/post/sql-zhi-shi-zong-jie/" rel="contents">
-            阅读全文 »
-          </a>
-        </div>
-        
-      </div>
-      
-        <footer class="post-footer">
-          <div class="post-eof"></div>
-        </footer>
-      
-    </div>
-  </article>
-
-  <article class="post-list-box  post box-shadow-wrapper">
-    <div class="article-wrapper bg-color">
-      <section class="post-header">
-  <h1 class="post-title">
-    <a class="post-title-link" href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/">
-      优雅地实现在 Python 退出时强制运行一段代码
-    </a>
-  </h1>
-  <div class="post-meta">
-    
-    <span class="meta-item pc-show">
-      <i class="fa fa-calendar-o"></i>
-      <span class="language" data-lan="publish">发布于</span>
-      <span class="publish-time" data-t="2020-11-28 16:30:15">2020-11-28</span>
-      <span class="post-meta-divider pc-show">|</span>
-    </span>
-    
-    <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="http://weakcc.github.io/tag/CUorjbHG_/">
-        <span>Python</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
-      <i class="fa fa-clock-o"></i>
-      <span>2<span class="language" data-lan="minute">分钟</span></span>
-    </span>
-    <span class="meta-item">
-      <span class="post-meta-divider">|</span>
-      <i class="fa fa-file-word-o"></i>
-      <span>352<span class="pc-show language" data-lan="words">字数</span></span>
-    </span>
-    
-  </div>
-</section>
-      <div class="post-body">
-        
-        
-          
-            <p>如果有这样一个场景，你要给一个项目开发测试程序，程序开始运行的时候，会创建初始环境，测试完成以后，会清理环境。<br>
-使用 Python 自带的 <code>atexit</code> 这个模块</p>
-<pre><code class="language-python">import atexit
-
-@atexit.register
-def clean():
-    print(&quot;清理环境相关的代码&quot;)
-
-def test():
-    print(&quot;这里先执行&quot;)
-    example = {'a': 1, 'b': 2}
-    print(example['c'])  # 显然这里会报错
-
-test()
-
-# 这里先执行
-# Traceback (most recent call last):
-# 清理环境相关的代码
-#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 15, in &lt;module&gt;
-#     test()
-#   File &quot;/Users/dupeng/m7/Python/Web/demo.py&quot;, line 12, in test
-#     print(example['c'])  # 显然这里会报错
-# KeyError: 'c'
-</code></pre>
-
-          
-        
-        
-        <div class="post-button text-center">
-          <a class="btn language" data-lan="read-more" href="http://weakcc.github.io/post/you-ya-di-shi-xian-zai-python-tui-chu-shi-qiang-zhi-yun-xing-yi-duan-dai-ma/" rel="contents">
             阅读全文 »
           </a>
         </div>
@@ -1797,6 +1786,15 @@ test()
       <hr>
     </div>
     <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/mamp-xia-zhi-ding-php-ban-ben-zhi-xing-composer-zhi-ding-xiang-mu/"" data-c="
+          &lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;cd m7/PHP/benben/basic_crm/
+
+/Applications/MAMP/bin/php/php7.0.31/bin/php /usr/local/bin/composer require tencentcloud/tencentcloud-sdk-php
+&lt;/code&gt;&lt;/pre&gt;
+">MAMP 下指定 PHP 版本执行 composer （指定项目）</a>
+      </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="http://weakcc.github.io/post/tong-guo-mvccduo-ban-ben-bing-fa-kong-zhi-bao-zheng-shu-ju-ku-shi-wu-de-yi-zhi-xing/"" data-c="
